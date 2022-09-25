@@ -1,0 +1,17 @@
+{
+  "name": "@kylehue/tree-view",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "kylehue",
+  "license": "ISC"
+}
