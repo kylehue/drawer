@@ -1,65 +1,71 @@
 .treeview-directory-header {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	width: 100%;
-	cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 .treeview-directory {
-	padding-left: 1rem;
+  z-index: 1;
+}
+
+.treeview-content-wrapper {
+  padding-left: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .treeview-directory-collapsed {
-	display: none;
+  display: none;
 }
 
 .treeview-directory-name {
-	margin: 0 4px;
-	pointer-events: none;
-	user-select: none;
+  margin: 0 4px;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
 }
 
 .treeview-collapse-button {
-	padding: 0px !important;
-	line-height: 1 !important;
-	font-size: 1.2rem !important;
-	border: none !important;
-	background: none !important;
-	margin-left: auto;
-	margin-right: 1rem;
+  padding: 0px !important;
+  line-height: 1 !important;
+  font-size: 1.2rem !important;
+  border: none !important;
+  background: none !important;
+  margin-left: auto;
+  margin-right: 1rem;
+  z-index: 1;
 }
 
 .treeview-collapse-button::before {
-	content: "▾";
+  content: "▾";
 }
 
 .treeview-collapse-button.treeview-button-expand::before {
-	content: "▸";
+  content: "▸";
 }
 
 .treeview-file-wrapper {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	width: 100%;
-	margin-left: 0.5rem;
-	padding-left: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  user-select: none;
+  text-align: left;
+	position: relative;
 }
 
-.treeview-file-button {
-	background: none;
-	border: none;
-	border-radius: 4px;
-	text-align: left;
-	user-select: none;
+.treeview-file-wrapper > span {
+  pointer-events: none;
 }
 
-.treeview-file-button:hover {
-	background: rgba(255, 255, 255, 0.025);
+.treeview-highlighter {
+  display: none;
+  background: rgba(122, 122, 122, 0.2);
+  position: absolute;
+	top: 0;
+  z-index: 0;
 }
 
-
-.treeview-file-button:active {
-	background: rgba(255, 255, 255, 0.05);
+.treeview-file-wrapper:has(.treeview-highlighter) * {
+	z-index: 1;
 }
