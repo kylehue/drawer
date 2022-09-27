@@ -31,8 +31,7 @@
   font-size: 1.2rem !important;
   border: none !important;
   background: none !important;
-  margin-left: auto;
-  margin-right: 1rem;
+	cursor: default !important;
   z-index: 1;
 }
 
