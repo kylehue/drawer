@@ -5,24 +5,42 @@
   width: 100%;
 }
 
-.treeview-directory {
+.treeview-directory-name {
+  margin: 0 4px;
+  pointer-events: none;
+  user-select: none;
   z-index: 1;
 }
 
-.treeview-content-wrapper {
-  padding-left: 0.5rem;
-  margin-left: 0.5rem;
+.treeview-directory {
+  z-index: 1;
 }
 
 .treeview-directory-collapsed {
   display: none;
 }
 
-.treeview-directory-name {
-  margin: 0 4px;
-  pointer-events: none;
+.treeview-file {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
   user-select: none;
-  z-index: 1;
+  text-align: left;
+	position: relative;
+}
+
+.treeview-file > span {
+  pointer-events: none;
+}
+
+.treeview-file:has(.treeview-highlighter) * {
+	z-index: 1;
+}
+
+.treeview-content-wrapper {
+  padding-left: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .treeview-collapse-button {
@@ -43,28 +61,10 @@
   content: "▸";
 }
 
-.treeview-file-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  user-select: none;
-  text-align: left;
-	position: relative;
-}
-
-.treeview-file-wrapper > span {
-  pointer-events: none;
-}
-
 .treeview-highlighter {
   display: none;
   background: rgba(122, 122, 122, 0.2);
   position: absolute;
 	top: 0;
   z-index: 0;
-}
-
-.treeview-file-wrapper:has(.treeview-highlighter) * {
-	z-index: 1;
 }
