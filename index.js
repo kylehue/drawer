@@ -1,1 +1,2 @@
-module.exports = require("./lib/TreeView.js");
+require("./styles/main.scss");
+module.exports = require("./src/main.js");
