@@ -8,13 +8,14 @@ class DrawerFile extends DrawerContent {
 
 		this.element = new DrawerFileElement(this.title);
 	}
-
+ 
 	refresh() {
 		this.appendToParent();
 	}
 
 	addContent(name, value) {
 		this.content[name] = value;
+		return this;
 	}
 }
 

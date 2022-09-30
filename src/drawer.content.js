@@ -9,12 +9,13 @@ class DrawerContent {
 		if (hasParent) {
 			let parent = this.parent;
 			let parentElement = parent.element;
+			// Append this directory's element to parent DrawerDirectory element
 			if (parent.title != "drawer") {
 				if (!parentElement.has(this.element)) {
 					parentElement.append(this.element);
 				}
 			} else {
-				// Simply append this directory's element to main element if the parent is the main directory.
+				// Simply append this directory's element to main HTML element if the parent is the main directory.
 				let element = this.element.getMain();
 				let isInDOM = parentElement.contains(element);
 				if (!isInDOM) {
