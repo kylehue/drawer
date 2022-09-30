@@ -1,2 +1,2 @@
-require("./styles/treeview.scss");
-module.exports = require("./src/treeview.js");
+require("./styles/drawer.scss");
+module.exports = require("./src/drawer.js");

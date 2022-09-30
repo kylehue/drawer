@@ -1,5 +1,4 @@
-const scanObject = require("./treeview.scan-object.js");
-const Directory = require("./treeview.directory.js");
+const DrawerDirectory = require("./drawer.content.directory.js");
 
 function getElement(element) {
 	if (typeof element == "string") {
@@ -9,12 +8,11 @@ function getElement(element) {
 	}
 }
 
-class TreeView extends Directory {
+class Drawer extends DrawerDirectory {
 	constructor(options = {}) {
-		super();
+		super("drawer", options);
 		console.clear();
 
-		// Options
 		this.options = Object.assign({
 			element: null,
 			autoSortFiles: false,
@@ -26,6 +24,13 @@ class TreeView extends Directory {
 		this.element = getElement(this.options.element);
 	}
 
+	toJSON() {
+
+	}
+
+	fromJSON() {
+
+	}
 }
 
-module.exports = TreeView;
+module.exports = Drawer;

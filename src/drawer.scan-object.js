@@ -1,4 +1,4 @@
-const { getAncestorPath } = require("./treeview.path.js");
+const { getAncestorPath } = require("./drawer.path.js");
 
 module.exports = function scanObject(object, callback, parentObject) {
 	if (!object instanceof Object || typeof callback != "function") return;
