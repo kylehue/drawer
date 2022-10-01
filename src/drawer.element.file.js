@@ -1,4 +1,5 @@
 const DrawerElement = require("./drawer.element.js");
+const fileIcon = require("file-icons-js").getClassWithColor;
 
 const styles = {
 	wrapper: ["drawer-file"],
@@ -6,17 +7,17 @@ const styles = {
 }
 
 class DrawerFileElement extends DrawerElement {
-	constructor(title) {
+	constructor(title, insertIcons) {
 		super(title);
 
-		this.elements.main = DrawerFileElement.createMain(this.title);
+		this.elements.main = DrawerFileElement.createMain(this.title, insertIcons);
 	}
 
 	getMain() {
 		return this.elements.main;
 	}
 
-	static createMain(title) {
+	static createMain(title, insertIcons) {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add(...styles.wrapper);
 
@@ -26,6 +27,18 @@ class DrawerFileElement extends DrawerElement {
 			wrapper.append(textElement);
 		}
 
+		function addIcon() {
+			const iconElement = DrawerElement.createIcon();
+			const iconClass = fileIcon(title);
+
+			if (iconClass) {
+				let iconClassArray = iconClass.split(" ");
+				iconElement.classList.add(...iconClassArray);
+				wrapper.append(iconElement);
+			}
+		}
+
+		if (insertIcons) addIcon();
 		if (title) {
 			addTitle();
 		}

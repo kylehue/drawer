@@ -18,11 +18,11 @@ class Drawer extends DrawerDirectory {
 			autoSortFiles: false,
 			autoSortDirectories: false,
 			highlight: false,
-			autoRefresh: false
+			autoRefresh: false,
+			insertFileIcons: false
 		}, options);
 
 		this.element = getElement(this.options.element);
-		this.main = this;
 	}
 
 	toJSON() {

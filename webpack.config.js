@@ -31,6 +31,10 @@ module.exports = {
 		path: path.resolve(__dirname, "./dist"),
 		publicPath: "/",
 		filename: "[name].js",
-		clean: true
+		clean: true,
+		library: {
+			name: "drawer",
+			type: "umd"
+		}
 	}
 };

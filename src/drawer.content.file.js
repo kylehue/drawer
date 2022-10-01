@@ -2,13 +2,13 @@ const DrawerContent = require("./drawer.content.js");
 const DrawerFileElement = require("./drawer.element.file.js");
 
 class DrawerFile extends DrawerContent {
-	constructor(title) {
+	constructor(title, options = {}) {
 		super(title);
-		this.type = "file";
-		
-		this.content = {};
 
-		this.element = new DrawerFileElement(this.title);
+		this.type = "file";
+
+		this.content = {};
+		this.element = new DrawerFileElement(this.title, options.insertFileIcons);
 	}
 
 	refresh() {
@@ -17,6 +17,7 @@ class DrawerFile extends DrawerContent {
 
 	addContent(name, value) {
 		this.content[name] = value;
+
 		return this;
 	}
 }

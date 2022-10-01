@@ -5,7 +5,6 @@
   @include drawer-flex-column;
   width: 100%;
   height: fit-content;
-  box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.25);
 
 	.drawer-head {
 	  @include drawer-flex-row;
@@ -22,14 +21,27 @@
 	}
 }
 
-.drawer-text {
+.drawer-text, .drawer-icon {
 	line-height: 1;
 }
 
+.drawer-icon {
+	margin-right: 0.5em;
+	&::before {
+		font-size: 1em;
+	}
+}
+
 .drawer-head, .drawer-file {
-	height: fit-content;
-	padding: $item-size 0;
 	font-size: $font-size;
+}
+
+.drawer-file {
+	height: $file-height;
+}
+
+.drawer-head {
+	height: $directory-height;
 }
 
 .drawer-file {

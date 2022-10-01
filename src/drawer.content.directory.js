@@ -5,6 +5,7 @@ const DrawerDirectoryElement = require("./drawer.element.directory.js");
 class DrawerDirectory extends DrawerContent {
 	constructor(title, options = {}) {
 		super(title);
+		this.options = options;
 		this.type = "directory";
 
 		this.content = {
@@ -43,8 +44,8 @@ class DrawerDirectory extends DrawerContent {
 		this.refreshFiles();
 	}
 
-	addDirectory(title, options = {}) {
-		let directory = new DrawerDirectory(title, options);
+	addDirectory(title) {
+		let directory = new DrawerDirectory(title, this.options);
 		directory.setParent(this);
 
 		this.content.directories.push(directory);
@@ -58,7 +59,7 @@ class DrawerDirectory extends DrawerContent {
 	}
 
 	addFile(title) {
-		let file = new DrawerFile(title);
+		let file = new DrawerFile(title, this.options);
 		file.setParent(this);
 
 		this.content.files.push(file);

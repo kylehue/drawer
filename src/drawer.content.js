@@ -5,6 +5,7 @@ class DrawerContent extends DrawerEventEmitter {
 		super();
 		this.title = title;
 		this.parent = null;
+		this.descendantListeners = {};
 	}
 
 	setParent(parent) {
@@ -38,9 +39,9 @@ class DrawerContent extends DrawerEventEmitter {
 			if (type == "emit") {
 				currentParent.emit(eventName, ...args);
 			} else if (type == "on") {
-				currentParent.on(eventName, ...args);
+				currentParent.on(eventName, args[0]);
 			} else if (type == "once") {
-				currentParent.once(eventName, ...args);
+				currentParent.once(eventName, args[0]);
 			} else {
 				throw new Error("Invalid listener type.");
 			}
@@ -54,9 +55,9 @@ class DrawerContent extends DrawerEventEmitter {
 			if (type == "emit") {
 				subDirectory.emit(eventName, ...args);
 			} else if (type == "on") {
-				subDirectory.on(eventName, ...args);
+				subDirectory.on(eventName, args[0]);
 			} else if (type == "once") {
-				subDirectory.once(eventName, ...args);
+				subDirectory.once(eventName, args[0]);
 			} else {
 				throw new Error("Invalid listener type.");
 			}

@@ -72,7 +72,15 @@ class DrawerDirectoryElement extends DrawerElement {
 			head.append(textElement);
 		}
 
+		function addFolderIcon() {
+			const iconElement = DrawerElement.createIcon();
+			iconElement.classList.add("mdi", "mdi-folder");
+
+			head.append(iconElement);
+		}
+
 		addArrow();
+		//addFolderIcon();
 		if (title) {
 			addTitle();
 		}

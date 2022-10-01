@@ -1,5 +1,6 @@
 const styles = {
-	text: ["drawer-text"]
+	text: ["drawer-text"],
+	icon: ["drawer-icon"]
 }
 
 class DrawerElement {
@@ -31,6 +32,12 @@ class DrawerElement {
 		const span = document.createElement("span");
 		span.classList.add(...styles.text);
 		span.textContent = text;
+		return span;
+	}
+
+	static createIcon() {
+		const span = document.createElement("span");
+		span.classList.add(...styles.icon);
 		return span;
 	}
 }
