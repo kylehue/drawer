@@ -22,6 +22,7 @@ class Drawer extends DrawerDirectory {
 		}, options);
 
 		this.element = getElement(this.options.element);
+		this.main = this;
 	}
 
 	toJSON() {

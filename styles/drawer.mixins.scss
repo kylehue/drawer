@@ -1,0 +1,16 @@
+@mixin drawer-flex {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+@mixin drawer-flex-row {
+  @include drawer-flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+@mixin drawer-flex-column {
+  @include drawer-flex;
+  flex-direction: column;
+}

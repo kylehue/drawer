@@ -4,11 +4,13 @@ const DrawerFileElement = require("./drawer.element.file.js");
 class DrawerFile extends DrawerContent {
 	constructor(title) {
 		super(title);
+		this.type = "file";
+		
 		this.content = {};
 
 		this.element = new DrawerFileElement(this.title);
 	}
- 
+
 	refresh() {
 		this.appendToParent();
 	}

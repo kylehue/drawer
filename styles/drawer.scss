@@ -1,69 +1,60 @@
-@mixin drawer-flex {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
-}
-
-@mixin drawer-flex-row {
-  @include drawer-flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-@mixin drawer-flex-column {
-  @include drawer-flex;
-  flex-direction: column;
-}
-
-$drawer-item-height: 25px;
+@import "./drawer.mixins.scss";
+@import "./drawer.config.scss";
 
 .drawer-wrapper {
   @include drawer-flex-column;
   width: 100%;
   height: fit-content;
-  background: rgba(255, 0, 0, 0.1);
+  box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.25);
 
-  &.drawer-collapsed {
-    .drawer-body {
-      display: none;
-    }
+	.drawer-head {
+	  @include drawer-flex-row;
+	  width: 100%;
+	  user-select: none;
+		font-weight: bold;
+	}
 
-    .drawer-arrow::before {
-      content: "▸";
-    }
-  }
-}
-
-.drawer-head {
-  @include drawer-flex-row;
-  width: 100%;
-  height: $drawer-item-height;
-  user-select: none;
+	.drawer-body {
+	  @include drawer-flex-column;
+	  width: 100%;
+	  height: fit-content;
+	  padding-left: $indent-size;
+	}
 }
 
 .drawer-text {
 	line-height: 1;
 }
 
-.drawer-body {
-  @include drawer-flex-column;
-  width: 100%;
-  height: fit-content;
-  padding-left: 10px;
-}
-
-.drawer-arrow {
-  width: fit-content;
-  height: fit-content;
-
-  &::before {
-    content: "▾";
-  }
+.drawer-head, .drawer-file {
+	height: fit-content;
+	padding: $item-size 0;
+	font-size: $font-size;
 }
 
 .drawer-file {
-  @include drawer-flex-row;
-  width: 100%;
-  height: $drawer-item-height;
-  user-select: none;
+	@include drawer-flex-row;
+	width: 100%;
+	user-select: none;
+}
+
+.drawer-arrow {
+	width: $indent-size;
+	height: fit-content;
+	text-align: center;
+	font-weight: normal;
+
+	&::before {
+		content: "▾";
+	}
+}
+
+.drawer-collapsed {
+	.drawer-body {
+		display: none;
+	}
+
+	.drawer-arrow::before {
+		content: "▸";
+	}
 }

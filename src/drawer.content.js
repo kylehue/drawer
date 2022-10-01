@@ -1,7 +1,14 @@
-class DrawerContent {
+const DrawerEventEmitter = require("./drawer.event-emitter");
+
+class DrawerContent extends DrawerEventEmitter {
 	constructor(title) {
+		super();
 		this.title = title;
 		this.parent = null;
+	}
+
+	setParent(parent) {
+		this.parent = parent || null;
 	}
 
 	appendToParent() {
@@ -25,8 +32,59 @@ class DrawerContent {
 		}
 	}
 
-	setParent(parent) {
-		this.parent = parent || null;
+	ascendantsListener(type, eventName, ...args) {
+		let currentParent = this.parent;
+		while (currentParent) {
+			if (type == "emit") {
+				currentParent.emit(eventName, ...args);
+			} else if (type == "on") {
+				currentParent.on(eventName, ...args);
+			} else if (type == "once") {
+				currentParent.once(eventName, ...args);
+			} else {
+				throw new Error("Invalid listener type.");
+			}
+
+			currentParent = currentParent.parent;
+		}
+	}
+
+	descendantsListener(type, eventName, ...args) {
+		this.scanContent((subDirectory, subDirectoryFiles) => {
+			if (type == "emit") {
+				subDirectory.emit(eventName, ...args);
+			} else if (type == "on") {
+				subDirectory.on(eventName, ...args);
+			} else if (type == "once") {
+				subDirectory.once(eventName, ...args);
+			} else {
+				throw new Error("Invalid listener type.");
+			}
+		});
+	}
+
+	ascendantsEmit(eventName, ...args) {
+		this.ascendantsListener("emit", eventName, ...args);
+	}
+
+	ascendantsOn(eventName, callback) {
+		this.ascendantsListener("on", eventName, callback);
+	}
+
+	ascendantsOnce(eventName, callback) {
+		this.ascendantsListener("once", eventName, callback);
+	}
+
+	descendantsEmit(eventName, ...args) {
+		this.descendantsListener("emit", eventName, ...args);
+	}
+
+	descendantsOn(eventName, callback) {
+		this.descendantsListener("on", eventName, callback);
+	}
+
+	descendantsOnce(eventName, callback) {
+		this.descendantsListener("once", eventName, callback);
 	}
 }
 

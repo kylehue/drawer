@@ -15,7 +15,7 @@ class DrawerElement {
 		} else if (element instanceof HTMLElement) {
 			htmlElement = element;
 		} else {
-			console.error("Invalid element.");
+			throw new Error("Invalid element.");
 		}
 
 		return htmlElement;
