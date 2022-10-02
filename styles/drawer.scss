@@ -1,3 +1,7 @@
+$material-icons-font-path: '~material-icons/iconfont/';
+$material-icons-font-size: 1em !default;
+$material-icons-font-display: block !default;
+@import 'material-icons/iconfont/round.scss';
 @import "./drawer.mixins.scss";
 @import "./drawer.config.scss";
 
@@ -21,17 +25,6 @@
 	}
 }
 
-.drawer-text, .drawer-icon {
-	line-height: 1;
-}
-
-.drawer-icon {
-	margin-right: 0.5em;
-	&::before {
-		font-size: 1em;
-	}
-}
-
 .drawer-head, .drawer-file {
 	font-size: $font-size;
 }
@@ -50,14 +43,26 @@
 	user-select: none;
 }
 
-.drawer-arrow {
-	width: $indent-size;
-	height: fit-content;
-	text-align: center;
-	font-weight: normal;
+.drawer-text, .drawer-icon {
+	line-height: 1;
+}
 
+.drawer-icon {
+	margin: 0 0.25em;
 	&::before {
-		content: "▾";
+		font-size: 1em;
+	}
+}
+
+.drawer-icon-arrow {
+	&::before {
+		content: "keyboard_arrow_down";
+	}
+}
+
+.drawer-icon-folder {
+	&::before {
+		content: "folder_open";
 	}
 }
 
@@ -66,7 +71,11 @@
 		display: none;
 	}
 
-	.drawer-arrow::before {
-		content: "▸";
+	.drawer-icon-arrow::before {
+		content: "keyboard_arrow_right";
+	}
+
+	.drawer-icon-folder::before {
+		content: "folder";
 	}
 }

@@ -5,17 +5,18 @@ const styles = {
 	head: ["drawer-head"],
 	body: ["drawer-body"],
 	collapseButton: ["drawer-collapse-button"],
-	arrow: ["drawer-arrow"],
-	collapsed: ["drawer-collapsed"]
+	collapsed: ["drawer-collapsed"],
+	arrow: ["drawer-icon", "drawer-icon-arrow"],
+	folder: ["drawer-icon", "drawer-icon-folder"]
 }
 
 class DrawerDirectoryElement extends DrawerElement {
-	constructor(title) {
+	constructor(title, options = {}) {
 		super(title);
 
 		this.elements.main = DrawerDirectoryElement.createMain(this.title);
 
-		this.elements.head = DrawerDirectoryElement.createHead(this.title);
+		this.elements.head = DrawerDirectoryElement.createHead(this.title, options);
 
 		this.elements.body = DrawerDirectoryElement.createBody(this.title);
 
@@ -55,15 +56,15 @@ class DrawerDirectoryElement extends DrawerElement {
 		return wrapper;
 	}
 
-	static createHead(title) {
+	static createHead(title, options) {
 		const head = document.createElement("div");
 		head.classList.add(...styles.head);
 
 		function addArrow() {
-			const textElement = DrawerElement.createText("");
-			textElement.classList.add(...styles.arrow);
+			const iconElement = DrawerElement.createText("");
+			iconElement.classList.add("material-icons-round", ...styles.arrow);
 
-			head.append(textElement);
+			head.append(iconElement);
 		}
 
 		function addTitle() {
@@ -73,14 +74,17 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		function addFolderIcon() {
-			const iconElement = DrawerElement.createIcon();
-			iconElement.classList.add("mdi", "mdi-folder");
+			const iconElement = DrawerElement.createText("");
+			iconElement.classList.add("material-icons-round", ...styles.folder);
 
 			head.append(iconElement);
 		}
 
 		addArrow();
-		//addFolderIcon();
+		if (options.insertDirectoryIcons) {
+			addFolderIcon();
+		}
+
 		if (title) {
 			addTitle();
 		}

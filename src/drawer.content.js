@@ -5,7 +5,9 @@ class DrawerContent extends DrawerEventEmitter {
 		super();
 		this.title = title;
 		this.parent = null;
-		this.descendantListeners = {};
+		this.ascendantsCallbacks = {};
+
+		this.level = -1;
 	}
 
 	setParent(parent) {
@@ -62,6 +64,14 @@ class DrawerContent extends DrawerEventEmitter {
 				throw new Error("Invalid listener type.");
 			}
 		});
+
+		if (type == "emit") {
+			this.dispatchListener(this.ascendantsCallbacks, eventName, ...args);
+		} else if (type == "on") {
+			this.addListener(this.ascendantsCallbacks, eventName, args[0]);
+		} else {
+			throw new Error("Invalid listener type.");
+		}
 	}
 
 	ascendantsEmit(eventName, ...args) {

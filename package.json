@@ -38,6 +38,7 @@
   "dependencies": {
     "file-icons-js": "github:websemantics/file-icons-js",
     "lodash.get": "^4.4.2",
-    "lodash.set": "^4.3.2"
+    "lodash.set": "^4.3.2",
+    "material-icons": "^1.12.0"
   }
 }

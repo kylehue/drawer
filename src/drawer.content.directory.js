@@ -13,7 +13,12 @@ class DrawerDirectory extends DrawerContent {
 			files: []
 		};
 
-		this.element = new DrawerDirectoryElement(this.title);
+		this.element = new DrawerDirectoryElement(this.title, this.options);
+
+		let element = this.element.getHead();
+		element.addEventListener("click", (event) => {
+			this.emit("click", event);
+		});
 	}
 
 	scanContent(callback) {
@@ -41,6 +46,16 @@ class DrawerDirectory extends DrawerContent {
 
 	refresh() {
 		this.appendToParent();
+
+		Object.keys(this.parent.ascendantsCallbacks).forEach((key, i) => {
+			let value = this.parent.ascendantsCallbacks[key];
+			if (!this.ascendantsCallbacks[key]) this.ascendantsCallbacks[key] = [];
+			this.ascendantsCallbacks[key].push(...value);
+		});
+
+		this.level = this.parent.level + 1;
+
+		this.element.getHead().style.paddingLeft = (this.level + 0.5) + "em";
 		this.refreshFiles();
 	}
 

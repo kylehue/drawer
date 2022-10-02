@@ -9,9 +9,9 @@ class DrawerEventEmitter {
 		}, options);
 	}
 
-	on(eventName, callback) {
-		if (!this.callbacks[eventName]) {
-			this.callbacks[eventName] = [];
+	addListener(object, eventName, callback) {
+		if (!object[eventName]) {
+			object[eventName] = [];
 		}
 
 		// Add listener
@@ -21,7 +21,11 @@ class DrawerEventEmitter {
 			});
 		}
 
-		this.callbacks[eventName].push(callback);
+		object[eventName].push(callback);
+	}
+
+	on(eventName, callback) {
+		this.addListener(this.callbacks, eventName, callback);
 
 		return this;
 	}
@@ -34,8 +38,8 @@ class DrawerEventEmitter {
 		this.on(eventName, listener);
 	}
 
-	emit(eventName, ...args) {
-		let callbacks = this.callbacks[eventName];
+	dispatchListener(object, eventName, ...args) {
+		let callbacks = object[eventName];
 
 		if (callbacks) {
 			function triggerCallbacks() {
@@ -59,6 +63,10 @@ class DrawerEventEmitter {
 
 			this.element.getMain().dispatchEvent(htmlEvent);
 		}
+	}
+
+	emit(eventName, ...args) {
+		this.dispatchListener(this.callbacks, eventName, ...args);
 
 		return this;
 	}

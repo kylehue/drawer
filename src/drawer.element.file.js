@@ -7,17 +7,17 @@ const styles = {
 }
 
 class DrawerFileElement extends DrawerElement {
-	constructor(title, insertIcons) {
+	constructor(title, options = {}) {
 		super(title);
 
-		this.elements.main = DrawerFileElement.createMain(this.title, insertIcons);
+		this.elements.main = DrawerFileElement.createMain(this.title, options);
 	}
 
 	getMain() {
 		return this.elements.main;
 	}
 
-	static createMain(title, insertIcons) {
+	static createMain(title, options) {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add(...styles.wrapper);
 
@@ -38,7 +38,10 @@ class DrawerFileElement extends DrawerElement {
 			}
 		}
 
-		if (insertIcons) addIcon();
+		if (options.insertFileIcons) {
+			addIcon();
+		}
+		
 		if (title) {
 			addTitle();
 		}

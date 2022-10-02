@@ -19,7 +19,9 @@ class Drawer extends DrawerDirectory {
 			autoSortDirectories: false,
 			highlight: false,
 			autoRefresh: false,
-			insertFileIcons: false
+			insertFileIcons: true,
+			insertDirectoryIcons: true,
+			drawer: this
 		}, options);
 
 		this.element = getElement(this.options.element);
