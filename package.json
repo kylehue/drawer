@@ -2,7 +2,7 @@
   "name": "@kylehue/drawer",
   "version": "1.0.0",
   "description": "",
-  "main": "./index.js",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kylehue/js-lib.git"
@@ -21,7 +21,8 @@
     "webpack-cli": "^4.10.0"
   },
   "scripts": {
-    "build": "webpack --config ./webpack.config.js"
+    "watch": "webpack --mode=development --watch",
+    "build": "webpack --mode=production"
   },
   "engines": {
     "node": "14.x"

@@ -1,7 +1,6 @@
 const path = require("path");
 
 module.exports = {
-	mode: "production",
 	entry: {
 		index: path.resolve(__dirname, "./index.js")
 	},
