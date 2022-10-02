@@ -94,4 +94,4 @@ class DrawerEventEmitter {
 	}
 }
 
-module.exports = DrawerEventEmitter;
+export default DrawerEventEmitter;

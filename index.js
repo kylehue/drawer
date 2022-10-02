@@ -1,2 +1,4 @@
-require("./styles/drawer.scss");
-module.exports = require("./src/drawer.js");
+import "./styles/drawer.scss";
+import Drawer from "./src/drawer";
+
+export default Drawer;

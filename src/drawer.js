@@ -1,4 +1,4 @@
-const DrawerDirectory = require("./drawer.content.directory.js");
+import DrawerDirectory from "./drawer.content.directory";
 
 function getElement(element) {
 	if (typeof element == "string") {
@@ -34,4 +34,4 @@ class Drawer extends DrawerDirectory {
 	}
 }
 
-module.exports = Drawer;
+export default Drawer;

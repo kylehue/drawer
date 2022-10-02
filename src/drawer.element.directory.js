@@ -1,4 +1,4 @@
-const DrawerElement = require("./drawer.element.js");
+import DrawerElement from "./drawer.element";
 
 const styles = {
 	wrapper: ["drawer-wrapper"],
@@ -95,4 +95,4 @@ class DrawerDirectoryElement extends DrawerElement {
 	}
 }
 
-module.exports = DrawerDirectoryElement;
+export default DrawerDirectoryElement;

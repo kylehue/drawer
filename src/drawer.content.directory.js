@@ -1,6 +1,6 @@
-const DrawerContent = require("./drawer.content.js");
-const DrawerFile = require("./drawer.content.file.js");
-const DrawerDirectoryElement = require("./drawer.element.directory.js");
+import DrawerContent from "./drawer.content";
+import DrawerFile from "./drawer.content.file";
+import DrawerDirectoryElement from "./drawer.element.directory";
 
 class DrawerDirectory extends DrawerContent {
 	constructor(title, options = {}) {
@@ -73,4 +73,4 @@ class DrawerDirectory extends DrawerContent {
 	}
 }
 
-module.exports = DrawerDirectory;
+export default DrawerDirectory;

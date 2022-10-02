@@ -1,4 +1,4 @@
-const DrawerEventEmitter = require("./drawer.event-emitter");
+import DrawerEventEmitter from "./drawer.event-emitter";
 
 class DrawerContent extends DrawerEventEmitter {
 	constructor(title) {
@@ -89,4 +89,4 @@ class DrawerContent extends DrawerEventEmitter {
 	}
 }
 
-module.exports = DrawerContent;
+export default DrawerContent;

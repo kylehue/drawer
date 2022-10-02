@@ -42,4 +42,4 @@ class DrawerElement {
 	}
 }
 
-module.exports = DrawerElement;
+export default DrawerElement;

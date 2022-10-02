@@ -1,5 +1,5 @@
-const DrawerElement = require("./drawer.element.js");
-const fileIcon = require("file-icons-js").getClassWithColor;
+import DrawerElement from "./drawer.element";
+import { getClassWithColor as fileIcon } from "file-icons-js";
 
 const styles = {
 	wrapper: ["drawer-file"],
@@ -47,4 +47,4 @@ class DrawerFileElement extends DrawerElement {
 	}
 }
 
-module.exports = DrawerFileElement;
+export default DrawerFileElement;
