@@ -49,6 +49,7 @@
 
 .drawer-icon {
 	margin-right: 0.25em;
+	flex-shrink: 0;
 	&::before {
 		font-size: 1em;
 	}
