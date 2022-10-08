@@ -2,11 +2,12 @@ import DrawerElement from "./drawer.element";
 import { pathToSVG } from "./utils";
 import {
 	mdiFolder as folderSVGPath,
+	//mdiFolderOpen as folderOpenSVGPath,
 	mdiChevronDown as arrowDownSVGPath
 } from "@mdi/js";
 
 const styles = {
-	wrapper: ["drawer-wrapper"],
+	wrapper: ["drawer-directory"],
 	head: ["drawer-head"],
 	body: ["drawer-body"],
 	collapseButton: ["drawer-collapse-button"],
@@ -54,6 +55,21 @@ class DrawerDirectoryElement extends DrawerElement {
 	toggleCollapse() {
 		let main = this.getMain();
 		main.classList.toggle(...styles.collapsed);
+
+
+		// function toggleFolderIcon() {
+		// 	let isCollapsed = main.classList.contains(styles.collapsed[0]);
+		//
+		// 	let head = this.getHead();
+		// 	let folderSVG = head.querySelector("." + styles.folder.join("."));
+		// 	if (isCollapsed) {
+		// 		folderSVG.querySelector("path").setAttribute("d", folderSVGPath);
+		// 	} else {
+		// 		folderSVG.querySelector("path").setAttribute("d", folderOpenSVGPath);
+		// 	}
+		// }
+		//
+		// toggleFolderIcon.call(this);
 	}
 
 	static createMain() {

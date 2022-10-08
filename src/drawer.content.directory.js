@@ -19,6 +19,7 @@ class DrawerDirectory extends DrawerContent {
 		element.addEventListener("click", (event) => {
 			this.emit("click", event);
 		});
+
 	}
 
 	scanContent(callback) {
@@ -37,10 +38,40 @@ class DrawerDirectory extends DrawerContent {
 		}
 	}
 
+	sort(type) {
+		var elements = [];
+		var parent;
+		if (this.parent.title == "drawer") {
+			parent = this.parent.element;
+		} else {
+			parent = this.parent.element.getMain();
+		}
+
+		//Get elements in parent
+		elements = Array.from(parent.querySelectorAll(`.drawer-${type}`));
+
+		//Sort
+		const sortedElements = elements.sort((a, b) => b.innerText.localeCompare(a.innerText));
+
+		sortedElements.forEach(e => e.parentElement.prepend(e));
+	}
+
+	sortDirectories() {
+		this.sort("directory");
+	}
+
+	sortFiles() {
+		this.sort("file");
+	}
+
 	refreshFiles() {
 		for (let i = 0; i < this.content.files.length; i++) {
 			let file = this.content.files[i];
 			file.refresh();
+		}
+
+		if (this.options.autoSortFiles) {
+			this.sortFiles();
 		}
 	}
 
@@ -48,6 +79,9 @@ class DrawerDirectory extends DrawerContent {
 		this.appendToParent();
 
 		this.level = this.parent.level + 1;
+		if (this.options.autoSortDirectories) {
+			this.sortDirectories();
+		}
 
 		// Indent
 		this.element.getHead().style.paddingLeft = (this.level * 1.5 + 0.5) + "em";
