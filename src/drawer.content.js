@@ -5,12 +5,16 @@ class DrawerContent extends DrawerEventEmitter {
 		super();
 		this.title = title;
 		this.parent = null;
-		this.ascendantsCallbacks = {};
 
 		this.level = -1;
 	}
 
 	setParent(parent) {
+		// Remove dependent listeners
+		if (this.parent) {
+			this.parent.removeListener("removeHighlight");
+		}
+
 		this.parent = parent || null;
 	}
 
@@ -64,14 +68,6 @@ class DrawerContent extends DrawerEventEmitter {
 				throw new Error("Invalid listener type.");
 			}
 		});
-
-		if (type == "emit") {
-			this.dispatchListener(this.ascendantsCallbacks, eventName, ...args);
-		} else if (type == "on") {
-			this.addListener(this.ascendantsCallbacks, eventName, args[0]);
-		} else {
-			throw new Error("Invalid listener type.");
-		}
 	}
 
 	ascendantsEmit(eventName, ...args) {

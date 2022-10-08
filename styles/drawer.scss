@@ -37,6 +37,10 @@
 	@include drawer-flex-row;
 	width: 100%;
 	user-select: none;
+
+	&.drawer-highlight {
+		background: rgba(120, 120, 120, 0.2);
+	}
 }
 
 .drawer-text, .drawer-icon {
@@ -44,7 +48,7 @@
 }
 
 .drawer-icon {
-	margin: 0 0.25em;
+	margin-right: 0.25em;
 	&::before {
 		font-size: 1em;
 	}

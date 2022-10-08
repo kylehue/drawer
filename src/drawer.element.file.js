@@ -3,7 +3,8 @@ import { getClassWithColor as fileIcon } from "file-icons-js";
 
 const styles = {
 	wrapper: ["drawer-file"],
-	text: ["drawer-text"]
+	text: ["drawer-text"],
+	highlight: ["drawer-highlight"]
 }
 
 class DrawerFileElement extends DrawerElement {
@@ -11,6 +12,14 @@ class DrawerFileElement extends DrawerElement {
 		super(title);
 
 		this.elements.main = DrawerFileElement.createMain(this.title, options);
+	}
+
+	highlight() {
+		this.getMain().classList.add(...styles.highlight);
+	}
+
+	removeHighlight() {
+		this.getMain().classList.remove(...styles.highlight);
 	}
 
 	getMain() {
