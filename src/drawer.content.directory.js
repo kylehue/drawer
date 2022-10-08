@@ -94,7 +94,9 @@ class DrawerDirectory extends DrawerContent {
 
 		this.content.directories.push(directory);
 
-		directory.refresh();
+		if (this.options.autoRefresh) {
+			directory.refresh();
+		}
 
 		this.emit("addDirectory", directory);
 		this.ascendantsEmit("addDirectory", directory);

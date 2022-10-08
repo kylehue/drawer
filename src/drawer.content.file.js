@@ -4,7 +4,7 @@ import DrawerFileElement from "./drawer.element.file";
 class DrawerFile extends DrawerContent {
 	constructor(title, options = {}) {
 		super(title);
-		this.drawer = options.drawer;
+		this.options = options;
 
 		this.type = "file";
 
@@ -21,18 +21,20 @@ class DrawerFile extends DrawerContent {
 		this.appendToParent();
 
 		// Highlight on click
-		this.on("click", event => {
-			let drawer = this.drawer;
-			drawer.descendantsEmit("removeHighlight");
-			drawer.emit("removeHighlight");
+		if (this.options.highlight) {
+			this.on("click", event => {
+				let drawer = this.options.drawer;
+				drawer.descendantsEmit("removeHighlight");
+				drawer.emit("removeHighlight");
 
-			this.element.highlight();
-		});
+				this.element.highlight();
+			});
 
-		// Listen to remove highlight event
-		this.parent.on("removeHighlight", () => {
-			this.element.removeHighlight();
-		});
+			// Listen to remove highlight event
+			this.parent.on("removeHighlight", () => {
+				this.element.removeHighlight();
+			});
+		}
 
 		// Indent
 		this.element.getMain().style.paddingLeft = (this.parent.level * 1.5 + 3.5) + "em";
