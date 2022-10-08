@@ -27,8 +27,8 @@ module.exports = {
 		}]
 	},
 	output: {
-		path: path.resolve(__dirname, "./dist/"),
-		publicPath: "/",
+		path: path.resolve(__dirname, "./dist"),
+		//publicPath: "/",
 		filename: "[name].js",
 		clean: true,
 		library: {

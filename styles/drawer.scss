@@ -1,7 +1,3 @@
-$material-icons-font-path: '~material-icons/iconfont/';
-$material-icons-font-size: 1em !default;
-$material-icons-font-display: block !default;
-@import 'material-icons/iconfont/round.scss';
 @import "./drawer.mixins.scss";
 @import "./drawer.config.scss";
 
@@ -55,27 +51,21 @@ $material-icons-font-display: block !default;
 }
 
 .drawer-icon-arrow {
-	&::before {
-		content: "keyboard_arrow_down";
-	}
+	margin: 0;
 }
 
 .drawer-icon-folder {
-	&::before {
-		content: "folder_open";
+	path {
+		fill: $folder-icon-color;
 	}
 }
 
 .drawer-collapsed {
+	.drawer-icon-arrow {
+		transform: rotate(-90deg);
+	}
+
 	.drawer-body {
 		display: none;
-	}
-
-	.drawer-icon-arrow::before {
-		content: "keyboard_arrow_right";
-	}
-
-	.drawer-icon-folder::before {
-		content: "folder";
 	}
 }

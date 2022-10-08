@@ -1,4 +1,9 @@
 import DrawerElement from "./drawer.element";
+import { pathToSVG } from "./utils";
+import {
+	mdiFolder as folderSVGPath,
+	mdiChevronDown as arrowDownSVGPath
+} from "@mdi/js";
 
 const styles = {
 	wrapper: ["drawer-wrapper"],
@@ -25,7 +30,7 @@ class DrawerDirectoryElement extends DrawerElement {
 
 		//Collapse drawer on click
 		this.getHead().addEventListener("click", () => {
-				this.toggleCollapse();
+			this.toggleCollapse();
 		});
 	}
 
@@ -47,7 +52,8 @@ class DrawerDirectoryElement extends DrawerElement {
 	}
 
 	toggleCollapse() {
-		this.getMain().classList.toggle(...styles.collapsed);
+		let main = this.getMain();
+		main.classList.toggle(...styles.collapsed);
 	}
 
 	static createMain() {
@@ -61,10 +67,11 @@ class DrawerDirectoryElement extends DrawerElement {
 		head.classList.add(...styles.head);
 
 		function addArrow() {
-			const iconElement = DrawerElement.createText("");
-			iconElement.classList.add("material-icons-round", ...styles.arrow);
-
-			head.append(iconElement);
+			const svg = pathToSVG(arrowDownSVGPath, {
+				size: 15
+			});
+			svg.classList.add(...styles.arrow);
+			head.append(svg);
 		}
 
 		function addTitle() {
@@ -74,14 +81,16 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		function addFolderIcon() {
-			const iconElement = DrawerElement.createText("");
-			iconElement.classList.add("material-icons-round", ...styles.folder);
+			let hasIcon = head.contains(document.querySelector("." + styles.folder.join(", .")));
+			if (hasIcon) return;
 
-			head.append(iconElement);
+			const svg = pathToSVG(folderSVGPath);
+			svg.classList.add(...styles.folder);
+			head.append(svg);
 		}
 
 		addArrow();
-		if (options.insertDirectoryIcons) {
+		if (options.directoryIcons) {
 			addFolderIcon();
 		}
 

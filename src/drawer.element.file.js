@@ -38,10 +38,10 @@ class DrawerFileElement extends DrawerElement {
 			}
 		}
 
-		if (options.insertFileIcons) {
+		if (options.fileIcons) {
 			addIcon();
 		}
-		
+
 		if (title) {
 			addTitle();
 		}
