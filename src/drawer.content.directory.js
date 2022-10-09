@@ -8,27 +8,26 @@ class DrawerDirectory extends DrawerContent {
 		this.options = options;
 		this.type = "directory";
 
-		this.content = {
+		this.items = {
 			directories: [],
 			files: []
 		};
 
-		this.element = new DrawerDirectoryElement(this.title, this.options);
+		this.element = new DrawerDirectoryElement(this);
 
 		let element = this.element.getHead();
 		element.addEventListener("click", (event) => {
 			this.emit("click", event);
 		});
-
 	}
 
 	scanContent(callback) {
 		if (this.type == "directory") {
 			function scan(directory, callback) {
-				let directories = directory.content.directories;
+				let directories = directory.items.directories;
 				for (var i = 0; i < directories.length; i++) {
 					let subDirectory = directories[i];
-					let subDirectoryFiles = subDirectory.content.files;
+					let subDirectoryFiles = subDirectory.items.files;
 					callback(subDirectory, subDirectoryFiles);
 					scan(subDirectory, callback);
 				}
@@ -38,14 +37,21 @@ class DrawerDirectory extends DrawerContent {
 		}
 	}
 
-	sort(type) {
-		var elements = [];
-		var parent;
-		if (this.parent.title == "drawer") {
-			parent = this.parent.element;
-		} else {
-			parent = this.parent.element.getMain();
+	clear() {
+		let body = this.element.getBody();
+
+		this.items.directories = [];
+		this.items.files = [];
+
+		//Clear elements in DOM
+		while (body.firstChild) {
+			body.removeChild(body.lastChild);
 		}
+	}
+
+	sort(type) {
+		let elements = [];
+		let parent = this.parent.element.getMain();
 
 		//Get elements in parent
 		elements = Array.from(parent.querySelectorAll(`.drawer-${type}`));
@@ -65,8 +71,8 @@ class DrawerDirectory extends DrawerContent {
 	}
 
 	refreshFiles() {
-		for (let i = 0; i < this.content.files.length; i++) {
-			let file = this.content.files[i];
+		for (let i = 0; i < this.items.files.length; i++) {
+			let file = this.items.files[i];
 			file.refresh();
 		}
 
@@ -92,7 +98,7 @@ class DrawerDirectory extends DrawerContent {
 		let directory = new DrawerDirectory(title, this.options);
 		directory.setParent(this);
 
-		this.content.directories.push(directory);
+		this.items.directories.push(directory);
 
 		if (this.options.autoRefresh) {
 			directory.refresh();
@@ -108,7 +114,7 @@ class DrawerDirectory extends DrawerContent {
 		let file = new DrawerFile(title, this.options);
 		file.setParent(this);
 
-		this.content.files.push(file);
+		this.items.files.push(file);
 
 		file.refresh();
 

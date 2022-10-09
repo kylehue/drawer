@@ -1,6 +1,6 @@
 class DrawerEventEmitter {
 	constructor() {
-		this.callbacks = {};
+		this._listeners = {};
 	}
 
 	transformCallback(callback, options) {
@@ -25,7 +25,7 @@ class DrawerEventEmitter {
 	}
 
 	on(eventName, callback) {
-		this.addListener(this.callbacks, eventName, callback);
+		this.addListener(this._listeners, eventName, callback);
 
 		return this;
 	}
@@ -66,7 +66,7 @@ class DrawerEventEmitter {
 	}
 
 	emit(eventName, ...args) {
-		this.dispatchListener(this.callbacks, eventName, ...args);
+		this.dispatchListener(this._listeners, eventName, ...args);
 
 		return this;
 	}
@@ -85,11 +85,11 @@ class DrawerEventEmitter {
 
 	removeListener(eventName, callback) {
     if (typeof eventName == "string" && arguments.length == 1) {
-      delete this.callbacks[eventName];
+      delete this._listeners[eventName];
     }
 
 		if (typeof callback == "function") {
-			let callbacks = this.callbacks[eventName];
+			let callbacks = this._listeners[eventName];
 			for (var i = 0; i < callbacks.length; i++) {
 				if (callback === callbacks[i].method) {
 					callbacks.splice(i, 1);

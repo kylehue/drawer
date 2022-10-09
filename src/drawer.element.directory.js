@@ -17,16 +17,21 @@ const styles = {
 }
 
 class DrawerDirectoryElement extends DrawerElement {
-	constructor(title, options = {}) {
-		super(title);
+	constructor(directory) {
+		super(directory);
 
-		this.elements.main = DrawerDirectoryElement.createMain(this.title);
+		this.directory = directory;
 
-		this.elements.head = DrawerDirectoryElement.createHead(this.title, options);
+		this.elements.main = DrawerDirectoryElement.createMain.call(this, this.directory.title);
 
-		this.elements.body = DrawerDirectoryElement.createBody(this.title);
+		this.elements.head = DrawerDirectoryElement.createHead.call(this, this.directory.title);
 
-		this.getMain().append(this.getHead());
+		this.elements.body = DrawerDirectoryElement.createBody.call(this, this.directory.title);
+
+		if (this.directory != this.directory.options.drawer) {
+			this.getMain().append(this.getHead());
+		}
+
 		this.getMain().append(this.getBody());
 
 		//Collapse drawer on click
@@ -106,7 +111,7 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		addArrow();
-		if (options.directoryIcons) {
+		if (this.directory.options.directoryIcons) {
 			addFolderIcon();
 		}
 

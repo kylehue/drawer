@@ -1,12 +1,12 @@
 import DrawerDirectory from "./drawer.content.directory";
-
+import DrawerDirectoryElement from "./drawer.element.directory";
 /**
  * TODO:
- * 1. toJSON/fromJSON
- * 2. method for clearing a directory
- * 3. method for adding dirs/files from path string
- * 4. animations
- * 5. optional context menu
+ * [x] toJSON/fromJSON
+ * [/] method for clearing a directory
+ * [x] method for adding dirs/files from path string
+ * [x] animations
+ * [x] optional context menu
  */
 function getElement(element) {
 	if (typeof element == "string") {
@@ -32,7 +32,9 @@ class Drawer extends DrawerDirectory {
 			drawer: this
 		}, options);
 
-		this.element = getElement(this.options.element);
+		this.element = new DrawerDirectoryElement(this);
+
+		getElement(this.options.element).append(this.element.getMain())
 	}
 
 	toJSON() {

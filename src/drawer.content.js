@@ -10,12 +10,18 @@ class DrawerContent extends DrawerEventEmitter {
 	}
 
 	setParent(parent) {
+		if (!parent) {
+			throw new Error ("Cannot set parent to null or undefined.")
+		}
+
 		// Remove dependent listeners
-		if (this.parent) {
+		let hasParent = !!this.parent;
+		if (hasParent) {
 			this.parent.removeListener("removeHighlight");
 		}
 
-		this.parent = parent || null;
+		// Set
+		this.parent = parent;
 	}
 
 	appendToParent() {
@@ -24,17 +30,8 @@ class DrawerContent extends DrawerEventEmitter {
 			let parent = this.parent;
 			let parentElement = parent.element;
 			// Append this directory's element to parent DrawerDirectory element
-			if (parent.title != "drawer") {
-				if (!parentElement.has(this.element)) {
-					parentElement.append(this.element);
-				}
-			} else {
-				// Simply append this directory's element to main HTML element if the parent is the main directory.
-				let element = this.element.getMain();
-				let isInDOM = parentElement.contains(element);
-				if (!isInDOM) {
-					parentElement.append(element);
-				}
+			if (!parentElement.has(this.element)) {
+				parentElement.append(this.element);
 			}
 		}
 	}
