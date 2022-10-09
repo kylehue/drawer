@@ -38,8 +38,53 @@ class Drawer extends DrawerDirectory {
 		getElement(this.options.element).append(this.element.getMain())
 	}
 
-	toJSON() {
+	toJSON(options = {}) {
+		let treeData = {};
 
+		function deepscan(items, parentNode) {
+			// Scan files
+			for (let file of items.files) {
+				let fileData = {
+					title: file.title
+				};
+
+				// Include file's content?
+				if (options.fileContent) {
+					fileData.content = file.content;
+				}
+
+				// Instantiate array if it doesn't exist
+				if (!parentNode.files) {
+					parentNode.files = [];
+				}
+
+				parentNode.files.push(fileData);
+			}
+
+			// Scan directories
+			for (let directory of items.directories) {
+				let directoryData = {
+					title: directory.title
+				};
+
+				// Instantiate array if it doesn't exist
+				if (!parentNode.directories) {
+					parentNode.directories = [];
+				}
+
+				parentNode.directories.push(directoryData);
+
+				// Continue scanning if either directories or files has an item in it
+				if (directory.items.directories.length != 0 || directory.items.files.length != 0) {
+					deepscan(directory.items, directoryData);
+				}
+			}
+		}
+
+		deepscan(this.items, treeData);
+
+		let treeJSON = JSON.stringify(treeData);
+		return treeJSON;
 	}
 
 	fromJSON() {
