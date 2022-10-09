@@ -13,7 +13,8 @@ const styles = {
 	collapseButton: ["drawer-collapse-button"],
 	collapsed: ["drawer-collapsed"],
 	arrow: ["drawer-icon", "drawer-icon-arrow"],
-	folder: ["drawer-icon", "drawer-icon-folder"]
+	folder: ["drawer-icon", "drawer-icon-folder"],
+	animate: ["drawer-animated"]
 }
 
 class DrawerDirectoryElement extends DrawerElement {
@@ -80,6 +81,11 @@ class DrawerDirectoryElement extends DrawerElement {
 	static createMain() {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add(...styles.wrapper);
+
+		if (this.directory.options.animate) {
+			wrapper.classList.add(...styles.animate);
+		}
+
 		return wrapper;
 	}
 
@@ -125,6 +131,7 @@ class DrawerDirectoryElement extends DrawerElement {
 	static createBody() {
 		const body = document.createElement("div");
 		body.classList.add(...styles.body);
+
 		return body;
 	}
 }

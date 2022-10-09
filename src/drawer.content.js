@@ -6,7 +6,7 @@ class DrawerContent extends DrawerEventEmitter {
 		this.title = title;
 		this.parent = null;
 
-		this.level = -1;
+		this.level = 0;
 	}
 
 	setParent(parent) {

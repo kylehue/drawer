@@ -36,10 +36,12 @@ class DrawerFile extends DrawerContent {
 			});
 		}
 
+		this.level = this.parent.level;
+
 		// Indent
-		this.element.getMain().style.paddingLeft = (this.parent.level * 1.5 + 3.5) + "em";
+		this.element.getMain().style.paddingLeft = (this.level * 1.5 + 2.5) + "em";
 		if (!this.parent.parent) {
-			this.element.getMain().style.paddingLeft = "2em";
+			this.element.getMain().style.paddingLeft = "2.5em";
 		}
 	}
 

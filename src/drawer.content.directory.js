@@ -1,6 +1,7 @@
 import DrawerContent from "./drawer.content";
 import DrawerFile from "./drawer.content.file";
 import DrawerDirectoryElement from "./drawer.element.directory";
+import * as path from "path";
 
 class DrawerDirectory extends DrawerContent {
 	constructor(title, options = {}) {
@@ -35,6 +36,14 @@ class DrawerDirectory extends DrawerContent {
 
 			scan(this, callback);
 		}
+	}
+
+	addDirectoryFromPath(pathStr) {
+
+	}
+
+	addFileFromPath(pathStr) {
+
 	}
 
 	clear() {
@@ -90,7 +99,7 @@ class DrawerDirectory extends DrawerContent {
 		}
 
 		// Indent
-		this.element.getHead().style.paddingLeft = (this.level * 1.5 + 0.5) + "em";
+		this.element.getHead().style.paddingLeft = (this.level * 1.5 - 0.5) + "em";
 		this.refreshFiles();
 	}
 

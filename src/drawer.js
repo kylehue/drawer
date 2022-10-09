@@ -5,7 +5,7 @@ import DrawerDirectoryElement from "./drawer.element.directory";
  * [x] toJSON/fromJSON
  * [/] method for clearing a directory
  * [x] method for adding dirs/files from path string
- * [x] animations
+ * [/] animations
  * [x] optional context menu
  */
 function getElement(element) {
@@ -26,6 +26,7 @@ class Drawer extends DrawerDirectory {
 			autoSortFiles: false,
 			autoSortDirectories: false,
 			highlight: true,
+			animate: true,
 			autoRefresh: true,
 			fileIcons: true,
 			directoryIcons: true,

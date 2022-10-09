@@ -15,6 +15,7 @@
 
 	.drawer-body {
 	  @include drawer-flex-column;
+		overflow: hidden;
 	  width: 100%;
 	  height: fit-content;
 	  padding-left: $indent-size;
@@ -65,12 +66,41 @@
 	}
 }
 
-.drawer-collapsed {
+.drawer-directory:not(.drawer-animated) {
+	.drawer-collapsed {
+		& > * > .drawer-icon-arrow {
+			transform: rotate(-90deg);
+		}
+
+		& > .drawer-body {
+			.drawer-file, .drawer-directory {
+				display: none !important;
+			}
+		}
+	}
+}
+
+.drawer-animated {
 	.drawer-icon-arrow {
-		transform: rotate(-90deg);
+		transition: transform 100ms;
 	}
 
-	.drawer-body {
-		display: none;
+	.drawer-directory, .drawer-file {
+		transition-property: height, opacity;
+		transition-duration: 150ms;
+		opacity: 1;
+	}
+
+	.drawer-collapsed {
+		& > * > .drawer-icon-arrow {
+			transform: rotate(-90deg);
+		}
+
+		& > .drawer-body {
+			.drawer-file, .drawer-directory {
+				height: 0px !important;
+				opacity: 0 !important;
+			}
+		}
 	}
 }
