@@ -2,7 +2,7 @@ import DrawerDirectory from "./drawer.content.directory";
 import DrawerDirectoryElement from "./drawer.element.directory";
 /**
  * TODO:
- * [x] toJSON/fromJSON
+ * [/] serialize/import
  * [/] method for clearing a directory
  * [x] method for adding dirs/files from path string
  * [/] animations
@@ -38,7 +38,7 @@ class Drawer extends DrawerDirectory {
 		getElement(this.options.element).append(this.element.getMain())
 	}
 
-	toJSON(options = {}) {
+	serialize(options = {}) {
 		let treeData = {};
 
 		function deepscan(items, parentNode) {
@@ -83,12 +83,49 @@ class Drawer extends DrawerDirectory {
 
 		deepscan(this.items, treeData);
 
-		let treeJSON = JSON.stringify(treeData);
-		return treeJSON;
+		let serial = JSON.stringify(treeData);
+		return serial;
 	}
 
-	fromJSON() {
+	import(serial) {
+		let treeData;
+		if (typeof serial == "string") {
+			try {
+				treeData = JSON.parse(serial);
+			} catch (e) {
+				throw new Error("Import must be a proper JSON string or object.");
+			}
+		} else {
+			treeData = serial;
+		}
 
+		// Clear tree
+		this.clear();
+
+		function deepscan(data, parentDirectory) {
+			if (data.files) {
+				// Scan files
+				for (let file of data.files) {
+					parentDirectory.addFile(file.title);
+				}
+			}
+
+			if (data.directories) {
+				// Scan directories
+				for (let directory of data.directories) {
+					let newDir = parentDirectory.addDirectory(directory.title);
+
+					// Continue scanning if either directories or files has an item in it
+					if (directory.directories != undefined || directory.files != undefined) {
+						deepscan(directory, newDir);
+					}
+				}
+			}
+		}
+
+		deepscan(treeData, this);
+
+		console.log(treeData);
 	}
 }
 
