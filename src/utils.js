@@ -1,3 +1,9 @@
+import {
+	resolve as resolvePath,
+	basename as getBasename,
+	dirname as getDirname
+} from "path";
+
 export function pathToSVG(pathStr, options = {}) {
 	options = Object.assign({
 		size: 18,
@@ -16,4 +22,16 @@ export function pathToSVG(pathStr, options = {}) {
 	svg.append(path);
 
 	return svg;
+}
+
+export function toObjectPath(pathStr) {
+	let path = resolvePath(pathStr);
+
+	path = path.substring(1, path.length);
+
+	let divider = "']['";
+	let format = path.replace(/\//g, divider);
+	let objectPath = `['${format}']`;
+
+	return objectPath;
 }

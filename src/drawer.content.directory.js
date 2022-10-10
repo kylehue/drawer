@@ -1,7 +1,14 @@
 import DrawerContent from "./drawer.content";
 import DrawerFile from "./drawer.content.file";
 import DrawerDirectoryElement from "./drawer.element.directory";
-import * as path from "path";
+import {
+	resolve as resolvePath,
+	basename as getBasename,
+	dirname as getDirname
+} from "path";
+
+import { toObjectPath } from "./utils";
+
 
 class DrawerDirectory extends DrawerContent {
 	constructor(title, options = {}) {
@@ -39,7 +46,11 @@ class DrawerDirectory extends DrawerContent {
 	}
 
 	addDirectoryFromPath(pathStr) {
-
+		pathStr = resolvePath(pathStr);
+		let title = getBasename(pathStr);
+		let dirname = getDirname(pathStr);
+		let objectPath = toObjectPath(dirname);
+		console.log(objectPath);
 	}
 
 	addFileFromPath(pathStr) {
