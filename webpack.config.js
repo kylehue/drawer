@@ -1,4 +1,5 @@
 const path = require("path");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
 	entry: {
@@ -35,5 +36,8 @@ module.exports = {
 			name: "drawer",
 			type: "umd"
 		}
-	}
+	},
+	plugins: [
+		new NodePolyfillPlugin()
+	]
 };
