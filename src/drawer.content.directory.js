@@ -52,39 +52,52 @@ class DrawerDirectory extends DrawerContent {
 			throw new Error("Item type must either be 'file' or 'directory'.");
 		}
 
+		let result = null;
 		let path = resolvePath(pathStr);
 		let pathArray = path.substr(1, pathStr.length).split(pathSeperator);
-		let title = getBasename(path);
-		let result = null;
+		let targetTitle = getBasename(path);
 
-		function deepscan(directories, scanLevel) {
-			scanLevel = scanLevel || 0;
-			// Scan directories
-			for (let directory of directories) {
+		// If type is file, remove file name from path
+		if (type == "file") {
+			pathArray.pop();
+		}
 
-				// Does the current directory in the path array exist?
-				if (directory.title == pathArray[scanLevel]) {
-					if (type == "file") {
-						for (let file of directory.items.files) {
-							// Does the target basename match the current directory's title?
-							if (file.title == title) {
-								result = file;
+		// If path array is empty, it means that we're looking for a file in the root directory.
+		// So in that case, we don't need to deepscan this directory's directories.
+		if (pathArray.length == 0) {
+			for (let file of this.items.files) {
+				if (file.title == targetTitle) {
+					result = file;
+				}
+			}
+		} else {
+			function deepscan(directories, scanLevel) {
+				scanLevel = scanLevel || 0;
+				for (let directory of directories) {
+					let currentBasename = pathArray[scanLevel];
+					if (directory.title == currentBasename) {
+						if (type == "file") {
+							for (let file of directory.items.files) {
+								if (file.title == targetTitle) {
+									result = file;
+									return;
+								}
+							}
+						} else {
+							if (directory.title == targetTitle) {
+								result = directory;
 								return;
 							}
 						}
-					} else {
-						if (directory.title == title) {
-							result = directory;
-							return;
-						}
-					}
 
-					deepscan(directory.items.directories, scanLevel + 1);
+						deepscan(directory.items.directories, scanLevel + 1);
+						break;
+					}
 				}
 			}
-		}
 
-		deepscan(this.items.directories);
+			deepscan(this.items.directories);
+		}
 
 		return result;
 	}
@@ -167,6 +180,30 @@ class DrawerDirectory extends DrawerContent {
 		}
 	}
 
+	remove() {
+		let hasParent = !!this.parent;
+		if (hasParent) {
+			let parentDirectories = this.parent.items.directories;
+
+			// Remove from parent's array
+			for (var i = 0; i < parentDirectories.length; i++) {
+				let parentDir = parentDirectories[i];
+				if (parentDir === this) {
+					parentDirectories.splice(i, 1);
+					console.log(parentDir);
+					break;
+				}
+			}
+
+			// Remove from DOM
+			this.element.getMain().remove();
+		} else {
+			if (this === this.options.drawer) {
+				this.clear();
+			}
+		}
+	}
+
 	sort(type) {
 		let elements = [];
 		let parent = this.parent.element.getMain();
@@ -216,7 +253,38 @@ class DrawerDirectory extends DrawerContent {
 		this.refreshFiles();
 	}
 
+	removeDirectoryFromPath(pathStr) {
+		let directory = this.getDirectoryFromPath(pathStr);
+		let directoryExists = !!directory;
+		if (directoryExists) {
+			directory.element.getMain().remove();
+		}
+	}
+
+	removeDirectory(title) {
+		for (let directory of this.items.directories) {
+			if (directory.title == title) {
+				directory.remove();
+				break;
+			}
+		}
+	}
+
+	removeFile(title) {
+		for (let file of this.items.files) {
+			if (file.title == title) {
+				file.remove();
+				break;
+			}
+		}
+	}
+
 	addDirectory(title) {
+		if (this.getDirectoryFromPath(title)) {
+			console.warn(`Directory '${title}' already exists.`);
+			return null;
+		}
+
 		let directory = new DrawerDirectory(title, this.options);
 		directory.setParent(this);
 
@@ -233,6 +301,11 @@ class DrawerDirectory extends DrawerContent {
 	}
 
 	addFile(title) {
+		if (this.getFileFromPath(title)) {
+			console.warn(`File '${title}' already exists.`);
+			return null;
+		}
+
 		let file = new DrawerFile(title, this.options);
 		file.setParent(this);
 

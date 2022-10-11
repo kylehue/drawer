@@ -7,6 +7,10 @@ import DrawerDirectoryElement from "./drawer.element.directory";
  * [/] method for adding dirs/files from path string
  * [/] animations
  * [x] optional context menu
+ * [x] remove dirs/files
+ * [x] update dirs/files
+ * [x] move dirs/files
+ * [x] drag and drop
  */
 function getElement(element) {
 	if (typeof element == "string") {

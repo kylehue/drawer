@@ -45,6 +45,25 @@ class DrawerFile extends DrawerContent {
 		}
 	}
 
+	remove() {
+		let hasParent = !!this.parent;
+		if (hasParent) {
+			let parentFiles = this.parent.items.files;
+
+			// Remove from parent's array
+			for (var i = 0; i < parentFiles.length; i++) {
+				let parentFile = parentFiles[i];
+				if (parentFile === this) {
+					parentFiles.splice(i, 1);
+					break;
+				}
+			}
+
+			// Remove from DOM
+			this.element.getMain().remove();
+		}
+	}
+
 	addContent(name, value) {
 		this.content[name] = value;
 
