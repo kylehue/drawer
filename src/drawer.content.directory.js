@@ -257,7 +257,15 @@ class DrawerDirectory extends DrawerContent {
 		let directory = this.getDirectoryFromPath(pathStr);
 		let directoryExists = !!directory;
 		if (directoryExists) {
-			directory.element.getMain().remove();
+			directory.remove();
+		}
+	}
+
+	removeFileFromPath(pathStr) {
+		let file = this.getFileFromPath(pathStr);
+		let fileExists = !!file;
+		if (fileExists) {
+			file.remove();
 		}
 	}
 

@@ -2,12 +2,7 @@ import DrawerDirectory from "./drawer.content.directory";
 import DrawerDirectoryElement from "./drawer.element.directory";
 /**
  * TODO:
- * [/] serialize/import
- * [/] method for clearing a directory
- * [/] method for adding dirs/files from path string
- * [/] animations
  * [x] optional context menu
- * [x] remove dirs/files
  * [x] update dirs/files
  * [x] move dirs/files
  * [x] drag and drop
