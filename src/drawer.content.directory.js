@@ -202,11 +202,23 @@ class DrawerDirectory extends DrawerContent {
 				this.clear();
 			}
 		}
+
+		this.emit("removeDirectory", this);
+		this.ascendantsEmit("removeDirectory", this);
+		this.emit("change", "removeDirectory");
+		this.ascendantsEmit("change", "removeDirectory");
 	}
 
 	sort(type) {
 		let elements = [];
-		let parent = this.parent.element.getMain();
+
+		let parent;
+		let isRoot = this === this.options.drawer;
+		if (!isRoot) {
+			parent = this.parent.element.getMain();
+		} else {
+			parent = this.element.getMain();
+		}
 
 		//Get elements in parent
 		elements = Array.from(parent.querySelectorAll(`.drawer-${type}`));
@@ -214,11 +226,7 @@ class DrawerDirectory extends DrawerContent {
 		//Sort
 		const sortedElements = elements.sort((a, b) => b.innerText.localeCompare(a.innerText));
 
-		if (type == "directory") {
-			sortedElements.forEach(e => e.parentElement.prepend(e));
-		} else {
-			sortedElements.forEach(e => e.parentElement.append(e));
-		}
+		sortedElements.forEach(e => e.parentElement.prepend(e));
 	}
 
 	sortDirectories() {
@@ -243,13 +251,26 @@ class DrawerDirectory extends DrawerContent {
 	refresh() {
 		this.appendToParent();
 
-		this.level = this.parent.level + 1;
+		let head = this.element.getHead();
+
+		// Reset title
+		if (this.title != head.textContent) {
+			let textElement = head.querySelector(".drawer-text");
+			textElement.textContent = this.title;
+		}
+
+		// Reset level
+		let isRoot = this === this.options.drawer;
+		if (!isRoot) {
+			this.level = this.parent.level + 1;
+		}
+
 		if (this.options.autoSortDirectories) {
 			this.sortDirectories();
 		}
 
 		// Indent
-		this.element.getHead().style.paddingLeft = (this.level * 1.5 - 0.5) + "em";
+		head.style.paddingLeft = (this.level * 1.5 - 0.5) + "em";
 		this.refreshFiles();
 	}
 
@@ -304,6 +325,8 @@ class DrawerDirectory extends DrawerContent {
 
 		this.emit("addDirectory", directory);
 		this.ascendantsEmit("addDirectory", directory);
+		this.emit("change", "addDirectory");
+		this.ascendantsEmit("change", "addDirectory");
 
 		return directory;
 	}
@@ -323,6 +346,8 @@ class DrawerDirectory extends DrawerContent {
 
 		this.emit("addFile", file);
 		this.ascendantsEmit("addFile", file);
+		this.emit("change", "addFile");
+		this.ascendantsEmit("change", "addFile");
 
 		return file;
 	}

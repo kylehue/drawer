@@ -33,22 +33,39 @@ class DrawerFileElement extends DrawerElement {
 		function addTitle() {
 			const textElement = DrawerElement.createText(title);
 
-			wrapper.append(textElement);
-		}
+			function addIcon() {
+				let iconElement = DrawerElement.createIcon();
+				let iconClass = fileIcon(title);
 
-		function addIcon() {
-			const iconElement = DrawerElement.createIcon();
-			const iconClass = fileIcon(title);
+				if (iconClass) {
+					let iconClassArray = iconClass.split(" ");
+					iconElement.classList.add(...iconClassArray);
+					wrapper.append(iconElement);
+				}
 
-			if (iconClass) {
-				let iconClassArray = iconClass.split(" ");
-				iconElement.classList.add(...iconClassArray);
-				wrapper.append(iconElement);
+				const observer = new MutationObserver(() => {
+					iconElement.classList.remove(...iconClass.split(" "));
+					iconClass = fileIcon(textElement.textContent);
+
+					if (iconClass) {
+						let iconClassArray = iconClass.split(" ");
+						iconElement.classList.add(...iconClassArray);
+					}
+				});
+
+				observer.observe(textElement, {
+					characterData: false,
+					attributes: false,
+					childList: true,
+					subtree: false
+				});
 			}
-		}
 
-		if (options.fileIcons) {
-			addIcon();
+			if (options.fileIcons) {
+				addIcon();
+			}
+
+			wrapper.append(textElement);
 		}
 
 		if (title) {

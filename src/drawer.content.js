@@ -11,7 +11,7 @@ class DrawerContent extends DrawerEventEmitter {
 
 	setParent(parent) {
 		if (!parent) {
-			throw new Error ("Cannot set parent to null or undefined.")
+			throw new Error("Cannot set parent to null or undefined.")
 		}
 
 		// Remove dependent listeners
@@ -22,6 +22,16 @@ class DrawerContent extends DrawerEventEmitter {
 
 		// Set
 		this.parent = parent;
+	}
+
+	rename(title) {
+		this.title = title;
+		this.refresh();
+
+		let hasParent = !!this.parent;
+		if (hasParent) {
+			this.parent.refresh();
+		}
 	}
 
 	appendToParent() {

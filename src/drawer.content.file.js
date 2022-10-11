@@ -36,12 +36,20 @@ class DrawerFile extends DrawerContent {
 			});
 		}
 
+		let main = this.element.getMain();
+
+		// Reset title
+		if (this.title != main.textContent) {
+			let textElement = main.querySelector(".drawer-text");
+			textElement.textContent = this.title;
+		}
+
 		this.level = this.parent.level;
 
 		// Indent
-		this.element.getMain().style.paddingLeft = (this.level * 1.5 + 2.5) + "em";
+		main.style.paddingLeft = (this.level * 1.5 + 2.5) + "em";
 		if (!this.parent.parent) {
-			this.element.getMain().style.paddingLeft = "2.5em";
+			main.style.paddingLeft = "2.5em";
 		}
 	}
 
@@ -61,6 +69,11 @@ class DrawerFile extends DrawerContent {
 
 			// Remove from DOM
 			this.element.getMain().remove();
+
+			this.emit("removeFile", this);
+			this.ascendantsEmit("removeFile", this);
+			this.emit("change", "removeFile");
+			this.ascendantsEmit("change", "removeFile");
 		}
 	}
 
