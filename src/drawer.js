@@ -4,7 +4,7 @@ import DrawerDirectoryElement from "./drawer.element.directory";
  * TODO:
  * [/] serialize/import
  * [/] method for clearing a directory
- * [x] method for adding dirs/files from path string
+ * [/] method for adding dirs/files from path string
  * [/] animations
  * [x] optional context menu
  */
