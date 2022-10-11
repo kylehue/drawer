@@ -106,16 +106,21 @@ class DrawerDirectory extends DrawerContent {
 			throw new Error("Item type must either be 'file' or 'directory'.");
 		}
 
+		let newItem;
+
 		let path = resolvePath(pathStr);
 		let pathArray = path.substr(1, pathStr.length).split(pathSeperator);
 		let targetTitle = getBasename(path);
 
 		function add(itemTitle, directory) {
+			let item;
 			if (type == "file" && itemTitle == targetTitle) {
-				directory.addFile(itemTitle);
+				item = directory.addFile(itemTitle);
 			} else {
-				directory.addDirectory(itemTitle);
+				item = directory.addDirectory(itemTitle);
 			}
+
+			return item;
 		}
 
 		for (var i = 0; i < pathArray.length; i++) {
@@ -127,21 +132,27 @@ class DrawerDirectory extends DrawerContent {
 				let currentPathTitle = getBasename(currentPath);
 
 				if (parentDirectory) {
-					add(currentPathTitle, parentDirectory);
+					newItem = add(currentPathTitle, parentDirectory);
 				} else {
 					// If parent doesn't exist, just add to the main
-					add(currentPathTitle, this);
+					newItem = add(currentPathTitle, this);
 				}
 			}
 		}
+
+		return newItem;
 	}
 
 	addDirectoryFromPath(pathStr) {
-		this.addItemFromPath("directory", pathStr);
+		let newDirectory = this.addItemFromPath("directory", pathStr);
+
+		return newDirectory;
 	}
 
 	addFileFromPath(pathStr) {
-		this.addItemFromPath("file", pathStr);
+		let newFile = this.addItemFromPath("file", pathStr);
+
+		return newFile;
 	}
 
 	clear() {
@@ -233,6 +244,111 @@ class DrawerDirectory extends DrawerContent {
 		this.ascendantsEmit("addFile", file);
 
 		return file;
+	}
+
+	serialize(options = {}) {
+		options = Object.assign({
+			fileContent: false,
+			childrenOnly: false
+		}, options);
+
+		let treeData;
+
+		function deepscan(items, parentNode) {
+			// Scan files
+			for (let file of items.files) {
+				let fileData = {
+					title: file.title
+				};
+
+				// Include file's content?
+				if (options.fileContent) {
+					fileData.content = file.content;
+				}
+
+				// Instantiate array if it doesn't exist
+				if (!parentNode.files) {
+					parentNode.files = [];
+				}
+
+				parentNode.files.push(fileData);
+			}
+
+			// Scan directories
+			for (let directory of items.directories) {
+				let directoryData = {
+					title: directory.title
+				};
+
+				// Instantiate array if it doesn't exist
+				if (!parentNode.directories) {
+					parentNode.directories = [];
+				}
+
+				parentNode.directories.push(directoryData);
+
+				// Continue scanning if either directories or files has an item in it
+				if (directory.items.directories.length != 0 || directory.items.files.length != 0) {
+					deepscan(directory.items, directoryData);
+				}
+			}
+		}
+
+		if (this.options.drawer === this || !options.childrenOnly) {
+			treeData = {};
+			deepscan(this.items, treeData);
+		} else {
+			treeData = {
+				directories: [{
+					title: this.title
+				}]
+			};
+
+			deepscan(this.items, treeData.directories[0]);
+		}
+
+
+		let serial = JSON.stringify(treeData);
+		return serial;
+	}
+
+	import(serial, merge = false) {
+		let treeData;
+		if (typeof serial == "string") {
+			try {
+				treeData = JSON.parse(serial);
+			} catch (e) {
+				throw new Error("Import must be a proper JSON string or object.");
+			}
+		} else {
+			treeData = serial;
+		}
+
+		// Clear tree
+		if (!merge) this.clear();
+
+		function deepscan(data, parentDirectory) {
+			if (data.files) {
+				// Scan files
+				for (let file of data.files) {
+					parentDirectory.addFile(file.title);
+				}
+			}
+
+			if (data.directories) {
+				// Scan directories
+				for (let directory of data.directories) {
+					let newDir = parentDirectory.addDirectory(directory.title);
+
+					// Continue scanning if either directories or files has an item in it
+					if (directory.directories != undefined || directory.files != undefined) {
+						deepscan(directory, newDir);
+					}
+				}
+			}
+		}
+
+		deepscan(treeData, this);
 	}
 }
 
