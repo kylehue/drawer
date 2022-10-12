@@ -23,7 +23,7 @@ class DrawerFile extends DrawerItem {
 		// Highlight on click
 		if (this.options.highlight) {
 			this.on("click", event => {
-				let drawer = this.options.drawer;
+				let drawer = this.options._drawer;
 				drawer.descendantsEmit("removeHighlight");
 				drawer.emit("removeHighlight");
 

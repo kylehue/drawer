@@ -7,10 +7,8 @@ import {
 	dirname as getDirname,
 	sep as pathSeperator
 } from "path";
-import lodashGet from "lodash.get";
 
 import { toObjectPath } from "./utils";
-
 
 class DrawerDirectory extends DrawerItem {
 	constructor(title, options = {}) {
@@ -142,13 +140,13 @@ class DrawerDirectory extends DrawerItem {
 			if (!directoryExists) {
 				let parentPath = getDirname(currentPath);
 				let parentDirectory = this.getDirectoryFromPath(parentPath);
-				let currentPathTitle = getBasename(currentPath);
+				let currentBasename = getBasename(currentPath);
 
 				if (parentDirectory) {
-					newItem = add(currentPathTitle, parentDirectory);
+					newItem = add(currentBasename, parentDirectory);
 				} else {
 					// If parent doesn't exist, just add to the main
-					newItem = add(currentPathTitle, this);
+					newItem = add(currentBasename, this);
 				}
 			}
 		}
@@ -168,6 +166,10 @@ class DrawerDirectory extends DrawerItem {
 		return newFile;
 	}
 
+	isRoot() {
+		return this === this.options._drawer;
+	}
+
 	clear() {
 		let body = this.element.getBody();
 
@@ -181,8 +183,7 @@ class DrawerDirectory extends DrawerItem {
 	}
 
 	remove() {
-		let hasParent = !!this.parent;
-		if (hasParent) {
+		if (!this.isRoot()) {
 			let parentDirectories = this.parent.items.directories;
 
 			// Remove from parent's array
@@ -198,9 +199,7 @@ class DrawerDirectory extends DrawerItem {
 			// Remove from DOM
 			this.element.getMain().remove();
 		} else {
-			if (this === this.options.drawer) {
-				this.clear();
-			}
+			throw new Error("Cannot remove root directory. Use clear() instead.");
 		}
 
 		this.emit("removeDirectory", this);
@@ -213,8 +212,7 @@ class DrawerDirectory extends DrawerItem {
 		let elements = [];
 
 		let parent;
-		let isRoot = this === this.options.drawer;
-		if (!isRoot) {
+		if (!this.isRoot()) {
 			parent = this.parent.element.getMain();
 		} else {
 			parent = this.element.getMain();
@@ -260,8 +258,7 @@ class DrawerDirectory extends DrawerItem {
 		}
 
 		// Reset level
-		let isRoot = this === this.options.drawer;
-		if (!isRoot) {
+		if (!this.isRoot()) {
 			this.level = this.parent.level + 1;
 		}
 
@@ -400,7 +397,7 @@ class DrawerDirectory extends DrawerItem {
 			}
 		}
 
-		if (this.options.drawer === this || !options.childrenOnly) {
+		if (this.isRoot() || !options.childrenOnly) {
 			treeData = {};
 			deepscan(this.items, treeData);
 		} else {

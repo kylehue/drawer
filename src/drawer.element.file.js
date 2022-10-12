@@ -1,5 +1,6 @@
 import DrawerElement from "./drawer.element";
 import { getClassWithColor as fileIcon } from "file-icons-js";
+import { extname as getExtname } from "path";
 
 const styles = {
 	wrapper: ["drawer-file"],
@@ -37,19 +38,37 @@ class DrawerFileElement extends DrawerElement {
 				let iconElement = DrawerElement.createIcon();
 				let iconClass = fileIcon(title);
 
-				if (iconClass) {
-					let iconClassArray = iconClass.split(" ");
-					iconElement.classList.add(...iconClassArray);
-					wrapper.append(iconElement);
+				// Default
+				if (!iconClass) {
+					iconClass = fileIcon(".txt");
 				}
 
-				const observer = new MutationObserver(() => {
-					iconElement.classList.remove(...iconClass.split(" "));
-					iconClass = fileIcon(textElement.textContent);
+				let iconClassArray = iconClass.split(" ");
+				iconElement.classList.add(...iconClassArray);
+				wrapper.append(iconElement);
 
-					if (iconClass) {
+				let oldExtname = getExtname(title);
+
+				// Watch title
+				const observer = new MutationObserver(() => {
+					let newTitle = textElement.textContent;
+					let newExtname = getExtname(newTitle);
+
+					// Change file icon if file extension changes
+					if (oldExtname != newExtname) {
+						iconElement.classList.remove(...iconClass.split(" "));
+						iconClass = fileIcon(newTitle);
+
+						// Default
+						if (!iconClass) {
+							iconClass = fileIcon(".txt");
+						}
+
+						// Set
 						let iconClassArray = iconClass.split(" ");
 						iconElement.classList.add(...iconClassArray);
+
+						oldExtname = newExtname;
 					}
 				});
 

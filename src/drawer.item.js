@@ -32,6 +32,9 @@ class DrawerItem extends DrawerEventEmitter {
 		if (hasParent) {
 			this.parent.refresh();
 		}
+
+		this.emit("change", "rename");
+		this.ascendantsEmit("change", "rename");
 	}
 
 	appendToParent() {

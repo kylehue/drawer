@@ -29,7 +29,7 @@ class DrawerDirectoryElement extends DrawerElement {
 
 		this.elements.body = DrawerDirectoryElement.createBody.call(this, this.directory.title);
 
-		if (this.directory != this.directory.options.drawer) {
+		if (!this.directory.isRoot()) {
 			this.getMain().append(this.getHead());
 		}
 

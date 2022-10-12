@@ -29,7 +29,7 @@ class Drawer extends DrawerDirectory {
 			autoRefresh: true,
 			fileIcons: true,
 			directoryIcons: true,
-			drawer: this
+			_drawer: this
 		}, options);
 
 		this.element = new DrawerDirectoryElement(this);
