@@ -1,7 +1,7 @@
-import DrawerContent from "./drawer.content";
+import DrawerItem from "./drawer.item";
 import DrawerFileElement from "./drawer.element.file";
 
-class DrawerFile extends DrawerContent {
+class DrawerFile extends DrawerItem {
 	constructor(title, options = {}) {
 		super(title);
 		this.options = options;

@@ -1,5 +1,5 @@
-import DrawerContent from "./drawer.content";
-import DrawerFile from "./drawer.content.file";
+import DrawerItem from "./drawer.item";
+import DrawerFile from "./drawer.item.file";
 import DrawerDirectoryElement from "./drawer.element.directory";
 import {
 	resolve as resolvePath,
@@ -12,7 +12,7 @@ import lodashGet from "lodash.get";
 import { toObjectPath } from "./utils";
 
 
-class DrawerDirectory extends DrawerContent {
+class DrawerDirectory extends DrawerItem {
 	constructor(title, options = {}) {
 		super(title);
 		this.options = options;

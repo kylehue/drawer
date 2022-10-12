@@ -1,6 +1,6 @@
 import DrawerEventEmitter from "./drawer.event-emitter";
 
-class DrawerContent extends DrawerEventEmitter {
+class DrawerItem extends DrawerEventEmitter {
 	constructor(title) {
 		super();
 		this.title = title;
@@ -102,4 +102,4 @@ class DrawerContent extends DrawerEventEmitter {
 	}
 }
 
-export default DrawerContent;
+export default DrawerItem;
