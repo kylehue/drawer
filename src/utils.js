@@ -17,3 +17,12 @@ export function pathToSVG(pathStr, options = {}) {
 
 	return svg;
 }
+
+export function getRoot(directory) {
+	let root = directory;
+	while (root.parent) {
+		root = root.parent;
+	}
+
+	return root;
+}

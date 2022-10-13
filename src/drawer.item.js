@@ -1,10 +1,10 @@
 import DrawerEventEmitter from "./drawer.event-emitter";
 
 class DrawerItem extends DrawerEventEmitter {
-	constructor(title) {
+	constructor(parent, title) {
 		super();
 		this.title = title;
-		this.parent = null;
+		this.parent = parent;
 
 		this.level = 0;
 	}

@@ -19,17 +19,17 @@ const styles = {
 
 class DrawerDirectoryElement extends DrawerElement {
 	constructor(directory) {
-		super(directory);
+		super();
 
 		this.directory = directory;
 
-		this.elements.main = DrawerDirectoryElement.createMain.call(this, this.directory.title);
+		this.elements.main = DrawerDirectoryElement.createMain(this.directory.root.options);
 
-		this.elements.head = DrawerDirectoryElement.createHead.call(this, this.directory.title);
+		this.elements.head = DrawerDirectoryElement.createHead(this.directory.title, this.directory.root.options);
 
-		this.elements.body = DrawerDirectoryElement.createBody.call(this, this.directory.title);
+		this.elements.body = DrawerDirectoryElement.createBody();
 
-		if (!this.directory.isRoot()) {
+		if (!this.directory.isRoot) {
 			this.getMain().append(this.getHead());
 		}
 
@@ -78,11 +78,11 @@ class DrawerDirectoryElement extends DrawerElement {
 		// toggleFolderIcon.call(this);
 	}
 
-	static createMain() {
+	static createMain(options) {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add(...styles.wrapper);
 
-		if (this.directory.options.animate) {
+		if (options.animate) {
 			wrapper.classList.add(...styles.animate);
 		}
 
@@ -117,7 +117,7 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		addArrow();
-		if (this.directory.options.directoryIcons) {
+		if (options.directoryIcons) {
 			addFolderIcon();
 		}
 

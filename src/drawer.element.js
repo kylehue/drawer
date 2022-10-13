@@ -4,8 +4,7 @@ const styles = {
 }
 
 class DrawerElement {
-	constructor(title) {
-		this.title = title;
+	constructor() {
 		this.elements = {};
 	}
 

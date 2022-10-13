@@ -8,25 +8,29 @@ import {
 	sep as pathSeperator
 } from "path";
 
-import { toObjectPath } from "./utils";
+import { toObjectPath, getRoot } from "./utils";
+
 
 class DrawerDirectory extends DrawerItem {
-	constructor(title, options = {}) {
-		super(title);
-		this.options = options;
+	constructor(parent, title) {
+		super(parent, title);
 		this.type = "directory";
+		this.root = getRoot(this);
+		this.isRoot = this.root === this;
 
 		this.items = {
 			directories: [],
 			files: []
 		};
 
-		this.element = new DrawerDirectoryElement(this);
+		if (!this.isRoot) {
+			this.element = new DrawerDirectoryElement(this);
 
-		let element = this.element.getHead();
-		element.addEventListener("click", (event) => {
-			this.emit("click", event);
-		});
+			let element = this.element.getHead();
+			element.addEventListener("click", (event) => {
+				this.emit("click", event);
+			});
+		}
 	}
 
 	scanContent(callback) {
@@ -166,10 +170,6 @@ class DrawerDirectory extends DrawerItem {
 		return newFile;
 	}
 
-	isRoot() {
-		return this === this.options._drawer;
-	}
-
 	clear() {
 		let body = this.element.getBody();
 
@@ -183,7 +183,7 @@ class DrawerDirectory extends DrawerItem {
 	}
 
 	remove() {
-		if (!this.isRoot()) {
+		if (!this.isRoot) {
 			let parentDirectories = this.parent.items.directories;
 
 			// Remove from parent's array
@@ -191,7 +191,6 @@ class DrawerDirectory extends DrawerItem {
 				let parentDir = parentDirectories[i];
 				if (parentDir === this) {
 					parentDirectories.splice(i, 1);
-					console.log(parentDir);
 					break;
 				}
 			}
@@ -212,7 +211,7 @@ class DrawerDirectory extends DrawerItem {
 		let elements = [];
 
 		let parent;
-		if (!this.isRoot()) {
+		if (!this.isRoot) {
 			parent = this.parent.element.getMain();
 		} else {
 			parent = this.element.getMain();
@@ -241,7 +240,7 @@ class DrawerDirectory extends DrawerItem {
 			file.refresh();
 		}
 
-		if (this.options.autoSortFiles) {
+		if (this.root.options.autoSortFiles) {
 			this.sortFiles();
 		}
 	}
@@ -258,11 +257,11 @@ class DrawerDirectory extends DrawerItem {
 		}
 
 		// Reset level
-		if (!this.isRoot()) {
+		if (!this.isRoot) {
 			this.level = this.parent.level + 1;
 		}
 
-		if (this.options.autoSortDirectories) {
+		if (this.root.options.autoSortDirectories) {
 			this.sortDirectories();
 		}
 
@@ -311,12 +310,11 @@ class DrawerDirectory extends DrawerItem {
 			return null;
 		}
 
-		let directory = new DrawerDirectory(title, this.options);
-		directory.setParent(this);
+		let directory = new DrawerDirectory(this, title);
 
 		this.items.directories.push(directory);
 
-		if (this.options.autoRefresh) {
+		if (this.root.options.autoRefresh) {
 			directory.refresh();
 		}
 
@@ -334,8 +332,7 @@ class DrawerDirectory extends DrawerItem {
 			return null;
 		}
 
-		let file = new DrawerFile(title, this.options);
-		file.setParent(this);
+		let file = new DrawerFile(this, title);
 
 		this.items.files.push(file);
 
@@ -397,7 +394,7 @@ class DrawerDirectory extends DrawerItem {
 			}
 		}
 
-		if (this.isRoot() || !options.childrenOnly) {
+		if (this.isRoot || !options.childrenOnly) {
 			treeData = {};
 			deepscan(this.items, treeData);
 		} else {

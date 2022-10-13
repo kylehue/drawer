@@ -17,11 +17,11 @@ function getElement(element) {
 
 class Drawer extends DrawerDirectory {
 	constructor(options = {}) {
-		super("drawer", options);
+		super(null, "drawer");
 		console.clear();
 
 		this.options = Object.assign({
-			element: null,
+			element: undefined,
 			autoSortFiles: false,
 			autoSortDirectories: false,
 			highlight: true,
@@ -29,7 +29,7 @@ class Drawer extends DrawerDirectory {
 			autoRefresh: true,
 			fileIcons: true,
 			directoryIcons: true,
-			_drawer: this
+			warnings: true
 		}, options);
 
 		this.element = new DrawerDirectoryElement(this);

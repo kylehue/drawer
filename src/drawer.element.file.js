@@ -9,10 +9,11 @@ const styles = {
 }
 
 class DrawerFileElement extends DrawerElement {
-	constructor(title, options = {}) {
-		super(title);
+	constructor(file) {
+		super();
+		this.file = file;
 
-		this.elements.main = DrawerFileElement.createMain(this.title, options);
+		this.elements.main = DrawerFileElement.createMain(this.file.title, this.file.parent.root.options);
 	}
 
 	highlight() {

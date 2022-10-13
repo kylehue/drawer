@@ -2,14 +2,12 @@ import DrawerItem from "./drawer.item";
 import DrawerFileElement from "./drawer.element.file";
 
 class DrawerFile extends DrawerItem {
-	constructor(title, options = {}) {
-		super(title);
-		this.options = options;
-
+	constructor(parent, title) {
+		super(parent, title);
 		this.type = "file";
 
 		this.content = {};
-		this.element = new DrawerFileElement(this.title, options);
+		this.element = new DrawerFileElement(this);
 
 		let element = this.element.getMain();
 		element.addEventListener("click", (event) => {
@@ -21,11 +19,11 @@ class DrawerFile extends DrawerItem {
 		this.appendToParent();
 
 		// Highlight on click
-		if (this.options.highlight) {
+		if (this.parent.root.options.highlight) {
 			this.on("click", event => {
-				let drawer = this.options._drawer;
-				drawer.descendantsEmit("removeHighlight");
-				drawer.emit("removeHighlight");
+				let root = this.parent.root;
+				root.descendantsEmit("removeHighlight");
+				root.emit("removeHighlight");
 
 				this.element.highlight();
 			});
