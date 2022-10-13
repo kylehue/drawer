@@ -1,3 +1,8 @@
+import {
+	resolve as resolvePath,
+	join as joinPath
+} from "path";
+
 export function pathToSVG(pathStr, options = {}) {
 	options = Object.assign({
 		size: 18,
@@ -25,4 +30,17 @@ export function getRoot(directory) {
 	}
 
 	return root;
+}
+
+export function getPath(directory) {
+	let path = directory.title;
+	let root = directory;
+	while (root.parent) {
+		path = joinPath(root.parent.title, path);
+		root = root.parent;
+	}
+
+	path = resolvePath(path);
+
+	return path;
 }

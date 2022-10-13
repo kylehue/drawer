@@ -1,5 +1,6 @@
 import DrawerDirectory from "./drawer.item.directory";
 import DrawerDirectoryElement from "./drawer.element.directory";
+import {sep as pathSeperator} from "path";
 /**
  * TODO:
  * [x] optional context menu
@@ -17,7 +18,9 @@ function getElement(element) {
 
 class Drawer extends DrawerDirectory {
 	constructor(options = {}) {
-		super(null, "drawer");
+		let parent = null;
+		let title = "";
+		super(parent, title);
 		console.clear();
 
 		this.options = Object.assign({

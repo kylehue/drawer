@@ -5,16 +5,22 @@ import {
 	resolve as resolvePath,
 	basename as getBasename,
 	dirname as getDirname,
+	join as joinPath,
 	sep as pathSeperator
 } from "path";
 
-import { toObjectPath, getRoot } from "./utils";
+import {
+	toObjectPath,
+	getRoot,
+	getPath
+} from "./utils";
 
 
 class DrawerDirectory extends DrawerItem {
 	constructor(parent, title) {
 		super(parent, title);
 		this.type = "directory";
+		this.path = getPath(this);
 		this.root = getRoot(this);
 		this.isRoot = this.root === this;
 
@@ -55,8 +61,8 @@ class DrawerDirectory extends DrawerItem {
 		}
 
 		let result = null;
-		let path = resolvePath(pathStr);
-		let pathArray = path.substr(1, pathStr.length).split(pathSeperator);
+		let path = joinPath(this.path, pathStr);
+		let pathArray = path.substr(1).split(pathSeperator);
 		let targetTitle = getBasename(path);
 
 		// If type is file, remove file name from path
@@ -98,7 +104,7 @@ class DrawerDirectory extends DrawerItem {
 				}
 			}
 
-			deepscan(this.items.directories);
+			deepscan(this.root.items.directories);
 		}
 
 		return result;
@@ -116,41 +122,62 @@ class DrawerDirectory extends DrawerItem {
 		return result;
 	}
 
+	getItem(type, compare) {
+		let searchArray = type == "file" ? this.items.files : this.items.directories;
+		let result = null;
+		for (let item of searchArray) {
+			if (typeof compare == "string") {
+				if (item.title == compare) {
+					result = item;
+					break;
+				}
+			} else {
+				if (item === compare) {
+					result = item;
+					break;
+				}
+			}
+		}
+
+		return result;
+	}
+
 	addItemFromPath(type, pathStr) {
 		if (type != "file" && type != "directory") {
 			throw new Error("Item type must either be 'file' or 'directory'.");
 		}
 
-		let newItem;
+		let targetTitle = getBasename(pathStr);
+		let path = joinPath(this.path, pathStr);
+		let parentPath = getDirname(path);
+		let pathArray = path.substr(1).split(pathSeperator);
+		pathArray.pop();
 
-		let path = resolvePath(pathStr);
-		let pathArray = path.substr(1, pathStr.length).split(pathSeperator);
-		let targetTitle = getBasename(path);
-
-		function add(itemTitle, directory) {
-			let item;
-			if (type == "file" && itemTitle == targetTitle) {
-				item = directory.addFile(itemTitle);
+		function addItem(directory) {
+			if (type == "file") {
+				return directory.addFile(targetTitle);
 			} else {
-				item = directory.addDirectory(itemTitle);
+				return directory.addDirectory(targetTitle);
 			}
-
-			return item;
 		}
 
-		for (var i = 0; i < pathArray.length; i++) {
-			let currentPath = pathArray.slice(0, i + 1).join(pathSeperator);
-			let directoryExists = !!this.getDirectoryFromPath(currentPath);
-			if (!directoryExists) {
-				let parentPath = getDirname(currentPath);
-				let parentDirectory = this.getDirectoryFromPath(parentPath);
-				let currentBasename = getBasename(currentPath);
+		let newItem;
 
-				if (parentDirectory) {
-					newItem = add(currentBasename, parentDirectory);
-				} else {
-					// If parent doesn't exist, just add to the main
-					newItem = add(currentBasename, this);
+		if (pathArray.length == 0) {
+			newItem = addItem(this.root);
+		} else {
+			let directory = this.root;
+			for (let currentBasename of pathArray) {
+				let base = directory.getItem("directory", currentBasename);
+				if (!base) {
+					base = directory.addDirectory(currentBasename);
+				}
+
+				directory = base;
+
+				if (directory.path == parentPath) {
+					newItem = addItem(base);
+					break;
 				}
 			}
 		}
@@ -261,6 +288,9 @@ class DrawerDirectory extends DrawerItem {
 			this.level = this.parent.level + 1;
 		}
 
+		// Reset path
+		this.path = getPath(this);
+
 		if (this.root.options.autoSortDirectories) {
 			this.sortDirectories();
 		}
@@ -304,9 +334,16 @@ class DrawerDirectory extends DrawerItem {
 		}
 	}
 
+	has(type, compare) {
+		return !!this.getItem(type, compare);
+	}
+
 	addDirectory(title) {
-		if (this.getDirectoryFromPath(title)) {
-			console.warn(`Directory '${title}' already exists.`);
+		if (this.has("directory", title)) {
+			if (this.root.options.warnings) {
+				console.warn(`Directory '${title}' from path '${this.path}' already exists.`);
+			}
+
 			return null;
 		}
 
@@ -327,8 +364,10 @@ class DrawerDirectory extends DrawerItem {
 	}
 
 	addFile(title) {
-		if (this.getFileFromPath(title)) {
-			console.warn(`File '${title}' already exists.`);
+		if (this.has("file", title)) {
+			if (this.root.options.warnings) {
+				console.warn(`File '${title}' from path '${this.path}' already exists.`);
+			}
 			return null;
 		}
 

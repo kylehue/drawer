@@ -34,6 +34,11 @@ class DrawerFile extends DrawerItem {
 			});
 		}
 
+		// Sort
+		if (this.parent.root.options.autoSortFiles) {
+			this.parent.sortFiles();
+		}
+
 		let main = this.element.getMain();
 
 		// Reset title
@@ -42,6 +47,7 @@ class DrawerFile extends DrawerItem {
 			textElement.textContent = this.title;
 		}
 
+		// Reset Level
 		this.level = this.parent.level;
 
 		// Indent
