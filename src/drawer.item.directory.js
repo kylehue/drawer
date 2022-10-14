@@ -197,43 +197,6 @@ class DrawerDirectory extends DrawerItem {
 		return newFile;
 	}
 
-	moveToDirectory(directory) {
-		if (this.isRoot) {
-			throw new Error("Cannot move root directory.");
-			return;
-		}
-
-		// Set new parent
-		this.changeParent(directory);
-
-		return this;
-	}
-
-	moveToPath(pathStr) {
-		if (this.isRoot) {
-			throw new Error("Cannot move root directory.");
-			return;
-		}
-
-		let directory = this.parent.getDirectoryFromPath(pathStr);
-		let targetPath = joinPath(this.parent.path, pathStr);
-
-		if (targetPath == this.root.path) {
-			this.moveToDirectory(this.root);
-		} else {
-			// Does the path exist?
-			let directoryExists = !!directory;
-			if (!directoryExists) {
-				// ...If not, then create directory
-				directory = this.addDirectoryFromPath(pathStr);
-			}
-
-			this.moveToDirectory(directory);
-		}
-
-		return this;
-	}
-
 	clear() {
 		let body = this.element.getBody();
 

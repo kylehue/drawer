@@ -1,5 +1,5 @@
 import DrawerEventEmitter from "./drawer.event-emitter";
-
+import { join as joinPath } from "path";
 class DrawerItem extends DrawerEventEmitter {
 	constructor(parent, title) {
 		super();
@@ -33,13 +33,52 @@ class DrawerItem extends DrawerEventEmitter {
 		// Move in DOM
 		let element = this.element.getMain();
 		newParent.element.getBody().append(element);
-		newParent.refresh(); // Refresh to fix stuff
 
 		// Assign new parent
 		this.parent = newParent;
 
-		// Lastly, refresh the directory itself
+		 // Refresh to fix stuff
 		this.refresh();
+		newParent.refresh();
+	}
+
+	moveToDirectory(directory) {
+		if (this.isRoot) {
+			throw new Error("Cannot move root directory.");
+			return;
+		}
+
+		// Set new parent
+		this.changeParent(directory);
+
+		return this;
+	}
+
+	moveToPath(pathStr) {
+		if (this.isRoot) {
+			throw new Error("Cannot move root directory.");
+			return;
+		}
+
+		let directory = this.type == "file" ? this.parent : this;
+
+		let targetDirectory = this.parent.getDirectoryFromPath(pathStr);
+		let targetPath = joinPath(this.parent.path, pathStr);
+
+		if (targetPath == directory.root.path) {
+			this.moveToDirectory(directory.root);
+		} else {
+			// Does the path exist?
+			let directoryExists = !!targetDirectory;
+			if (!directoryExists) {
+				// ...If not, then create directory
+				targetDirectory = directory.addDirectoryFromPath(pathStr);
+			}
+
+			this.moveToDirectory(targetDirectory);
+		}
+
+		return this;
 	}
 
 	rename(title) {
