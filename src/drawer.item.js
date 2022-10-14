@@ -9,19 +9,37 @@ class DrawerItem extends DrawerEventEmitter {
 		this.level = 0;
 	}
 
-	setParent(parent) {
-		if (!parent) {
+	changeParent(newParent) {
+		if (!newParent) {
 			throw new Error("Cannot set parent to null or undefined.")
 		}
 
-		// Remove dependent listeners
-		let hasParent = !!this.parent;
-		if (hasParent) {
-			this.parent.removeListener("removeHighlight");
+		// Remove from parent's array
+		let parentArray = this.type == "file" ? this.parent.items.files : this.parent.items.directories;
+		for (var i = 0; i < parentArray.length; i++) {
+			let item = parentArray[i];
+			if (item === this) {
+				parentArray.splice(i, 1);
+			}
 		}
 
-		// Set
-		this.parent = parent;
+		// Push to new parent's array
+		if (this.type == "file") {
+			newParent.items.files.push(this);
+		} else {
+			newParent.items.directories.push(this);
+		}
+
+		// Move in DOM
+		let element = this.element.getMain();
+		newParent.element.getBody().append(element);
+		newParent.refresh(); // Refresh to fix stuff
+
+		// Assign new parent
+		this.parent = newParent;
+
+		// Lastly, refresh the directory itself
+		this.refresh();
 	}
 
 	rename(title) {

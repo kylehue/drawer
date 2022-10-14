@@ -147,8 +147,8 @@ class DrawerDirectory extends DrawerItem {
 			throw new Error("Item type must either be 'file' or 'directory'.");
 		}
 
-		let targetTitle = getBasename(pathStr);
-		let path = joinPath(this.path, pathStr);
+		let path = resolvePath(joinPath(this.path, pathStr));
+		let targetTitle = getBasename(path);
 		let parentPath = getDirname(path);
 		let pathArray = path.substr(1).split(pathSeperator);
 		pathArray.pop();
@@ -197,6 +197,43 @@ class DrawerDirectory extends DrawerItem {
 		return newFile;
 	}
 
+	moveToDirectory(directory) {
+		if (this.isRoot) {
+			throw new Error("Cannot move root directory.");
+			return;
+		}
+
+		// Set new parent
+		this.changeParent(directory);
+
+		return this;
+	}
+
+	moveToPath(pathStr) {
+		if (this.isRoot) {
+			throw new Error("Cannot move root directory.");
+			return;
+		}
+
+		let directory = this.parent.getDirectoryFromPath(pathStr);
+		let targetPath = joinPath(this.parent.path, pathStr);
+
+		if (targetPath == this.root.path) {
+			this.moveToDirectory(this.root);
+		} else {
+			// Does the path exist?
+			let directoryExists = !!directory;
+			if (!directoryExists) {
+				// ...If not, then create directory
+				directory = this.addDirectoryFromPath(pathStr);
+			}
+
+			this.moveToDirectory(directory);
+		}
+
+		return this;
+	}
+
 	clear() {
 		let body = this.element.getBody();
 
@@ -225,7 +262,10 @@ class DrawerDirectory extends DrawerItem {
 			// Remove from DOM
 			this.element.getMain().remove();
 		} else {
-			throw new Error("Cannot remove root directory. Use clear() instead.");
+			if (this.root.options.warnings) {
+				console.warn("Cannot remove root directory. Using clear() instead.");
+				this.clear();
+			}
 		}
 
 		this.emit("removeDirectory", this);
