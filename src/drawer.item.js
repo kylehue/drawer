@@ -1,5 +1,8 @@
 import DrawerEventEmitter from "./drawer.event-emitter";
-import { join as joinPath } from "path";
+import {
+	join as joinPath,
+	sep as pathSeperator
+} from "path";
 class DrawerItem extends DrawerEventEmitter {
 	constructor(parent, title) {
 		super();
@@ -37,19 +40,33 @@ class DrawerItem extends DrawerEventEmitter {
 		// Assign new parent
 		this.parent = newParent;
 
-		 // Refresh to fix stuff
+		// Refresh to fix stuff
 		this.refresh();
 		newParent.refresh();
 	}
 
-	moveToDirectory(directory) {
+	moveToDirectory(targetDirectory) {
 		if (this.isRoot) {
 			throw new Error("Cannot move root directory.");
 			return;
 		}
 
+		let directory = this.type == "file" ? this.parent : this;
+
+		// Will this item have a title conflict in the target directory?
+		let duplicate = targetDirectory.getItem(this.type, this.title);
+		let duplicateExists = !!duplicate;
+		if (duplicateExists && directory.root.options.warnings) {
+			let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
+			console.warn(`Cannot move ${this.title} to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
+			return;
+		}
+
 		// Set new parent
-		this.changeParent(directory);
+		this.changeParent(targetDirectory);
+
+		this.emit("move", this);
+		this.ascendantsEmit("move", this);
 
 		return this;
 	}
@@ -65,13 +82,15 @@ class DrawerItem extends DrawerEventEmitter {
 		let targetDirectory = this.parent.getDirectoryFromPath(pathStr);
 		let targetPath = joinPath(this.parent.path, pathStr);
 
+		// Is the target path the root?
 		if (targetPath == directory.root.path) {
+			// ...If so, simply move this to the root
 			this.moveToDirectory(directory.root);
 		} else {
 			// Does the path exist?
-			let directoryExists = !!targetDirectory;
-			if (!directoryExists) {
-				// ...If not, then create directory
+			let targetDirectoryExists = !!targetDirectory;
+			if (!targetDirectoryExists) {
+				// ...If not, then create path
 				targetDirectory = directory.addDirectoryFromPath(pathStr);
 			}
 
@@ -82,6 +101,8 @@ class DrawerItem extends DrawerEventEmitter {
 	}
 
 	rename(title) {
+		if (title === this.title) return;
+
 		this.title = title;
 		this.refresh();
 
@@ -90,6 +111,8 @@ class DrawerItem extends DrawerEventEmitter {
 			this.parent.refresh();
 		}
 
+		this.emit("rename", this);
+		this.ascendantsEmit("rename", this);
 		this.emit("change", "rename");
 		this.ascendantsEmit("change", "rename");
 	}
