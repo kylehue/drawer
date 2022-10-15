@@ -1,5 +1,6 @@
 @import "./drawer.mixins.scss";
 @import "./drawer.config.scss";
+@import "file-icons-js/css/style.css";
 
 .drawer-directory {
   @include drawer-flex-column;

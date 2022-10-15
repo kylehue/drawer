@@ -29,12 +29,12 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, "./dist"),
-		//publicPath: "/",
-		filename: "[name].js",
+		filename: "drawer.js",
 		clean: true,
 		library: {
-			name: "drawer",
-			type: "umd"
+			name: "Drawer",
+			type: "umd",
+			export: "default"
 		}
 	},
 	plugins: [

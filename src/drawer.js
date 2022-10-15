@@ -18,8 +18,8 @@ class Drawer extends DrawerDirectory {
 
 		this.options = Object.assign({
 			element: undefined,
-			autoSortFiles: false,
-			autoSortDirectories: false,
+			autoSortFiles: true,
+			autoSortDirectories: true,
 			highlight: true,
 			animate: true,
 			autoRefresh: true,
@@ -32,9 +32,15 @@ class Drawer extends DrawerDirectory {
 
 		this.element = new DrawerDirectoryElement(this);
 
+		if (this.options.element) {
+			this.appendTo(this.options.element);
+		}
+	}
+
+	appendTo(el) {
 		let mainElement = this.element.getMain();
 		let bodyElement = this.element.getBody();
-		getElement(this.options.element).append(mainElement);
+		getElement(el).append(mainElement);
 
 		mainElement.style.height = "100%";
 		bodyElement.style.height = "100%";
