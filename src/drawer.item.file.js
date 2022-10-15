@@ -55,36 +55,24 @@ class DrawerFile extends DrawerItem {
 		if (!this.parent.parent) {
 			main.style.paddingLeft = "2.5em";
 		}
+
+		return this;
 	}
 
-	remove() {
-		let hasParent = !!this.parent;
-		if (hasParent) {
-			let parentFiles = this.parent.items.files;
-
-			// Remove from parent's array
-			for (var i = 0; i < parentFiles.length; i++) {
-				let parentFile = parentFiles[i];
-				if (parentFile === this) {
-					parentFiles.splice(i, 1);
-					break;
-				}
-			}
-
-			// Remove from DOM
-			this.element.getMain().remove();
-
-			this.emit("removeFile", this);
-			this.ascendantsEmit("removeFile", this);
-			this.emit("change", "removeFile");
-			this.ascendantsEmit("change", "removeFile");
-		}
-	}
-
-	addContent(name, value) {
+	updateContent(name, value) {
 		this.content[name] = value;
 
 		return this;
+	}
+
+	removeContent(name) {
+		delete this.content[name];
+
+		return this;
+	}
+
+	getContent(name) {
+		return this.content[name];
 	}
 }
 

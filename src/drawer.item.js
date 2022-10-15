@@ -12,9 +12,23 @@ class DrawerItem extends DrawerEventEmitter {
 		this.level = 0;
 	}
 
-	changeParent(newParent) {
-		if (!newParent) {
-			throw new Error("Cannot set parent to null or undefined.")
+	moveToDirectory(targetDirectory) {
+		if (!targetDirectory) {
+			throw new Error("Cannot move to null or undefined.");
+		}
+
+		if (this.isRoot) {
+			throw new Error("Cannot move root directory.");
+		}
+
+		let directory = this.type == "file" ? this.parent : this;
+
+		// Will this item have a title conflict in the target directory?
+		let duplicateExists = targetDirectory.has(this.type, this.title);
+		if (duplicateExists && directory.root.options.warnings) {
+			let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
+			console.warn(`Cannot move ${this.title} to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
+			return;
 		}
 
 		// Remove from parent's array
@@ -28,42 +42,21 @@ class DrawerItem extends DrawerEventEmitter {
 
 		// Push to new parent's array
 		if (this.type == "file") {
-			newParent.items.files.push(this);
+			targetDirectory.items.files.push(this);
 		} else {
-			newParent.items.directories.push(this);
+			targetDirectory.items.directories.push(this);
 		}
 
 		// Move in DOM
 		let element = this.element.getMain();
-		newParent.element.getBody().append(element);
+		targetDirectory.element.getBody().append(element);
 
 		// Assign new parent
-		this.parent = newParent;
+		this.parent = targetDirectory;
 
 		// Refresh to fix stuff
 		this.refresh();
-		newParent.refresh();
-	}
-
-	moveToDirectory(targetDirectory) {
-		if (this.isRoot) {
-			throw new Error("Cannot move root directory.");
-			return;
-		}
-
-		let directory = this.type == "file" ? this.parent : this;
-
-		// Will this item have a title conflict in the target directory?
-		let duplicate = targetDirectory.getItem(this.type, this.title);
-		let duplicateExists = !!duplicate;
-		if (duplicateExists && directory.root.options.warnings) {
-			let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
-			console.warn(`Cannot move ${this.title} to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
-			return;
-		}
-
-		// Set new parent
-		this.changeParent(targetDirectory);
+		targetDirectory.refresh();
 
 		this.emit("move", this);
 		this.ascendantsEmit("move", this);
@@ -113,8 +106,40 @@ class DrawerItem extends DrawerEventEmitter {
 
 		this.emit("rename", this);
 		this.ascendantsEmit("rename", this);
-		this.emit("change", "rename");
-		this.ascendantsEmit("change", "rename");
+		this.emit("change", "rename", this);
+		this.ascendantsEmit("change", "rename", this);
+
+		return this;
+	}
+
+	remove() {
+		let directory = this.type == "file" ? this.parent : this;
+
+		if (!directory.isRoot) {
+			// Remove from parent array
+			let parentArray = this.type == "file" ? this.parent.items.files : this.parent.items.directories;
+
+			for (var i = 0; i < parentArray.length; i++) {
+				let item = parentArray[i];
+				if (item === this) {
+					parentArray.splice(i, 1);
+					break;
+				}
+			}
+
+			// Remove from DOM
+			this.element.getMain().remove();
+		} else {
+			if (directory.root.options.warnings) {
+				console.warn("Cannot remove root directory. Using clear() instead.");
+				this.clear();
+			}
+		}
+
+		this.emit("remove", this);
+		this.ascendantsEmit("remove", this);
+		this.emit("change", "remove", this);
+		this.ascendantsEmit("change", "remove", this);
 	}
 
 	appendToParent() {
@@ -127,6 +152,8 @@ class DrawerItem extends DrawerEventEmitter {
 				parentElement.append(this.element);
 			}
 		}
+
+		return this;
 	}
 
 	ascendantsListener(type, eventName, ...args) {
@@ -144,10 +171,13 @@ class DrawerItem extends DrawerEventEmitter {
 
 			currentParent = currentParent.parent;
 		}
+
+		return this;
 	}
 
 	descendantsListener(type, eventName, ...args) {
-		this.scanContent((subDirectory, subDirectoryFiles) => {
+		let directory = this.type == "file" ? this.parent : this;
+		directory.scanItems((subDirectory, subDirectoryFiles) => {
 			if (type == "emit") {
 				subDirectory.emit(eventName, ...args);
 			} else if (type == "on") {
@@ -158,30 +188,44 @@ class DrawerItem extends DrawerEventEmitter {
 				throw new Error("Invalid listener type.");
 			}
 		});
+
+		return this;
 	}
 
 	ascendantsEmit(eventName, ...args) {
 		this.ascendantsListener("emit", eventName, ...args);
+
+		return this;
 	}
 
 	ascendantsOn(eventName, callback) {
 		this.ascendantsListener("on", eventName, callback);
+
+		return this;
 	}
 
 	ascendantsOnce(eventName, callback) {
 		this.ascendantsListener("once", eventName, callback);
+
+		return this;
 	}
 
 	descendantsEmit(eventName, ...args) {
 		this.descendantsListener("emit", eventName, ...args);
+
+		return this;
 	}
 
 	descendantsOn(eventName, callback) {
 		this.descendantsListener("on", eventName, callback);
+
+		return this;
 	}
 
 	descendantsOnce(eventName, callback) {
 		this.descendantsListener("once", eventName, callback);
+
+		return this;
 	}
 }
 

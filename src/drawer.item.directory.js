@@ -39,7 +39,7 @@ class DrawerDirectory extends DrawerItem {
 		}
 	}
 
-	scanContent(callback) {
+	scanItems(callback) {
 		if (this.type == "directory") {
 			function scan(directory, callback) {
 				let directories = directory.items.directories;
@@ -207,34 +207,8 @@ class DrawerDirectory extends DrawerItem {
 		while (body.firstChild) {
 			body.removeChild(body.lastChild);
 		}
-	}
 
-	remove() {
-		if (!this.isRoot) {
-			let parentDirectories = this.parent.items.directories;
-
-			// Remove from parent's array
-			for (var i = 0; i < parentDirectories.length; i++) {
-				let parentDir = parentDirectories[i];
-				if (parentDir === this) {
-					parentDirectories.splice(i, 1);
-					break;
-				}
-			}
-
-			// Remove from DOM
-			this.element.getMain().remove();
-		} else {
-			if (this.root.options.warnings) {
-				console.warn("Cannot remove root directory. Using clear() instead.");
-				this.clear();
-			}
-		}
-
-		this.emit("removeDirectory", this);
-		this.ascendantsEmit("removeDirectory", this);
-		this.emit("change", "removeDirectory");
-		this.ascendantsEmit("change", "removeDirectory");
+		return this;
 	}
 
 	sort(type) {
@@ -254,14 +228,20 @@ class DrawerDirectory extends DrawerItem {
 		const sortedElements = elements.sort((a, b) => b.innerText.localeCompare(a.innerText));
 
 		sortedElements.forEach(e => e.parentElement.prepend(e));
+
+		return this;
 	}
 
 	sortDirectories() {
 		this.sort("directory");
+
+		return this;
 	}
 
 	sortFiles() {
 		this.sort("file");
+
+		return this;
 	}
 
 	refreshFiles() {
@@ -273,6 +253,8 @@ class DrawerDirectory extends DrawerItem {
 		if (this.root.options.autoSortFiles) {
 			this.sortFiles();
 		}
+
+		return this;
 	}
 
 	refresh() {
@@ -301,6 +283,8 @@ class DrawerDirectory extends DrawerItem {
 		// Indent
 		head.style.paddingLeft = (this.level * 1.5 - 0.5) + "em";
 		this.refreshFiles();
+
+		return this;
 	}
 
 	removeDirectoryFromPath(pathStr) {
@@ -309,6 +293,8 @@ class DrawerDirectory extends DrawerItem {
 		if (directoryExists) {
 			directory.remove();
 		}
+
+		return this;
 	}
 
 	removeFileFromPath(pathStr) {
@@ -317,6 +303,8 @@ class DrawerDirectory extends DrawerItem {
 		if (fileExists) {
 			file.remove();
 		}
+
+		return this;
 	}
 
 	removeDirectory(title) {
@@ -326,6 +314,8 @@ class DrawerDirectory extends DrawerItem {
 				break;
 			}
 		}
+
+		return this;
 	}
 
 	removeFile(title) {
@@ -335,6 +325,8 @@ class DrawerDirectory extends DrawerItem {
 				break;
 			}
 		}
+
+		return this;
 	}
 
 	has(type, compare) {

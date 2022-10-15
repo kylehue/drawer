@@ -4,8 +4,6 @@ import {sep as pathSeperator} from "path";
 /**
  * TODO:
  * [x] optional context menu
- * [x] update dirs/files
- * [x] move dirs/files
  * [x] drag and drop
  */
 function getElement(element) {
