@@ -1,5 +1,5 @@
 import DrawerElement from "./drawer.element";
-import { pathToSVG, ghostDrag } from "./utils";
+import { pathToSVG, makeDraggable } from "./utils";
 import {
 	mdiFolder as folderSVGPath,
 	//mdiFolderOpen as folderOpenSVGPath,
@@ -35,10 +35,30 @@ class DrawerDirectoryElement extends DrawerElement {
 
 		this.getMain().append(this.getBody());
 
+		let isDragged = false;
+		let isMouseDown = false;
+
+		window.addEventListener("mousedown", () => {
+			isMouseDown = true;
+		});
+
+		window.addEventListener("mouseup", () => {
+			isMouseDown = false;
+			isDragged = false;
+		});
+
+		window.addEventListener("mousemove", () => {
+			if (isMouseDown) {
+				isDragged = true;
+			}
+		});
+
 		//Collapse drawer on click
 		this.getHead().addEventListener("mouseup", () => {
 			// Only collapse if not dragged
-			this.toggleCollapse();
+			if (!isDragged) {
+				this.toggleCollapse();
+			}
 		});
 	}
 
@@ -129,28 +149,30 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		// Add drag and drop functionality
-		ghostDrag(head, {
-			highlightClass: "drawer-drop-target",
-			highlightSelector: ".drawer-directory",
-			constraintSelector: "[class^=drawer-]",
-			onDrop: (el, event) => {
-				let target = event.target;
-				while (target.parentElement) {
-					if (target.dataset.drawerId) {
-						break;
+		if (directory.root.options.draggableDirectories) {
+			makeDraggable(head, {
+				highlightClass: "drawer-drop-target",
+				highlightSelector: ".drawer-directory",
+				constraintSelector: "[class^=drawer-]",
+				onDrop: (el, event) => {
+					let target = event.target;
+					while (target.parentElement) {
+						if (target.dataset.drawerId) {
+							break;
+						}
+						target = target.parentElement;
 					}
-					target = target.parentElement;
-				}
 
-				let targetId = target.dataset.drawerId;
-				let targetDirectory = directory.parent.root.getDirectoryById(targetId);
-				if (!targetDirectory) {
-					directory.moveToDirectory(directory.parent.root);
-				} else {
-					directory.moveToDirectory(targetDirectory);
+					let targetId = target.dataset.drawerId;
+					let targetDirectory = directory.parent.root.getDirectoryById(targetId);
+					if (!targetDirectory) {
+						directory.moveToDirectory(directory.parent.root);
+					} else {
+						directory.moveToDirectory(targetDirectory);
+					}
 				}
-			}
-		});
+			});
+		}
 
 		return head;
 	}

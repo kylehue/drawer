@@ -357,10 +357,10 @@ class DrawerDirectory extends DrawerItem {
 			directory.refresh();
 		}
 
-		this.emit("addDirectory", directory);
-		this.ascendantsEmit("addDirectory", directory);
-		this.emit("change", "addDirectory");
-		this.ascendantsEmit("change", "addDirectory");
+		this.emit("add", directory);
+		this.ascendantsEmit("add", directory);
+		this.emit("change", "add", directory);
+		this.ascendantsEmit("change", "add", directory);
 
 		return directory;
 	}
@@ -379,10 +379,10 @@ class DrawerDirectory extends DrawerItem {
 
 		file.refresh();
 
-		this.emit("addFile", file);
-		this.ascendantsEmit("addFile", file);
-		this.emit("change", "addFile");
-		this.ascendantsEmit("change", "addFile");
+		this.emit("add", file);
+		this.ascendantsEmit("add", file);
+		this.emit("change", "add", file);
+		this.ascendantsEmit("change", "add", file);
 
 		return file;
 	}

@@ -1,12 +1,7 @@
 import DrawerDirectory from "./drawer.item.directory";
 import DrawerDirectoryElement from "./drawer.element.directory";
 import {sep as pathSeperator} from "path";
-/**
- * TODO:
- * [x] optional context menu
- * [x] drag and drop
- * [x] fix animation
- */
+
 function getElement(element) {
 	if (typeof element == "string") {
 		return document.querySelector(element);
@@ -20,7 +15,6 @@ class Drawer extends DrawerDirectory {
 		let parent = null;
 		let title = "";
 		super(parent, title);
-		console.clear();
 
 		this.options = Object.assign({
 			element: undefined,
@@ -31,7 +25,9 @@ class Drawer extends DrawerDirectory {
 			autoRefresh: true,
 			fileIcons: true,
 			directoryIcons: true,
-			warnings: true
+			warnings: true,
+			draggableFiles: true,
+			draggableDirectories: true
 		}, options);
 
 		this.element = new DrawerDirectoryElement(this);

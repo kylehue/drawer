@@ -1,7 +1,7 @@
 import DrawerElement from "./drawer.element";
 import { getClassWithColor as fileIcon } from "file-icons-js";
 import { extname as getExtname } from "path";
-import { ghostDrag } from "./utils";
+import { makeDraggable } from "./utils";
 
 const styles = {
 	wrapper: ["drawer-file"],
@@ -94,29 +94,30 @@ class DrawerFileElement extends DrawerElement {
 		}
 
 		// Add drag and drop functionality
-		// Drag
-		ghostDrag(wrapper, {
-			highlightClass: "drawer-drop-target",
-			highlightSelector: ".drawer-directory",
-			constraintSelector: "[class^=drawer-]",
-			onDrop: (el, event) => {
-				let target = event.target;
-				while (target.parentElement) {
-					if (target.dataset.drawerId) {
-						break;
+		if (file.parent.root.options.draggableFiles) {
+			makeDraggable(wrapper, {
+				highlightClass: "drawer-drop-target",
+				highlightSelector: ".drawer-directory",
+				constraintSelector: "[class^=drawer-]",
+				onDrop: (el, event) => {
+					let target = event.target;
+					while (target.parentElement) {
+						if (target.dataset.drawerId) {
+							break;
+						}
+						target = target.parentElement;
 					}
-					target = target.parentElement;
-				}
 
-				let targetId = target.dataset.drawerId;
-				let targetDirectory = file.parent.root.getDirectoryById(targetId);
-				if (!targetDirectory) {
-					file.moveToDirectory(file.parent.root);
-				} else {
-					file.moveToDirectory(targetDirectory);
+					let targetId = target.dataset.drawerId;
+					let targetDirectory = file.parent.root.getDirectoryById(targetId);
+					if (!targetDirectory) {
+						file.moveToDirectory(file.parent.root);
+					} else {
+						file.moveToDirectory(targetDirectory);
+					}
 				}
-			}
-		});
+			});
+		}
 
 		// Drop
 		// let drag = null;

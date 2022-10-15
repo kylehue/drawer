@@ -62,7 +62,7 @@ class DrawerItem extends DrawerEventEmitter {
 		if (duplicateExists) {
 			if (directory.root.options.warnings) {
 				let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
-				console.warn(`Cannot move ${this.title} to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
+				console.warn(`Cannot move '${this.title}' to ${targetPath} because the ${this.type} '${this.title}' already exist in ${targetPath}.`);
 			}
 
 			return null;
@@ -97,17 +97,21 @@ class DrawerItem extends DrawerEventEmitter {
 
 		this.emit("move", this);
 		this.ascendantsEmit("move", this);
+		this.emit("change", "move", this);
+		this.ascendantsEmit("change", "move", this);
 
 		return this;
 	}
 
 	moveToPath(pathStr) {
-		if (this.isRoot) {
-			throw new Error("Cannot move root directory.");
-			return;
-		}
-
 		let directory = this.type == "file" ? this.parent : this;
+		if (this.isRoot) {
+			if (directory.root.options.warnings) {
+				console.warn("Cannot move root directory.");
+			}
+
+			return null;
+		}
 
 		let targetDirectory = this.parent.getDirectoryFromPath(pathStr);
 		let targetPath = joinPath(this.parent.path, pathStr);

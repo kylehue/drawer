@@ -69,11 +69,11 @@ export function uid(length = 8) {
 	return id;
 }
 
-export function ghostDrag(element, options = {}) {
+export function makeDraggable(element, options = {}) {
 	options = Object.assign({
 		offset: 10,
-		onDrop: () => {},
-		onDrag: () => {},
+		onDrop: null,
+		onDrag: null,
 		highlightClass: "",
 		highlightSelector: "",
 		constraintSelector: ""
@@ -104,7 +104,9 @@ export function ghostDrag(element, options = {}) {
 				item.classList.remove(options.highlightClass);
 			});
 
-			options.onDrop(element, event);
+			if (typeof options.onDrop == "function") {
+				options.onDrop(element, event);
+			}
 		}
 	});
 
@@ -161,7 +163,9 @@ export function ghostDrag(element, options = {}) {
 			nodeCopy.style.left = targetX + "px";
 
 			// Callback
-			options.onDrag(element, event);
+			if (typeof options.onDrag == "function") {
+				options.onDrag(element, event);
+			}
 		} else {
 			isDragging = false;
 		}
