@@ -1,6 +1,7 @@
 import DrawerElement from "./drawer.element";
 import { getClassWithColor as fileIcon } from "file-icons-js";
 import { extname as getExtname } from "path";
+import { ghostDrag } from "./utils";
 
 const styles = {
 	wrapper: ["drawer-file"],
@@ -13,7 +14,7 @@ class DrawerFileElement extends DrawerElement {
 		super();
 		this.file = file;
 
-		this.elements.main = DrawerFileElement.createMain(this.file.title, this.file.parent.root.options);
+		this.elements.main = DrawerFileElement.createMain(this.file);
 	}
 
 	highlight() {
@@ -28,16 +29,16 @@ class DrawerFileElement extends DrawerElement {
 		return this.elements.main;
 	}
 
-	static createMain(title, options) {
+	static createMain(file) {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add(...styles.wrapper);
 
 		function addTitle() {
-			const textElement = DrawerElement.createText(title);
+			const textElement = DrawerElement.createText(file.title);
 
 			function addIcon() {
 				let iconElement = DrawerElement.createIcon();
-				let iconClass = fileIcon(title);
+				let iconClass = fileIcon(file.title);
 
 				// Default
 				if (!iconClass) {
@@ -48,7 +49,7 @@ class DrawerFileElement extends DrawerElement {
 				iconElement.classList.add(...iconClassArray);
 				wrapper.append(iconElement);
 
-				let oldExtname = getExtname(title);
+				let oldExtname = getExtname(file.title);
 
 				// Watch title
 				const observer = new MutationObserver(() => {
@@ -81,17 +82,54 @@ class DrawerFileElement extends DrawerElement {
 				});
 			}
 
-			if (options.fileIcons) {
+			if (file.parent.root.options.fileIcons) {
 				addIcon();
 			}
 
 			wrapper.append(textElement);
 		}
 
-		if (title) {
+		if (file.title) {
 			addTitle();
 		}
 
+		// Add drag and drop functionality
+		// Drag
+		ghostDrag(wrapper, {
+			highlightClass: "drawer-drop-target",
+			highlightSelector: ".drawer-directory",
+			constraintSelector: "[class^=drawer-]",
+			onDrop: (el, event) => {
+				let target = event.target;
+				while (target.parentElement) {
+					if (target.dataset.drawerId) {
+						break;
+					}
+					target = target.parentElement;
+				}
+
+				let targetId = target.dataset.drawerId;
+				let targetDirectory = file.parent.root.getDirectoryById(targetId);
+				if (!targetDirectory) {
+					file.moveToDirectory(file.parent.root);
+				} else {
+					file.moveToDirectory(targetDirectory);
+				}
+			}
+		});
+
+		// Drop
+		// let drag = null;
+		// wrapper.addEventListener("mousedown", () => {
+		// 	drag = wrapper;
+		// });
+		//
+		// window.addEventListener("mouseup", () => {
+		// 	if (drag) {
+		// 		console.log(drag);
+		// 		drag = null;
+		// 	}
+		// });
 		return wrapper;
 	}
 }

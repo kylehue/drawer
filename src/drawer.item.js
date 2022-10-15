@@ -13,22 +13,59 @@ class DrawerItem extends DrawerEventEmitter {
 	}
 
 	moveToDirectory(targetDirectory) {
+		let directory = this.type == "file" ? this.parent : this;
 		if (!targetDirectory) {
-			throw new Error("Cannot move to null or undefined.");
+			if (directory.root.options.warnings) {
+				console.warn("Cannot move to null or undefined.");
+			}
+
+			return null;
 		}
 
 		if (this.isRoot) {
-			throw new Error("Cannot move root directory.");
+			if (directory.root.options.warnings) {
+				console.warn("Cannot move root directory.");
+			}
+
+			return null;
 		}
 
-		let directory = this.type == "file" ? this.parent : this;
+		if (this === targetDirectory) {
+			if (directory.root.options.warnings) {
+				console.warn("Cannot move a directory inside itself.");
+			}
+
+			return null;
+		}
+
+		// Make sure the directory isn't being moved in its subdirectories
+		if (this.type == "directory") {
+			let targetIsDescendant = false;
+			directory.scanItems((dir) => {
+				if (dir === targetDirectory) {
+					targetIsDescendant = true;
+					return;
+				}
+			});
+
+			if (targetIsDescendant) {
+				if (directory.root.options.warnings) {
+					console.warn("Cannot move a directory inside its descendant.");
+				}
+
+				return null;
+			}
+		}
 
 		// Will this item have a title conflict in the target directory?
 		let duplicateExists = targetDirectory.has(this.type, this.title);
-		if (duplicateExists && directory.root.options.warnings) {
-			let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
-			console.warn(`Cannot move ${this.title} to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
-			return;
+		if (duplicateExists) {
+			if (directory.root.options.warnings) {
+				let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
+				console.warn(`Cannot move ${this.title} to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
+			}
+
+			return null;
 		}
 
 		// Remove from parent's array

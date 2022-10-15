@@ -1,5 +1,5 @@
 import DrawerElement from "./drawer.element";
-import { pathToSVG } from "./utils";
+import { pathToSVG, ghostDrag } from "./utils";
 import {
 	mdiFolder as folderSVGPath,
 	//mdiFolderOpen as folderOpenSVGPath,
@@ -23,9 +23,9 @@ class DrawerDirectoryElement extends DrawerElement {
 
 		this.directory = directory;
 
-		this.elements.main = DrawerDirectoryElement.createMain(this.directory.root.options);
+		this.elements.main = DrawerDirectoryElement.createMain(this.directory);
 
-		this.elements.head = DrawerDirectoryElement.createHead(this.directory.title, this.directory.root.options);
+		this.elements.head = DrawerDirectoryElement.createHead(this.directory);
 
 		this.elements.body = DrawerDirectoryElement.createBody();
 
@@ -36,7 +36,8 @@ class DrawerDirectoryElement extends DrawerElement {
 		this.getMain().append(this.getBody());
 
 		//Collapse drawer on click
-		this.getHead().addEventListener("click", () => {
+		this.getHead().addEventListener("mouseup", () => {
+			// Only collapse if not dragged
 			this.toggleCollapse();
 		});
 	}
@@ -78,18 +79,20 @@ class DrawerDirectoryElement extends DrawerElement {
 		// toggleFolderIcon.call(this);
 	}
 
-	static createMain(options) {
+	static createMain(directory) {
 		const wrapper = document.createElement("div");
+		let id = directory.id;
+		wrapper.setAttribute(`data-drawer-id`, id);
 		wrapper.classList.add(...styles.wrapper);
 
-		if (options.animate) {
+		if (directory.root.options.animate) {
 			wrapper.classList.add(...styles.animate);
 		}
 
 		return wrapper;
 	}
 
-	static createHead(title, options) {
+	static createHead(directory) {
 		const head = document.createElement("div");
 		head.classList.add(...styles.head);
 
@@ -102,7 +105,7 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		function addTitle() {
-			const textElement = DrawerElement.createText(title);
+			const textElement = DrawerElement.createText(directory.title);
 
 			head.append(textElement);
 		}
@@ -117,13 +120,37 @@ class DrawerDirectoryElement extends DrawerElement {
 		}
 
 		addArrow();
-		if (options.directoryIcons) {
+		if (directory.root.options.directoryIcons) {
 			addFolderIcon();
 		}
 
-		if (title) {
+		if (directory.title) {
 			addTitle();
 		}
+
+		// Add drag and drop functionality
+		ghostDrag(head, {
+			highlightClass: "drawer-drop-target",
+			highlightSelector: ".drawer-directory",
+			constraintSelector: "[class^=drawer-]",
+			onDrop: (el, event) => {
+				let target = event.target;
+				while (target.parentElement) {
+					if (target.dataset.drawerId) {
+						break;
+					}
+					target = target.parentElement;
+				}
+
+				let targetId = target.dataset.drawerId;
+				let targetDirectory = directory.parent.root.getDirectoryById(targetId);
+				if (!targetDirectory) {
+					directory.moveToDirectory(directory.parent.root);
+				} else {
+					directory.moveToDirectory(targetDirectory);
+				}
+			}
+		});
 
 		return head;
 	}

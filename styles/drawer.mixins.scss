@@ -14,3 +14,9 @@
   @include drawer-flex;
   flex-direction: column;
 }
+
+@mixin drawer-transition {
+	transition-property: height, opacity;
+	transition-duration: 150ms;
+	opacity: 1;
+}

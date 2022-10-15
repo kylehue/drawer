@@ -8,6 +8,7 @@
 
 	.drawer-head {
 	  @include drawer-flex-row;
+		@include drawer-transition;
 	  width: 100%;
 	  user-select: none;
 		font-weight: bold;
@@ -87,9 +88,7 @@
 	}
 
 	.drawer-directory, .drawer-file {
-		transition-property: height, opacity;
-		transition-duration: 150ms;
-		opacity: 1;
+		@include drawer-transition;
 	}
 
 	.drawer-collapsed {
@@ -104,4 +103,19 @@
 			}
 		}
 	}
+}
+
+.drawer-drop-target {
+	border: 1px dashed $drop-target-border-color;
+	border-radius: 3px;
+}
+
+.drawer-ghost {
+	position: absolute !important;
+	pointer-events: none !important;
+	user-select: none !important;
+	z-index: 9999999999999 !important;
+	padding: 0 !important;
+	width: fit-content !important;
+	height: fit-content !important;
 }

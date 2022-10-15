@@ -12,9 +12,9 @@ import {
 import {
 	toObjectPath,
 	getRoot,
-	getPath
+	getPath,
+	uid as generateId
 } from "./utils";
-
 
 class DrawerDirectory extends DrawerItem {
 	constructor(parent, title) {
@@ -23,6 +23,7 @@ class DrawerDirectory extends DrawerItem {
 		this.path = getPath(this);
 		this.root = getRoot(this);
 		this.isRoot = this.root === this;
+		this.id = generateId();
 
 		this.items = {
 			directories: [],
@@ -282,6 +283,12 @@ class DrawerDirectory extends DrawerItem {
 
 		// Indent
 		head.style.paddingLeft = (this.level * 1.5 - 0.5) + "em";
+
+		// Refresh subdirectories
+		this.scanItems((directory) => {
+			directory.refresh();
+		});
+
 		this.refreshFiles();
 
 		return this;
