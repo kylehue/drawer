@@ -1,12 +1,20 @@
 import DrawerElement from "./drawer.element";
 import { getClassWithColor as fileIcon } from "file-icons-js";
 import { extname as getExtname } from "path";
-import { makeDraggable, makeRenameable } from "./utils";
+import { makeDraggable, makeRenameable, pathToSVG } from "./utils";
+import {
+	mdiContentCopy as copySVGPath,
+	mdiContentCut as cutSVGPath,
+	mdiPencilBoxOutline as renameSVGPath,
+	mdiTrashCan as removeSVGPath
+} from "@mdi/js";
 
 const styles = {
 	wrapper: ["drawer-file"],
 	text: ["drawer-text"],
-	highlight: ["drawer-highlight"]
+	highlight: ["drawer-highlight"],
+	icon: ["drawer-icon"],
+	buttonsWrapper: ["drawer-item-buttons"]
 }
 
 class DrawerFileElement extends DrawerElement {
@@ -112,12 +120,62 @@ class DrawerFileElement extends DrawerElement {
 			addTitle();
 		}
 
+		// Add buttons
+		let buttonOptions = file.parent.root.options.fileButton;
+
+		// Create wrapper for buttons
+		const buttonsWrapper = document.createElement("div");
+		buttonsWrapper.classList.add(...styles.buttonsWrapper);
+		wrapper.append(buttonsWrapper);
+
+		for (let key of Object.keys(buttonOptions)) {
+			let isEnabled = buttonOptions[key] === true;
+			let svgPath;
+
+			switch (key) {
+				case "rename":
+					svgPath = renameSVGPath;
+					break;
+				case "copy":
+					svgPath = copySVGPath;
+					break;
+				case "cut":
+					svgPath = cutSVGPath;
+					break;
+				case "remove":
+					svgPath = removeSVGPath;
+					break;
+			}
+
+			if (isEnabled) {
+				const iconButton = DrawerElement.createIconButton();
+
+				// Icon
+				const icon = pathToSVG(svgPath, {
+					size: 14
+				});
+
+				icon.classList.add(...styles.icon);
+
+				iconButton.append(icon);
+				buttonsWrapper.append(iconButton);
+
+				// Listener for click
+				iconButton.addEventListener("click", event => {
+					let emitArgs = [key + "Click", file, event];
+					file.emit(...emitArgs);
+					file.ascendantsEmit(...emitArgs);
+				});
+			}
+		}
+
 		// Add drag and drop functionality
 		if (file.parent.root.options.draggableFiles) {
 			makeDraggable(wrapper, {
 				highlightClass: "drawer-drop-target",
 				highlightSelector: ".drawer-directory",
 				constraintSelector: "[class^=drawer-]",
+				cloneExcludeSelector: ".drawer-item-buttons",
 				onDrop: (el, event) => {
 					let target = event.target;
 					while (target.parentElement) {

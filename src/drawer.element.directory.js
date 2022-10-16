@@ -4,10 +4,17 @@ import {
 	makeDraggable,
 	makeRenameable
 } from "./utils";
+
 import {
 	mdiFolder as folderSVGPath,
-	//mdiFolderOpen as folderOpenSVGPath,
-	mdiChevronDown as arrowDownSVGPath
+	mdiChevronDown as arrowDownSVGPath,
+	mdiFilePlus as addFileSVGPath,
+	mdiFolderPlus as addDirectorySVGPath,
+	mdiContentCopy as copySVGPath,
+	mdiContentCut as cutSVGPath,
+	mdiContentPaste as pasteSVGPath,
+	mdiPencilBoxOutline as renameSVGPath,
+	mdiTrashCan as removeSVGPath
 } from "@mdi/js";
 
 const styles = {
@@ -18,7 +25,9 @@ const styles = {
 	collapsed: ["drawer-collapsed"],
 	arrow: ["drawer-icon", "drawer-icon-arrow"],
 	folder: ["drawer-icon", "drawer-icon-folder"],
-	animate: ["drawer-animated"]
+	icon: ["drawer-icon"],
+	animate: ["drawer-animated"],
+	buttonsWrapper: ["drawer-item-buttons"]
 }
 
 class DrawerDirectoryElement extends DrawerElement {
@@ -172,12 +181,71 @@ class DrawerDirectoryElement extends DrawerElement {
 			addTitle();
 		}
 
+		// Add buttons
+		let buttonOptions = directory.root.options.directoryButton;
+
+		// Create wrapper for buttons
+		const buttonsWrapper = document.createElement("div");
+		buttonsWrapper.classList.add(...styles.buttonsWrapper);
+		head.append(buttonsWrapper);
+
+		for (let key of Object.keys(buttonOptions)) {
+			let isEnabled = buttonOptions[key] === true;
+			let svgPath;
+
+			switch (key) {
+				case "addDirectory":
+					svgPath = addDirectorySVGPath;
+					break;
+				case "addFile":
+					svgPath = addFileSVGPath;
+					break;
+				case "rename":
+					svgPath = renameSVGPath;
+					break;
+				case "copy":
+					svgPath = copySVGPath;
+					break;
+				case "cut":
+					svgPath = cutSVGPath;
+					break;
+				case "paste":
+					svgPath = pasteSVGPath;
+					break;
+				case "remove":
+					svgPath = removeSVGPath;
+					break;
+			}
+
+			if (isEnabled) {
+				const iconButton = DrawerElement.createIconButton();
+
+				// Icon
+				const icon = pathToSVG(svgPath, {
+					size: 14
+				});
+
+				icon.classList.add(...styles.icon);
+
+				iconButton.append(icon);
+				buttonsWrapper.append(iconButton);
+
+				// Listener for click
+				iconButton.addEventListener("click", event => {
+					let emitArgs = [key + "Click", directory, event];
+					directory.emit(...emitArgs);
+					directory.ascendantsEmit(...emitArgs);
+				});
+			}
+		}
+
 		// Add drag and drop functionality
 		if (directory.root.options.draggableDirectories) {
 			makeDraggable(head, {
 				highlightClass: "drawer-drop-target",
 				highlightSelector: ".drawer-directory",
 				constraintSelector: "[class^=drawer-]",
+				cloneExcludeSelector: ".drawer-item-buttons",
 				onDrop: (el, event) => {
 					let target = event.target;
 					while (target.parentElement) {

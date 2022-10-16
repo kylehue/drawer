@@ -1,6 +1,7 @@
 const styles = {
 	text: ["drawer-text"],
-	icon: ["drawer-icon"]
+	icon: ["drawer-icon"],
+	iconButton: ["drawer-icon-button"]
 }
 
 class DrawerElement {
@@ -25,6 +26,12 @@ class DrawerElement {
 		let htmlElement = this.getHTMLElement(element);
 		let mainHasElement = this.getMain().contains(htmlElement);
 		return mainHasElement;
+	}
+
+	static createIconButton() {
+		const button = document.createElement("button");
+		button.classList.add(...styles.iconButton);
+		return button;
 	}
 
 	static createText(text) {

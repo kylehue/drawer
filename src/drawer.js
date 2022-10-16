@@ -1,6 +1,6 @@
 import DrawerDirectory from "./drawer.item.directory";
 import DrawerDirectoryElement from "./drawer.element.directory";
-import {sep as pathSeperator} from "path";
+import { sep as pathSeperator } from "path";
 
 function getElement(element) {
 	if (typeof element == "string") {
@@ -16,6 +16,23 @@ class Drawer extends DrawerDirectory {
 		let title = "";
 		super(parent, title);
 
+		options.directoryButton = Object.assign({
+			addDirectory: true,
+			addFile: true,
+			rename: true,
+			cut: true,
+			copy: true,
+			paste: true,
+			remove: true
+		}, options.directoryButton || {});
+
+		options.fileButton = Object.assign({
+			rename: true,
+			cut: true,
+			copy: true,
+			remove: true
+		}, options.fileButton || {});
+
 		this.options = Object.assign({
 			element: undefined,
 			autoSortFiles: true,
@@ -29,7 +46,9 @@ class Drawer extends DrawerDirectory {
 			draggableFiles: true,
 			draggableDirectories: true,
 			renameFileOnDoubleClick: true,
-			renameDirectoryOnDoubleClick: true
+			renameDirectoryOnDoubleClick: true,
+			directoryButton: {},
+			fileButton: {}
 		}, options);
 
 		this.element = new DrawerDirectoryElement(this);
@@ -46,6 +65,8 @@ class Drawer extends DrawerDirectory {
 
 		mainElement.style.height = "100%";
 		bodyElement.style.height = "100%";
+
+		this.options.element = el;
 	}
 
 	getDirectoryById(id) {

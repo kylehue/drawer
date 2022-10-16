@@ -77,7 +77,8 @@ export function makeDraggable(element, options = {}) {
 		onDrag: null,
 		highlightClass: "",
 		highlightSelector: "",
-		constraintSelector: ""
+		constraintSelector: "",
+		cloneExcludeSelector: ""
 	}, options);
 
 	let isDragging = false;
@@ -92,6 +93,12 @@ export function makeDraggable(element, options = {}) {
 		nodeCopy.append(span);
 		input.remove();
 	});
+
+	if (options.cloneExcludeSelector) {
+		nodeCopy.querySelectorAll(options.cloneExcludeSelector).forEach(el => {
+			el.remove();
+		});
+	}
 
 	let markX = 0;
 	let markY = 0;
@@ -197,9 +204,10 @@ export function makeRenameable(input, options = {}) {
 	input.setAttribute("autofill", "false");
 
 	options.triggerElement.addEventListener("dblclick", event => {
+		let isTarget = event.target === options.triggerElement;
 		let isActive = input === document.activeElement;
 		// Only focus if not active
-		if (!isActive) {
+		if (!isActive && isTarget) {
 			input.classList.add(options.focusClass);
 			input.focus();
 
