@@ -28,10 +28,10 @@ class DrawerElement {
 	}
 
 	static createText(text) {
-		const span = document.createElement("span");
-		span.classList.add(...styles.text);
-		span.textContent = text;
-		return span;
+		const input = document.createElement("input");
+		input.classList.add(...styles.text);
+		input.value = text;
+		return input;
 	}
 
 	static createIcon() {

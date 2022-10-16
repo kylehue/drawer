@@ -226,7 +226,7 @@ class DrawerDirectory extends DrawerItem {
 		elements = Array.from(parent.querySelectorAll(`.drawer-${type}`));
 
 		//Sort
-		const sortedElements = elements.sort((a, b) => b.innerText.localeCompare(a.innerText));
+		const sortedElements = elements.sort((a, b) => b.querySelector(".drawer-text").value.localeCompare(a.querySelector(".drawer-text").value));
 
 		sortedElements.forEach(e => e.parentElement.prepend(e));
 
@@ -264,9 +264,9 @@ class DrawerDirectory extends DrawerItem {
 		let head = this.element.getHead();
 
 		// Reset title
-		if (this.title != head.textContent) {
-			let textElement = head.querySelector(".drawer-text");
-			textElement.textContent = this.title;
+		let textElement = head.querySelector(".drawer-text");
+		if (textElement && this.title != textElement.value) {
+			textElement.value = this.title;
 		}
 
 		// Reset level

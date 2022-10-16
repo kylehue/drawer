@@ -1,5 +1,9 @@
 import DrawerElement from "./drawer.element";
-import { pathToSVG, makeDraggable } from "./utils";
+import {
+	pathToSVG,
+	makeDraggable,
+	makeRenameable
+} from "./utils";
 import {
 	mdiFolder as folderSVGPath,
 	//mdiFolderOpen as folderOpenSVGPath,
@@ -54,9 +58,10 @@ class DrawerDirectoryElement extends DrawerElement {
 		});
 
 		//Collapse drawer on click
-		this.getHead().addEventListener("mouseup", () => {
+		this.getHead().addEventListener("mouseup", event => {
+			let isTarget = event.target === this.getHead();
 			// Only collapse if not dragged
-			if (!isDragged) {
+			if (!isDragged && isTarget) {
 				this.toggleCollapse();
 			}
 		});
@@ -126,6 +131,25 @@ class DrawerDirectoryElement extends DrawerElement {
 
 		function addTitle() {
 			const textElement = DrawerElement.createText(directory.title);
+
+			// Rename on double click
+			if (directory.root.options.renameDirectoryOnDoubleClick) {
+				makeRenameable(textElement, {
+					triggerElement: head,
+					focusClass: "drawer-text-focus",
+					excludeExtname: true,
+					onRename: () => {
+						// Rename
+						directory.rename(textElement.value);
+
+						// If file can't be renamed, set the input's value back to the old one.
+						let newTitle = directory.title;
+						if (newTitle !== textElement.value) {
+							textElement.value = newTitle;
+						}
+					}
+				});
+			}
 
 			head.append(textElement);
 		}

@@ -42,9 +42,10 @@ class DrawerFile extends DrawerItem {
 		let main = this.element.getMain();
 
 		// Reset title
-		if (this.title != main.textContent) {
-			let textElement = main.querySelector(".drawer-text");
-			textElement.textContent = this.title;
+		let textElement = main.querySelector(".drawer-text");
+		if (this.title != textElement.value) {
+
+			textElement.value = this.title;
 		}
 
 		// Reset Level

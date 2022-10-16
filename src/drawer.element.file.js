@@ -1,7 +1,7 @@
 import DrawerElement from "./drawer.element";
 import { getClassWithColor as fileIcon } from "file-icons-js";
 import { extname as getExtname } from "path";
-import { makeDraggable } from "./utils";
+import { makeDraggable, makeRenameable } from "./utils";
 
 const styles = {
 	wrapper: ["drawer-file"],
@@ -36,6 +36,25 @@ class DrawerFileElement extends DrawerElement {
 		function addTitle() {
 			const textElement = DrawerElement.createText(file.title);
 
+			// Rename on double click
+			if (file.parent.root.options.renameFileOnDoubleClick) {
+				makeRenameable(textElement, {
+					triggerElement: wrapper,
+					focusClass: "drawer-text-focus",
+					onRename: () => {
+						// Rename
+						file.rename(textElement.value);
+
+						// If file can't be renamed, set the input's value back to the old one.
+						let newTitle = file.title;
+						if (newTitle !== textElement.value) {
+							textElement.value = newTitle;
+						}
+					}
+				});
+			}
+
+			// Add icon
 			function addIcon() {
 				let iconElement = DrawerElement.createIcon();
 				let iconClass = fileIcon(file.title);
@@ -53,7 +72,7 @@ class DrawerFileElement extends DrawerElement {
 
 				// Watch title
 				const observer = new MutationObserver(() => {
-					let newTitle = textElement.textContent;
+					let newTitle = textElement.value;
 					let newExtname = getExtname(newTitle);
 
 					// Change file icon if file extension changes
@@ -76,8 +95,8 @@ class DrawerFileElement extends DrawerElement {
 
 				observer.observe(textElement, {
 					characterData: false,
-					attributes: false,
-					childList: true,
+					attributes: true,
+					childList: false,
 					subtree: false
 				});
 			}
@@ -119,18 +138,6 @@ class DrawerFileElement extends DrawerElement {
 			});
 		}
 
-		// Drop
-		// let drag = null;
-		// wrapper.addEventListener("mousedown", () => {
-		// 	drag = wrapper;
-		// });
-		//
-		// window.addEventListener("mouseup", () => {
-		// 	if (drag) {
-		// 		console.log(drag);
-		// 		drag = null;
-		// 	}
-		// });
 		return wrapper;
 	}
 }

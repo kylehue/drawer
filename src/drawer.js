@@ -27,7 +27,9 @@ class Drawer extends DrawerDirectory {
 			directoryIcons: true,
 			warnings: true,
 			draggableFiles: true,
-			draggableDirectories: true
+			draggableDirectories: true,
+			renameFileOnDoubleClick: true,
+			renameDirectoryOnDoubleClick: true
 		}, options);
 
 		this.element = new DrawerDirectoryElement(this);

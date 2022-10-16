@@ -1,6 +1,7 @@
 import {
 	resolve as resolvePath,
-	join as joinPath
+	join as joinPath,
+	extname as getExtname
 } from "path";
 
 export function pathToSVG(pathStr, options = {}) {
@@ -84,13 +85,23 @@ export function makeDraggable(element, options = {}) {
 	let nodeCopy = element.cloneNode(true);
 	nodeCopy.classList.add("drawer-ghost");
 
+	// Replace node copy's inputs with a span
+	nodeCopy.querySelectorAll("input").forEach((input, i) => {
+		let span = document.createElement("span");
+		span.textContent = input.value;
+		nodeCopy.append(span);
+		input.remove();
+	});
+
 	let markX = 0;
 	let markY = 0;
 
 	element.addEventListener("mousedown", event => {
-		isMouseDown = true;
-		markX = event.clientX;
-		markY = event.clientY;
+		if (event.target.tagName.toLowerCase() !== "input") {
+			isMouseDown = true;
+			markX = event.clientX;
+			markY = event.clientY;
+		}
 	});
 
 	window.addEventListener("mouseup", event => {
@@ -170,4 +181,62 @@ export function makeDraggable(element, options = {}) {
 			isDragging = false;
 		}
 	});
+}
+
+export function makeRenameable(input, options = {}) {
+	options = Object.assign({
+		triggerElement: input,
+		onEdit: null,
+		onRename: null,
+		excludeExtname: false,
+		focusClass: ""
+	}, options);
+
+	input.setAttribute("spellcheck", "false");
+	input.setAttribute("autocomplete", "false");
+	input.setAttribute("autofill", "false");
+
+	options.triggerElement.addEventListener("dblclick", event => {
+		let isActive = input === document.activeElement;
+		// Only focus if not active
+		if (!isActive) {
+			input.classList.add(options.focusClass);
+			input.focus();
+
+			// Select name on focus
+			let newTitle = input.value;
+			let selectRange = 0;
+			if (options.excludeExtname) {
+				selectRange = newTitle.length;
+			} else {
+				let extname = getExtname(newTitle);
+				selectRange = newTitle.indexOf(extname);
+			}
+
+			input.setSelectionRange(0, selectRange);
+
+			if (typeof options.onEdit == "function") {
+				options.onEdit();
+			}
+		}
+	});
+
+	function removeTextFocus(event) {
+		let enterKeyPressed = event.keyCode == 13;
+		let isTarget = event.target === input;
+		// Remove focus if target isn't the element or enter key is pressed
+		if (!isTarget || enterKeyPressed) {
+			input.classList.remove(options.focusClass);
+			input.blur();
+
+			if (typeof options.onRename == "function") {
+				options.onRename();
+			}
+		}
+	}
+
+	// Listen
+	input.addEventListener("keypress", removeTextFocus);
+	input.addEventListener("blur", removeTextFocus);
+	window.addEventListener("click", removeTextFocus);
 }

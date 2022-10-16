@@ -136,6 +136,18 @@ class DrawerItem extends DrawerEventEmitter {
 
 	rename(title) {
 		if (title === this.title) return;
+		let directory = this.type == "file" ? this.parent : this;
+		
+		// Will the new title have a title conflict among its siblings?
+		let scanArray = this.type == "file" ? this.parent.items.files : this.parent.items.directories;
+		for (let item of scanArray) {
+			if (item.title === title) {
+				if (directory.root.options.warnings) {
+					console.warn(`The title ${title} already exist in ${this.parent.path}.`);
+				}
+				return null;
+			}
+		}
 
 		this.title = title;
 		this.refresh();

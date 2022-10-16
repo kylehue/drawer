@@ -51,6 +51,23 @@
 	white-space: nowrap;
 }
 
+.drawer-text {
+	background: none;
+	border: none;
+	outline: none;
+	color: inherit;
+	width: 100%;
+	pointer-events: none;
+	user-select: none;
+}
+
+.drawer-text-focus {
+	pointer-events: all !important;
+	user-select: all !important;
+	border-radius: 3px;
+	border: 1px solid rgba(120, 120, 120, 0.4);
+}
+
 .drawer-icon {
 	margin-right: 0.25em;
 	flex-shrink: 0;
