@@ -106,13 +106,13 @@ const drawer = new Drawer(options);
 <td><code>directoryButton</code></td>
 <td><code>Object</code></td>
 <td><code>true</code></td>
-<td>Flags for directory buttons' visibility.</td>
+<td>Flags for directory buttons' visibility. <a href="#button-flags">Click here for more info.</td>
 </tr>
 <tr>
 <td><code>fileButton</code></td>
 <td><code>Object</code></td>
 <td><code>true</code></td>
-<td>Flags for file buttons' visibility.</td>
+<td>Flags for file buttons' visibility. <a href="#button-flags">Click here for more info.</a></td>
 </tr>
 </table>
 
@@ -337,7 +337,7 @@ drawer.import({
 <tr>
 <td>1.</td>
 <td><code>String</code></td>
-<td>The type of change. i.e "move", "rename", etc.</td>
+<td>The type of change. i.e <code>move</code>, <code>rename</code>, etc.</td>
 </tr>
 <tr>
 <td>2.</td>
@@ -540,7 +540,7 @@ drawer.import({
 <tr>
 <td>1.</td>
 <td><code>Object</code></td>
-<td>The directory that was clicked.</td>
+<td>The file that was clicked.</td>
 </tr>
 <tr>
 <td>2.</td>
@@ -563,7 +563,7 @@ drawer.import({
 <tr>
 <td>1.</td>
 <td><code>Object</code></td>
-<td>The directory that was clicked.</td>
+<td>The file that was clicked.</td>
 </tr>
 <tr>
 <td>2.</td>
@@ -586,7 +586,7 @@ drawer.import({
 <tr>
 <td>1.</td>
 <td><code>Object</code></td>
-<td>The directory that was clicked.</td>
+<td>The file that was clicked.</td>
 </tr>
 <tr>
 <td>2.</td>
@@ -609,7 +609,7 @@ drawer.import({
 <tr>
 <td>1.</td>
 <td><code>Object</code></td>
-<td>The directory that was clicked.</td>
+<td>The file that was clicked.</td>
 </tr>
 <tr>
 <td>2.</td>
