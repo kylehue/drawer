@@ -208,21 +208,6 @@ export function makeRenameable(input, options = {}) {
 		let isActive = input === document.activeElement;
 		// Only focus if not active
 		if (!isActive && isTarget) {
-			input.classList.add(options.focusClass);
-			input.focus();
-
-			// Select name on focus
-			let newTitle = input.value;
-			let selectRange = 0;
-			if (options.excludeExtname) {
-				selectRange = newTitle.length;
-			} else {
-				let extname = getExtname(newTitle);
-				selectRange = newTitle.indexOf(extname);
-			}
-
-			input.setSelectionRange(0, selectRange);
-
 			if (typeof options.onEdit == "function") {
 				options.onEdit();
 			}
@@ -246,5 +231,5 @@ export function makeRenameable(input, options = {}) {
 	// Listen
 	input.addEventListener("keypress", removeTextFocus);
 	input.addEventListener("blur", removeTextFocus);
-	window.addEventListener("click", removeTextFocus);
+	window.addEventListener("mouseup", removeTextFocus);
 }

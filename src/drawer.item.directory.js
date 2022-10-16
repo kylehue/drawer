@@ -128,7 +128,7 @@ class DrawerDirectory extends DrawerItem {
 		let result = null;
 		for (let item of searchArray) {
 			if (typeof compare == "string") {
-				if (item.title == compare) {
+				if (item.title.toLowerCase() == compare.toLowerCase()) {
 					result = item;
 					break;
 				}
@@ -390,7 +390,7 @@ class DrawerDirectory extends DrawerItem {
 	serialize(options = {}) {
 		options = Object.assign({
 			fileContent: false,
-			childrenOnly: false
+			includeParent: false
 		}, options);
 
 		let treeData;
@@ -435,7 +435,7 @@ class DrawerDirectory extends DrawerItem {
 			}
 		}
 
-		if (this.isRoot || !options.childrenOnly) {
+		if (this.isRoot || !options.includeParent) {
 			treeData = {};
 			deepscan(this.items, treeData);
 		} else {
@@ -453,7 +453,11 @@ class DrawerDirectory extends DrawerItem {
 		return serial;
 	}
 
-	import(serial, merge = false) {
+	import(serial, options = {}) {
+		options = Object.assign({
+			merge: false
+		}, options);
+
 		let treeData;
 		if (typeof serial == "string") {
 			try {
@@ -466,7 +470,7 @@ class DrawerDirectory extends DrawerItem {
 		}
 
 		// Clear tree
-		if (!merge) this.clear();
+		if (!options.merge) this.clear();
 
 		function deepscan(data, parentDirectory) {
 			if (data.files) {

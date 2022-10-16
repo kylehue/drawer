@@ -49,6 +49,9 @@ class DrawerFileElement extends DrawerElement {
 				makeRenameable(textElement, {
 					triggerElement: wrapper,
 					focusClass: "drawer-text-focus",
+					onEdit: () => {
+						file.element.makeEditable();
+					},
 					onRename: () => {
 						// Rename
 						file.rename(textElement.value);

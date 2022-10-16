@@ -3,10 +3,36 @@ const styles = {
 	icon: ["drawer-icon"],
 	iconButton: ["drawer-icon-button"]
 }
-
+import {extname as getExtname} from "path";
 class DrawerElement {
 	constructor() {
 		this.elements = {};
+	}
+
+	//TODO: come up with a better solution
+	makeEditable() {
+		let input;
+		let selectRange = 0;
+		if (this.file) {
+			input = this.getMain().querySelector("input");
+		} else {
+			input = this.getHead().querySelector("input");
+		}
+
+		input.classList.add("drawer-text-focus");
+		input.focus();
+
+		// Select name on focus
+		let newTitle = input.value;
+
+		if (!this.file) {
+			selectRange = newTitle.length;
+		} else {
+			let extname = getExtname(newTitle);
+			selectRange = newTitle.indexOf(extname);
+		}
+
+		input.setSelectionRange(0, selectRange);
 	}
 
 	getHTMLElement(element) {

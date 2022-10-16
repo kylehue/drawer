@@ -147,6 +147,9 @@ class DrawerDirectoryElement extends DrawerElement {
 					triggerElement: head,
 					focusClass: "drawer-text-focus",
 					excludeExtname: true,
+					onEdit: () => {
+						directory.element.makeEditable();
+					},
 					onRename: () => {
 						// Rename
 						directory.rename(textElement.value);

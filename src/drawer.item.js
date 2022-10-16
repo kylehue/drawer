@@ -137,7 +137,7 @@ class DrawerItem extends DrawerEventEmitter {
 	rename(title) {
 		if (title === this.title) return;
 		let directory = this.type == "file" ? this.parent : this;
-		
+
 		// Will the new title have a title conflict among its siblings?
 		let scanArray = this.type == "file" ? this.parent.items.files : this.parent.items.directories;
 		for (let item of scanArray) {
