@@ -1,13 +1,13 @@
 {
-  "name": "@kylehue/drawer",
+  "name": "drawer-js",
   "version": "1.0.0",
-  "description": "",
+  "description": "A front-end library for creating dynamic folder structures.",
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kylehue/js-lib.git"
+    "url": "git+https://github.com/kylehue/drawer.git"
   },
-  "homepage": "https://github.com/kylehue/js-lib#readme",
+  "homepage": "https://github.com/kylehue/drawer#readme",
   "devDependencies": {
     "@babel/core": "^7.19.3",
     "@babel/preset-env": "^7.19.3",

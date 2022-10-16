@@ -62,7 +62,7 @@ class DrawerItem extends DrawerEventEmitter {
 		if (duplicateExists) {
 			if (directory.root.options.warnings) {
 				let targetPath = targetDirectory.path == pathSeperator ? "root" : targetDirectory.path;
-				console.warn(`Cannot move '${this.title}' to ${targetPath} because the ${this.type} '${this.title}' already exist in ${targetPath}.`);
+				console.warn(`Cannot move '${this.title}' to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
 			}
 
 			return null;
@@ -143,7 +143,7 @@ class DrawerItem extends DrawerEventEmitter {
 		for (let item of scanArray) {
 			if (item.title === title) {
 				if (directory.root.options.warnings) {
-					console.warn(`The title ${title} already exist in ${this.parent.path}.`);
+					console.warn(`The title ${title} already exists in ${this.parent.path}.`);
 				}
 				return null;
 			}
