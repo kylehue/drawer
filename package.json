@@ -1,6 +1,6 @@
 {
-  "name": "drawer-js",
-  "version": "1.0.0",
+  "name": "@kylehue/drawer",
+  "version": "1.0.1",
   "description": "A front-end library for creating dynamic folder structures.",
   "main": "./dist/index.js",
   "repository": {
