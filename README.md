@@ -7,39 +7,39 @@
 - [Options](#options)
 - [Basic Examples](#basic-examples)
 - [Drawer Methods](#directory-methods)
--- [`appendTo`](#appendtoelement)
--- [`getDirectoryById`](#getdirectorybyidid)
+	- [`appendTo`](#appendtoelement)
+	- [`getDirectoryById`](#getdirectorybyidid)
 - [Directory Methods](#directory-methods)
--- [`addFile`](#addfiletitle)
--- [`addFileFromPath`](#addfilefrompathpath)
--- [`addDirectory`](#adddirectorytitle)
--- [`addDirectoryFromPath`](#adddirectoryfrompathpath)
--- [`removeFile`](#removefiletitle)
--- [`removeFileFromPath`](#removefilefrompathpath)
--- [`removeDirectory`](#removedirectorytitle)
--- [`removeDirectoryFromPath`](#removedirectoryfrompathpath)
--- [`getItem`](#getitemtype-title)
--- [`has`](#hastype-title)
--- [`getFileFromPath`](#getfilefrompathpath)
--- [`getDirectoryFromPath`](#getdirectoryfrompathpath)
--- [`moveToDirectory`](#movetodirectorydirectory)
--- [`moveToPath`](#movetopathpath)
--- [`rename`](#renametitle)
--- [`remove`](#remove)
--- [`refresh`](#refresh)
--- [`clear`](#clear)
--- [`sortFiles`](#sortfiles)
--- [`sortDirectories`](#sortdirectories)
--- [`import`](#importobject-options)
--- [`serialize`](#serializeoptions)
+	- [`addFile`](#addfiletitle)
+	- [`addFileFromPath`](#addfilefrompathpath)
+	- [`addDirectory`](#adddirectorytitle)
+	- [`addDirectoryFromPath`](#adddirectoryfrompathpath)
+	- [`removeFile`](#removefiletitle)
+	- [`removeFileFromPath`](#removefilefrompathpath)
+	- [`removeDirectory`](#removedirectorytitle)
+	- [`removeDirectoryFromPath`](#removedirectoryfrompathpath)
+	- [`getItem`](#getitemtype-title)
+	- [`has`](#hastype-title)
+	- [`getFileFromPath`](#getfilefrompathpath)
+	- [`getDirectoryFromPath`](#getdirectoryfrompathpath)
+	- [`moveToDirectory`](#movetodirectorydirectory)
+	- [`moveToPath`](#movetopathpath)
+	- [`rename`](#renametitle)
+	- [`remove`](#remove)
+	- [`refresh`](#refresh)
+	- [`clear`](#clear)
+	- [`sortFiles`](#sortfiles)
+	- [`sortDirectories`](#sortdirectories)
+	- [`import`](#importobj-options)
+	- [`serialize`](#serializeoptions)
 - [File Methods](#file-methods)
--- [`updateContent`](#updatecontentname-value)
--- [`removeContent`](#removecontentname)
--- [`getContent`](#getcontentname)
--- [`moveToDirectory`](#movetodirectorydirectory)
--- [`moveToPath`](#movetopathpath)
--- [`rename`](#renametitle)
--- [`remove`](#remove)
+	- [`updateContent`](#updatecontentname-value)
+	- [`removeContent`](#removecontentname)
+	- [`getContent`](#getcontentname)
+	- [`moveToDirectory`](#movetodirectorydirectory)
+	- [`moveToPath`](#movetopathpath)
+	- [`rename`](#renametitle)
+	- [`remove`](#remove)
 - [Events](#events)
 ## Installation
 **NPM**
@@ -157,7 +157,7 @@ const drawer = new Drawer(options);
 
 ## Button Flags
 You can show/hide the built-in buttons on files and directories by modifying the flags.
-> IMPORTANT NOTE: These buttons doesn't do anything. However, you can add functions to them by using the [event emitters](#events-for-the-built-in-buttons).
+> IMPORTANT NOTE: These buttons doesn't have any functionalities but you can add functions to them by using the [event emitters](#events-for-the-built-in-buttons).
 ### Directory Button Flags
 <table>  
 <tr>  
@@ -1600,7 +1600,7 @@ Each file and directory has built-in buttons on them. However, they are just but
 </tr>
 </table>
 
-## Events Basic Usage
+## Events Basic Examples
 ```js
 const drawer = new Drawer({
 	element: "#myElement"
