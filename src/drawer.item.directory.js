@@ -228,7 +228,11 @@ class DrawerDirectory extends DrawerItem {
 		//Sort
 		const sortedElements = elements.sort((a, b) => b.querySelector(".drawer-text").value.localeCompare(a.querySelector(".drawer-text").value));
 
-		sortedElements.forEach(e => e.parentElement.prepend(e));
+		if (type == "file") {
+			sortedElements.reverse().forEach(e => e.parentElement.append(e));
+		} else {
+			sortedElements.forEach(e => e.parentElement.prepend(e));
+		}
 
 		return this;
 	}
@@ -341,11 +345,21 @@ class DrawerDirectory extends DrawerItem {
 	}
 
 	addDirectory(title) {
+		if (!title) {
+			if (this.root.options.warnings) {
+				console.warn(`Directory title cannot be blank.`);
+			}
+
+			return null;
+		}
+
 		if (this.has("directory", title)) {
 			if (this.root.options.warnings) {
 				console.warn(`Directory '${title}' from path '${this.path}' already exists.`);
 			}
 
+			this.emit("error", 1, this);
+			this.ascendantsEmit("error", 1, this);
 			return null;
 		}
 
@@ -366,10 +380,21 @@ class DrawerDirectory extends DrawerItem {
 	}
 
 	addFile(title) {
+		if (!title) {
+			if (this.root.options.warnings) {
+				console.warn(`File title cannot be blank.`);
+			}
+
+			return null;
+		}
+
 		if (this.has("file", title)) {
 			if (this.root.options.warnings) {
 				console.warn(`File '${title}' from path '${this.path}' already exists.`);
 			}
+
+			this.emit("error", 1, this);
+			this.ascendantsEmit("error", 1, this);
 			return null;
 		}
 

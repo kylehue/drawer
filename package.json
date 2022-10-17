@@ -1,8 +1,8 @@
 {
   "name": "@kylehue/drawer",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "A front-end library for creating dynamic folder structures.",
-  "main": "./dist/index.js",
+  "main": "./dist/drawer.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kylehue/drawer.git"
@@ -38,5 +38,9 @@
   ],
   "dependencies": {
     "file-icons-js": "github:websemantics/file-icons-js"
-  }
+  },
+	"keywords": [
+		"folder",
+		"treeview"
+	]
 }

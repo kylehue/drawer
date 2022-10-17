@@ -65,6 +65,9 @@ class DrawerItem extends DrawerEventEmitter {
 				console.warn(`Cannot move '${this.title}' to ${targetPath} because the ${this.type} '${this.title}' already exists in ${targetPath}.`);
 			}
 
+			this.emit("error", 1, this);
+			this.ascendantsEmit("error", 1, this);
+
 			return null;
 		}
 
@@ -145,6 +148,9 @@ class DrawerItem extends DrawerEventEmitter {
 				if (directory.root.options.warnings) {
 					console.warn(`The title ${title} already exists in ${this.parent.path}.`);
 				}
+
+				this.emit("error", 1, this);
+				this.ascendantsEmit("error", 1, this);
 				return null;
 			}
 		}
@@ -166,9 +172,12 @@ class DrawerItem extends DrawerEventEmitter {
 	}
 
 	remove() {
-		let directory = this.type == "file" ? this.parent : this;
-
-		if (!directory.isRoot) {
+		if (this.type == "directory" && this.isRoot) {
+			if (this.root.options.warnings) {
+				console.warn("Cannot remove root directory. Using clear() instead.");
+				this.clear();
+			}
+		} else {
 			// Remove from parent array
 			let parentArray = this.type == "file" ? this.parent.items.files : this.parent.items.directories;
 
@@ -180,13 +189,8 @@ class DrawerItem extends DrawerEventEmitter {
 				}
 			}
 
-			// Remove from DOM
+			// Remove in DOM
 			this.element.getMain().remove();
-		} else {
-			if (directory.root.options.warnings) {
-				console.warn("Cannot remove root directory. Using clear() instead.");
-				this.clear();
-			}
 		}
 
 		this.emit("remove", this);

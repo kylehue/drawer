@@ -10,6 +10,8 @@ function getElement(element) {
 	}
 }
 
+// error 100 - title conflict
+
 class Drawer extends DrawerDirectory {
 	constructor(options = {}) {
 		let parent = null;

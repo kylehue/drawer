@@ -6,6 +6,11 @@
   @include drawer-flex-column;
   width: 100%;
   height: fit-content;
+	box-sizing: border-box;
+
+	* {
+		box-sizing: border-box !important;
+	}
 
   .drawer-head {
     @include drawer-flex-row;
@@ -99,6 +104,7 @@
   background: none;
   opacity: 0.5;
 	margin: 0 2.5px;
+	cursor: pointer;
 
   &:hover {
     opacity: 0.75;
