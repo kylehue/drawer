@@ -214,7 +214,7 @@ export function makeRenameable(input, options = {}) {
 		}
 	});
 
-	function removeTextFocus(event) {
+	function removeInputFocus(event) {
 		let enterKeyPressed = event.keyCode == 13;
 		let isTarget = event.target === input;
 		// Remove focus if target isn't the element or enter key is pressed
@@ -229,7 +229,7 @@ export function makeRenameable(input, options = {}) {
 	}
 
 	// Listen
-	input.addEventListener("keypress", removeTextFocus);
-	input.addEventListener("blur", removeTextFocus);
-	window.addEventListener("mouseup", removeTextFocus);
+	input.addEventListener("keypress", removeInputFocus);
+	input.addEventListener("blur", removeInputFocus);
+	window.addEventListener("mouseup", removeInputFocus);
 }

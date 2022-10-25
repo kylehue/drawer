@@ -222,12 +222,13 @@ class DrawerDirectory extends DrawerItem {
 			parent = this.element.getMain();
 		}
 
-		//Get elements in parent
+		// Get elements in parent
 		elements = Array.from(parent.querySelectorAll(`.drawer-${type}`));
 
-		//Sort
+		// Sort
 		const sortedElements = elements.sort((a, b) => b.querySelector(".drawer-text").value.localeCompare(a.querySelector(".drawer-text").value));
 
+		// Directories first, then files
 		if (type == "file") {
 			sortedElements.reverse().forEach(e => e.parentElement.append(e));
 		} else {

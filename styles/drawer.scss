@@ -4,7 +4,8 @@
 
 .drawer-directory {
   @include drawer-flex-column;
-  width: 100%;
+	width: 100%;
+	min-width: 140px;
   height: fit-content;
 	box-sizing: border-box;
 
