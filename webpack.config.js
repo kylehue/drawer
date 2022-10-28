@@ -25,6 +25,9 @@ module.exports = {
 				"css-loader",
 				"sass-loader"
 			]
+		}, {
+			test: /\.(png|jpg|gif|woff2)$/i,
+			type: "asset/inline"
 		}]
 	},
 	output: {

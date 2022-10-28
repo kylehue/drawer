@@ -1,6 +1,6 @@
 {
   "name": "@kylehue/drawer",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "A front-end library for creating dynamic folder structures.",
   "main": "./dist/drawer.js",
   "repository": {
@@ -23,7 +23,8 @@
   },
   "scripts": {
     "watch": "webpack --mode=development --watch",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+		"publish": "npm run build && npm publish"
   },
   "engines": {
     "node": "14.x"
