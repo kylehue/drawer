@@ -1,9 +1,11 @@
 import DrawerItem from "./drawer.item";
 import DrawerFileElement from "./drawer.element.file";
 
+import { uid as generateId } from "./utils";
 class DrawerFile extends DrawerItem {
 	constructor(parent, title) {
 		super(parent, title);
+		this.id = generateId();
 		this.type = "file";
 
 		this.content = {};
