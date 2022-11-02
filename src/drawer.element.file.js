@@ -41,6 +41,22 @@ class DrawerFileElement extends DrawerElement {
 		const wrapper = document.createElement("div");
 		wrapper.classList.add(...styles.wrapper);
 
+		// Listen to click event
+		wrapper.addEventListener("click", event => {
+			let emitArgs = ["click", file, event];
+			file.emit(...emitArgs);
+			file.parent.emit(...emitArgs);
+			file.parent.ascendantsEmit(...emitArgs);
+		});
+
+		// Listen to contextmenu event
+		wrapper.addEventListener("contextmenu", event => {
+			let emitArgs = ["contextmenu", file, event];
+			file.emit(...emitArgs);
+			file.parent.emit(...emitArgs);
+			file.parent.ascendantsEmit(...emitArgs);
+		});
+
 		function addTitle() {
 			const textElement = DrawerElement.createText(file.title);
 

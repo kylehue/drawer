@@ -130,6 +130,22 @@ class DrawerDirectoryElement extends DrawerElement {
 		const head = document.createElement("div");
 		head.classList.add(...styles.head);
 
+		// Listen to click event
+		head.addEventListener("click", event => {
+			let emitArgs = ["click", directory, event];
+			directory.emit(...emitArgs);
+			directory.parent.emit(...emitArgs);
+			directory.parent.ascendantsEmit(...emitArgs);
+		});
+
+		// Listen to contextmenu event
+		head.addEventListener("contextmenu", event => {
+			let emitArgs = ["contextmenu", directory, event];
+			directory.emit(...emitArgs);
+			directory.parent.emit(...emitArgs);
+			directory.parent.ascendantsEmit(...emitArgs);
+		});
+
 		function addArrow() {
 			const svg = pathToSVG(arrowDownSVGPath, {
 				size: 15
