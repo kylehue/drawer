@@ -1,6 +1,6 @@
 {
   "name": "@kylehue/drawer",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A front-end library for creating dynamic folder structures.",
   "main": "./dist/drawer.js",
   "repository": {
@@ -14,6 +14,7 @@
     "@mdi/js": "^7.0.96",
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
+    "file-icons-js": "^1.1.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "sass": "^1.55.0",
     "sass-loader": "^13.0.2",
@@ -23,11 +24,7 @@
   },
   "scripts": {
     "watch": "webpack --mode=development --watch",
-    "build": "webpack --mode=production",
-		"publish": "npm run build && npm publish"
-  },
-  "engines": {
-    "node": "14.x"
+    "build": "webpack --mode=production"
   },
   "author": "",
   "license": "ISC",
@@ -37,11 +34,8 @@
   "files": [
     "dist/"
   ],
-  "dependencies": {
-    "file-icons-js": "github:websemantics/file-icons-js"
-  },
-	"keywords": [
-		"folder",
-		"treeview"
-	]
+  "keywords": [
+    "folder",
+    "treeview"
+  ]
 }
