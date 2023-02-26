@@ -80,6 +80,8 @@ class DrawerItem extends DrawerEventEmitter {
 			}
 		}
 
+		let from = joinPath("/", this.parent.path, this.title);
+
 		// Push to new parent's array
 		if (this.type == "file") {
 			targetDirectory.items.files.push(this);
@@ -98,10 +100,12 @@ class DrawerItem extends DrawerEventEmitter {
 		this.refresh();
 		targetDirectory.refresh();
 
-		this.emit("move", this);
-		this.ascendantsEmit("move", this);
-		this.emit("change", "move", this);
-		this.ascendantsEmit("change", "move", this);
+		let to = joinPath("/", this.parent.path, this.title);
+
+		this.emit("move", this, from, to);
+		this.ascendantsEmit("move", this, from, to);
+		this.emit("change", "move", this, from, to);
+		this.ascendantsEmit("change", "move", this, from, to);
 
 		return this;
 	}
@@ -155,6 +159,8 @@ class DrawerItem extends DrawerEventEmitter {
 			}
 		}
 
+		let from = joinPath("/", this.parent.path, this.title);
+
 		this.title = title;
 		this.refresh();
 
@@ -163,10 +169,12 @@ class DrawerItem extends DrawerEventEmitter {
 			this.parent.refresh();
 		}
 
-		this.emit("rename", this);
-		this.ascendantsEmit("rename", this);
-		this.emit("change", "rename", this);
-		this.ascendantsEmit("change", "rename", this);
+		let to = joinPath("/", this.parent.path, this.title);
+
+		this.emit("rename", this, from, to);
+		this.ascendantsEmit("rename", this, from, to);
+		this.emit("change", "rename", this, from, to);
+		this.ascendantsEmit("change", "rename", this, from, to);
 
 		return this;
 	}
