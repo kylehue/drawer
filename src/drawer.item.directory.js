@@ -62,6 +62,11 @@ class DrawerDirectory extends DrawerItem {
 		}
 
 		let result = null;
+		
+		if (!this.path || !pathStr) {
+			return result;
+		}
+		
 		let path = joinPath(this.path, pathStr);
 		let pathArray = path.substr(1).split(pathSeperator);
 		let targetTitle = getBasename(path);
