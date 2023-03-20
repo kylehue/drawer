@@ -66,8 +66,8 @@ class DrawerDirectoryElement extends DrawerElement {
 			}
 		});
 
-		//Collapse drawer on click
-		this.getHead().addEventListener("mouseup", event => {
+		// Collapse drawer on click
+		this.getHead().addEventListener("click", event => {
 			let isTarget = event.target === this.getHead();
 			// Only collapse if not dragged
 			if (!isDragged && isTarget) {
