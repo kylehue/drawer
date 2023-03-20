@@ -62,15 +62,23 @@ class DrawerDirectory extends DrawerItem {
          return result;
 		}
 		
-		let target = resolvePath(this.path, pathStr);
+		let targetDirectory = resolvePath(this.path, pathStr);
 		
 		if (type == "file") {
-			target = getDirname(target);
+			targetDirectory = getDirname(targetDirectory);
+		}
+
+		if (targetDirectory == "/") {
+			for (let file of this.items.files) {
+            if (file.title == getBasename(pathStr)) {
+					return file;
+            }
+         }
 		}
 
       function deepscan(directories) {
 			for (let directory of directories) {
-            if (target == directory.path) {
+            if (targetDirectory == directory.path) {
                if (type == "file") {
                   for (let file of directory.items.files) {
                      if (file.title == getBasename(pathStr)) {
@@ -83,15 +91,64 @@ class DrawerDirectory extends DrawerItem {
                   return;
                }
 
-               deepscan(directory.items.directories);
                break;
-            }
+				}
+				
+				deepscan(directory.items.directories);
          }
       }
 
       deepscan(this.root.items.directories);
 
 		return result;
+
+      let path = joinPath(this.path, pathStr);
+      let pathArray = path.substr(1).split(pathSeperator);
+      let targetTitle = getBasename(path);
+
+      // If type is file, remove file name from path
+      if (type == "file") {
+         pathArray.pop();
+      }
+
+      // If path array is empty, it means that we're looking for a file in the root directory.
+      // So in that case, we don't need to deepscan this directory's directories.
+      if (pathArray.length == 0 && false) {
+         for (let file of this.items.files) {
+            if (file.title == targetTitle) {
+               result = file;
+            }
+         }
+      } else {
+         function deepscan(directories, scanLevel) {
+            scanLevel = scanLevel || 0;
+            for (let directory of directories) {
+               let currentBasename = pathArray[scanLevel];
+               if (directory.title == currentBasename) {
+                  if (type == "file") {
+                     for (let file of directory.items.files) {
+                        if (file.title == targetTitle) {
+                           result = file;
+                           return;
+                        }
+                     }
+                  } else {
+                     if (directory.title == targetTitle) {
+                        result = directory;
+                        return;
+                     }
+                  }
+
+                  deepscan(directory.items.directories, scanLevel + 1);
+                  break;
+               }
+            }
+         }
+
+         deepscan(this.root.items.directories);
+      }
+
+      return result;
    }
 
    getDirectoryFromPath(pathStr) {

@@ -54,9 +54,10 @@ class DrawerFile extends DrawerItem {
 		this.level = this.parent.level;
 
 		// Indent
-		main.style.paddingLeft = (this.level * 1.5 + 2.5) + "em";
+		let paddingOffset = 2;
+		main.style.paddingLeft = this.level * 1.5 + paddingOffset + "em";
 		if (!this.parent.parent) {
-			main.style.paddingLeft = "2.5em";
+			main.style.paddingLeft = paddingOffset + "em";
 		}
 
 		return this;
