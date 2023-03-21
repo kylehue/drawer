@@ -9,7 +9,7 @@ import {
    sep as pathSeperator,
 } from "path";
 
-import { toObjectPath, getRoot, getPath, uid as generateId } from "./utils";
+import { isValidTitle, getRoot, getPath, uid as generateId } from "./utils";
 
 class DrawerDirectory extends DrawerItem {
    constructor(parent, title) {
@@ -101,54 +101,6 @@ class DrawerDirectory extends DrawerItem {
       deepscan(this.root.items.directories);
 
 		return result;
-
-      let path = joinPath(this.path, pathStr);
-      let pathArray = path.substr(1).split(pathSeperator);
-      let targetTitle = getBasename(path);
-
-      // If type is file, remove file name from path
-      if (type == "file") {
-         pathArray.pop();
-      }
-
-      // If path array is empty, it means that we're looking for a file in the root directory.
-      // So in that case, we don't need to deepscan this directory's directories.
-      if (pathArray.length == 0 && false) {
-         for (let file of this.items.files) {
-            if (file.title == targetTitle) {
-               result = file;
-            }
-         }
-      } else {
-         function deepscan(directories, scanLevel) {
-            scanLevel = scanLevel || 0;
-            for (let directory of directories) {
-               let currentBasename = pathArray[scanLevel];
-               if (directory.title == currentBasename) {
-                  if (type == "file") {
-                     for (let file of directory.items.files) {
-                        if (file.title == targetTitle) {
-                           result = file;
-                           return;
-                        }
-                     }
-                  } else {
-                     if (directory.title == targetTitle) {
-                        result = directory;
-                        return;
-                     }
-                  }
-
-                  deepscan(directory.items.directories, scanLevel + 1);
-                  break;
-               }
-            }
-         }
-
-         deepscan(this.root.items.directories);
-      }
-
-      return result;
    }
 
    getDirectoryFromPath(pathStr) {
@@ -399,6 +351,14 @@ class DrawerDirectory extends DrawerItem {
          return null;
       }
 
+      if (!isValidTitle(title)) {
+         if (this.root.options.warnings) {
+            console.warn(`Invalid directory name.`);
+         }
+
+         return null;
+      }
+
       if (this.has("directory", title)) {
          if (this.root.options.warnings) {
             console.warn(
@@ -431,6 +391,14 @@ class DrawerDirectory extends DrawerItem {
       if (!title) {
          if (this.root.options.warnings) {
             console.warn(`File title cannot be blank.`);
+         }
+
+         return null;
+      }
+
+      if (!isValidTitle(title)) {
+         if (this.root.options.warnings) {
+            console.warn(`Invalid filename.`);
          }
 
          return null;

@@ -24,6 +24,10 @@ export function pathToSVG(pathStr, options = {}) {
 	return svg;
 }
 
+export function isValidTitle(title) {
+   return !!title && !/[/\\:*?<>|"]/.test(title);
+}
+
 export function getRoot(directory) {
 	let root = directory;
 	while (root.parent) {
@@ -217,8 +221,9 @@ export function makeRenameable(input, options = {}) {
 	function removeInputFocus(event) {
 		let enterKeyPressed = event.keyCode == 13;
 		let isTarget = event.target === input;
+		let isActive = input.classList.contains(options.focusClass);
 		// Remove focus if target isn't the element or enter key is pressed
-		if (!isTarget || enterKeyPressed) {
+		if ((!isTarget || enterKeyPressed) && isActive) {
 			input.classList.remove(options.focusClass);
 			input.blur();
 

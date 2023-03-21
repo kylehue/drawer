@@ -3,6 +3,7 @@ import {
 	join as joinPath,
 	sep as pathSeperator
 } from "path";
+import { isValidTitle } from "./utils";
 class DrawerItem extends DrawerEventEmitter {
 	constructor(parent, title) {
 		super();
@@ -142,7 +143,15 @@ class DrawerItem extends DrawerEventEmitter {
 	}
 
 	rename(title) {
-		if (title === this.title) return;
+		if (title === this.title) {
+         return this;
+      }
+		
+		if (!isValidTitle(title)) {
+         console.warn("Invalid filename.");
+         return this;
+      }
+
 		let directory = this.type == "file" ? this.parent : this;
 
 		// Will the new title have a title conflict among its siblings?
