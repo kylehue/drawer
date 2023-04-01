@@ -31,269 +31,281 @@ const styles = {
 }
 
 class DrawerDirectoryElement extends DrawerElement {
-	constructor(directory) {
-		super();
+   constructor(directory) {
+      super();
 
-		this.directory = directory;
+      this.directory = directory;
 
-		this.elements.main = DrawerDirectoryElement.createMain(this.directory);
+      this.elements.main = DrawerDirectoryElement.createMain(this.directory);
 
-		this.elements.head = DrawerDirectoryElement.createHead(this.directory);
+      this.elements.head = DrawerDirectoryElement.createHead(this.directory);
 
-		this.elements.body = DrawerDirectoryElement.createBody();
+      this.elements.body = DrawerDirectoryElement.createBody(this.directory);
 
-		if (!this.directory.isRoot) {
-			this.getMain().append(this.getHead());
-		}
+      if (!this.directory.isRoot) {
+         this.getMain().append(this.getHead());
+      }
 
-		this.getMain().append(this.getBody());
+      this.getMain().append(this.getBody());
 
-		let isDragged = false;
-		let isMouseDown = false;
+      let isDragged = false;
+      let isMouseDown = false;
 
-		window.addEventListener("mousedown", () => {
-			isMouseDown = true;
-		});
+      window.addEventListener("mousedown", () => {
+         isMouseDown = true;
+      });
 
-		window.addEventListener("mouseup", () => {
-			isMouseDown = false;
-			isDragged = false;
-		});
+      window.addEventListener("mouseup", () => {
+         isMouseDown = false;
+         isDragged = false;
+      });
 
-		window.addEventListener("mousemove", () => {
-			if (isMouseDown) {
-				isDragged = true;
-			}
-		});
+      window.addEventListener("mousemove", () => {
+         if (isMouseDown) {
+            isDragged = true;
+         }
+      });
 
-		// Collapse drawer on click
-		this.getHead().addEventListener("click", event => {
-			let isTarget = event.target === this.getHead();
-			// Only collapse if not dragged
-			if (!isDragged && isTarget) {
-				this.toggleCollapse();
-			}
-		});
-	}
+      // Collapse drawer on click
+      this.getHead().addEventListener("click", (event) => {
+         let isTarget = event.target === this.getHead();
+         // Only collapse if not dragged
+         if (!isDragged && isTarget) {
+            this.toggleCollapse();
+         }
+      });
+   }
 
-	getMain() {
-		return this.elements.main;
-	}
+   getMain() {
+      return this.elements.main;
+   }
 
-	getHead() {
-		return this.elements.head;
-	}
+   getHead() {
+      return this.elements.head;
+   }
 
-	getBody() {
-		return this.elements.body;
-	}
+   getBody() {
+      return this.elements.body;
+   }
 
-	append(element) {
-		let htmlElement = this.getHTMLElement(element);
-		this.getBody().append(htmlElement);
-	}
+   append(element) {
+      let htmlElement = this.getHTMLElement(element);
+      this.getBody().append(htmlElement);
+   }
 
-	toggleCollapse() {
-		let main = this.getMain();
-		main.classList.toggle(...styles.collapsed);
+   toggleCollapse() {
+      let main = this.getMain();
+      main.classList.toggle(...styles.collapsed);
 
+      // function toggleFolderIcon() {
+      // 	let isCollapsed = main.classList.contains(styles.collapsed[0]);
+      //
+      // 	let head = this.getHead();
+      // 	let folderSVG = head.querySelector("." + styles.folder.join("."));
+      // 	if (isCollapsed) {
+      // 		folderSVG.querySelector("path").setAttribute("d", folderSVGPath);
+      // 	} else {
+      // 		folderSVG.querySelector("path").setAttribute("d", folderOpenSVGPath);
+      // 	}
+      // }
+      //
+      // toggleFolderIcon.call(this);
+   }
 
-		// function toggleFolderIcon() {
-		// 	let isCollapsed = main.classList.contains(styles.collapsed[0]);
-		//
-		// 	let head = this.getHead();
-		// 	let folderSVG = head.querySelector("." + styles.folder.join("."));
-		// 	if (isCollapsed) {
-		// 		folderSVG.querySelector("path").setAttribute("d", folderSVGPath);
-		// 	} else {
-		// 		folderSVG.querySelector("path").setAttribute("d", folderOpenSVGPath);
-		// 	}
-		// }
-		//
-		// toggleFolderIcon.call(this);
-	}
+   static createMain(directory) {
+      const wrapper = document.createElement("div");
+      let id = directory.id;
+      wrapper.setAttribute(`data-drawer-id`, id);
+      wrapper.classList.add(...styles.wrapper);
 
-	static createMain(directory) {
-		const wrapper = document.createElement("div");
-		let id = directory.id;
-		wrapper.setAttribute(`data-drawer-id`, id);
-		wrapper.classList.add(...styles.wrapper);
+      if (directory.root.options.animate) {
+         wrapper.classList.add(...styles.animate);
+      }
 
-		if (directory.root.options.animate) {
-			wrapper.classList.add(...styles.animate);
-		}
+      return wrapper;
+   }
 
-		return wrapper;
-	}
+   static createHead(directory) {
+      const head = document.createElement("div");
+      head.classList.add(...styles.head);
 
-	static createHead(directory) {
-		const head = document.createElement("div");
-		head.classList.add(...styles.head);
+      // Listen to click event
+      head.addEventListener("click", (event) => {
+         let emitArgs = ["click", directory, event];
+         directory.emit(...emitArgs);
+         directory.parent.emit(...emitArgs);
+         directory.parent.ascendantsEmit(...emitArgs);
+      });
 
-		// Listen to click event
-		head.addEventListener("click", event => {
-			let emitArgs = ["click", directory, event];
-			directory.emit(...emitArgs);
-			directory.parent.emit(...emitArgs);
-			directory.parent.ascendantsEmit(...emitArgs);
-		});
+      // Listen to contextmenu event
+      head.addEventListener("contextmenu", (event) => {
+         let emitArgs = ["contextmenu", directory, event];
+         directory.emit(...emitArgs);
+         directory.parent.emit(...emitArgs);
+         directory.parent.ascendantsEmit(...emitArgs);
+      });
 
-		// Listen to contextmenu event
-		head.addEventListener("contextmenu", event => {
-			let emitArgs = ["contextmenu", directory, event];
-			directory.emit(...emitArgs);
-			directory.parent.emit(...emitArgs);
-			directory.parent.ascendantsEmit(...emitArgs);
-		});
+      function addArrow() {
+         const svg = pathToSVG(arrowDownSVGPath, {
+            size: 15,
+         });
+         svg.classList.add(...styles.arrow);
+         head.append(svg);
+      }
 
-		function addArrow() {
-			const svg = pathToSVG(arrowDownSVGPath, {
-				size: 15
-			});
-			svg.classList.add(...styles.arrow);
-			head.append(svg);
-		}
+      function addTitle() {
+         const textElement = DrawerElement.createText(directory.title);
 
-		function addTitle() {
-			const textElement = DrawerElement.createText(directory.title);
+         // Rename on double click
+         if (directory.root.options.renameDirectoryOnDoubleClick) {
+            makeRenameable(textElement, {
+               triggerElement: head,
+               focusClass: "drawer-text-focus",
+               excludeExtname: true,
+               onEdit: () => {
+                  directory.element.makeEditable();
+               },
+               onRename: () => {
+                  // Rename
+                  directory.rename(textElement.value);
 
-			// Rename on double click
-			if (directory.root.options.renameDirectoryOnDoubleClick) {
-				makeRenameable(textElement, {
-					triggerElement: head,
-					focusClass: "drawer-text-focus",
-					excludeExtname: true,
-					onEdit: () => {
-						directory.element.makeEditable();
-					},
-					onRename: () => {
-						// Rename
-						directory.rename(textElement.value);
+                  // If file can't be renamed, set the input's value back to the old one.
+                  let newTitle = directory.title;
+                  if (newTitle !== textElement.value) {
+                     textElement.value = newTitle;
+                  }
+               },
+            });
+         }
 
-						// If file can't be renamed, set the input's value back to the old one.
-						let newTitle = directory.title;
-						if (newTitle !== textElement.value) {
-							textElement.value = newTitle;
-						}
-					}
-				});
-			}
+         head.append(textElement);
+      }
 
-			head.append(textElement);
-		}
+      function addFolderIcon() {
+         let hasIcon = head.contains(
+            document.querySelector("." + styles.folder.join(", ."))
+         );
+         if (hasIcon) return;
 
-		function addFolderIcon() {
-			let hasIcon = head.contains(document.querySelector("." + styles.folder.join(", .")));
-			if (hasIcon) return;
+         const svg = pathToSVG(folderSVGPath);
+         svg.classList.add(...styles.folder);
+         head.append(svg);
+      }
 
-			const svg = pathToSVG(folderSVGPath);
-			svg.classList.add(...styles.folder);
-			head.append(svg);
-		}
+      addArrow();
+      if (directory.root.options.directoryIcons) {
+         addFolderIcon();
+      }
 
-		addArrow();
-		if (directory.root.options.directoryIcons) {
-			addFolderIcon();
-		}
+      if (directory.title) {
+         addTitle();
+      }
 
-		if (directory.title) {
-			addTitle();
-		}
+      // Add buttons
+      let buttonOptions = directory.root.options.directoryButton;
 
-		// Add buttons
-		let buttonOptions = directory.root.options.directoryButton;
+      // Create wrapper for buttons
+      const buttonsWrapper = document.createElement("div");
+      buttonsWrapper.classList.add(...styles.buttonsWrapper);
+      head.append(buttonsWrapper);
 
-		// Create wrapper for buttons
-		const buttonsWrapper = document.createElement("div");
-		buttonsWrapper.classList.add(...styles.buttonsWrapper);
-		head.append(buttonsWrapper);
+      for (let key of Object.keys(buttonOptions)) {
+         let isEnabled = buttonOptions[key] === true;
+         let svgPath;
 
-		for (let key of Object.keys(buttonOptions)) {
-			let isEnabled = buttonOptions[key] === true;
-			let svgPath;
+         switch (key) {
+            case "addDirectory":
+               svgPath = addDirectorySVGPath;
+               break;
+            case "addFile":
+               svgPath = addFileSVGPath;
+               break;
+            case "rename":
+               svgPath = renameSVGPath;
+               break;
+            case "copy":
+               svgPath = copySVGPath;
+               break;
+            case "cut":
+               svgPath = cutSVGPath;
+               break;
+            case "paste":
+               svgPath = pasteSVGPath;
+               break;
+            case "remove":
+               svgPath = removeSVGPath;
+               break;
+         }
 
-			switch (key) {
-				case "addDirectory":
-					svgPath = addDirectorySVGPath;
-					break;
-				case "addFile":
-					svgPath = addFileSVGPath;
-					break;
-				case "rename":
-					svgPath = renameSVGPath;
-					break;
-				case "copy":
-					svgPath = copySVGPath;
-					break;
-				case "cut":
-					svgPath = cutSVGPath;
-					break;
-				case "paste":
-					svgPath = pasteSVGPath;
-					break;
-				case "remove":
-					svgPath = removeSVGPath;
-					break;
-			}
+         if (isEnabled) {
+            const iconButton = DrawerElement.createIconButton();
 
-			if (isEnabled) {
-				const iconButton = DrawerElement.createIconButton();
+            // Icon
+            const icon = pathToSVG(svgPath, {
+               size: 14,
+            });
 
-				// Icon
-				const icon = pathToSVG(svgPath, {
-					size: 14
-				});
+            icon.classList.add(...styles.icon);
 
-				icon.classList.add(...styles.icon);
+            iconButton.append(icon);
+            buttonsWrapper.append(iconButton);
 
-				iconButton.append(icon);
-				buttonsWrapper.append(iconButton);
+            // Listener for click
+            iconButton.addEventListener("click", (event) => {
+               let emitArgs = [key + "Click", directory, event];
+               directory.emit(...emitArgs);
+               directory.ascendantsEmit(...emitArgs);
+            });
+         }
+      }
 
-				// Listener for click
-				iconButton.addEventListener("click", event => {
-					let emitArgs = [key + "Click", directory, event];
-					directory.emit(...emitArgs);
-					directory.ascendantsEmit(...emitArgs);
-				});
-			}
-		}
+      // Add drag and drop functionality
+      if (directory.root.options.draggableDirectories) {
+         makeDraggable(head, {
+            highlightClass: "drawer-drop-target",
+            highlightSelector: ".drawer-directory",
+            constraintSelector: "[class^=drawer-]",
+            cloneExcludeSelector: ".drawer-item-buttons",
+            onDrop: (el, event) => {
+               let target = event.target;
+               while (target.parentElement) {
+                  if (target.dataset.drawerId) {
+                     break;
+                  }
+                  target = target.parentElement;
+               }
 
-		// Add drag and drop functionality
-		if (directory.root.options.draggableDirectories) {
-			makeDraggable(head, {
-				highlightClass: "drawer-drop-target",
-				highlightSelector: ".drawer-directory",
-				constraintSelector: "[class^=drawer-]",
-				cloneExcludeSelector: ".drawer-item-buttons",
-				onDrop: (el, event) => {
-					let target = event.target;
-					while (target.parentElement) {
-						if (target.dataset.drawerId) {
-							break;
-						}
-						target = target.parentElement;
-					}
+               let targetId = target.dataset.drawerId;
+               let targetDirectory =
+                  directory.parent.root.getDirectoryById(targetId);
+               if (!targetDirectory) {
+                  directory.moveToDirectory(directory.parent.root);
+               } else {
+                  directory.moveToDirectory(targetDirectory);
+               }
+            },
+         });
+      }
 
-					let targetId = target.dataset.drawerId;
-					let targetDirectory = directory.parent.root.getDirectoryById(targetId);
-					if (!targetDirectory) {
-						directory.moveToDirectory(directory.parent.root);
-					} else {
-						directory.moveToDirectory(targetDirectory);
-					}
-				}
-			});
-		}
+      return head;
+   }
 
-		return head;
-	}
+   static createBody(directory) {
+      const body = document.createElement("div");
+      body.classList.add(...styles.body);
 
-	static createBody() {
-		const body = document.createElement("div");
-		body.classList.add(...styles.body);
+		body.addEventListener("contextmenu", (event) => {
+			console.log(event);
+         //if (event.target !== body) return;
 
-		return body;
-	}
+         let emitArgs = ["contextmenu", directory, event];
+         directory.emit(...emitArgs);
+         directory.parent.emit(...emitArgs);
+         directory.parent.ascendantsEmit(...emitArgs);
+      });
+
+      return body;
+   }
 }
 
 export default DrawerDirectoryElement;
