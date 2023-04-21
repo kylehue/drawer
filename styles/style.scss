@@ -1,0 +1,21 @@
+@import "./config.scss";
+@import "./mixins.scss";
+
+.drawer-folder {
+   @include flex-column;
+   width: 100%;
+   height: fit-content;
+
+   .drawer-folder-head {
+      @include flex-row;
+      height: $item-height;
+
+      .drawer-folder-name {
+         font-size: $font-size;
+      }
+
+      .drawer-folder-icon, .drawer-folder-icon-chevron {
+         font-size: $icon-size;
+      }
+   }
+}

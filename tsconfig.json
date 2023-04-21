@@ -1,7 +1,7 @@
 {
    "include": ["./src/**/*.ts"],
    "compilerOptions": {
-      "lib": ["es2022"],
+      "lib": ["es2022", "dom"],
       "module": "esnext",
       "target": "es2022",
       "moduleResolution": "nodenext",
@@ -12,6 +12,7 @@
       "strict": true,
       "sourceMap": true,
       "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
       "declaration": true,
