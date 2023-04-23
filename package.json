@@ -1,6 +1,6 @@
 {
-   "name": "drawer",
-   "version": "1.0.0-development",
+   "name": "@kylehue/drawer",
+   "version": "2.0.0-development",
    "type": "module",
    "exports": "./build/index.js",
    "types": "./build/index.d.ts",
@@ -57,6 +57,7 @@
       "eslint-import-resolver-typescript": "^3.5.5",
       "eslint-plugin-eslint-comments": "^3.2.0",
       "eslint-plugin-import": "^2.27.5",
+      "jsdom": "^21.1.1",
       "nyc": "^15.1.0",
       "prettier": "^2.8.7",
       "rimraf": "^4.4.1",
