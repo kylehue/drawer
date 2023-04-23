@@ -5,17 +5,78 @@
    @include flex-column;
    width: 100%;
    height: fit-content;
+   & > :not(:nth-child(1)) {
+      padding-left: 1rem;
+   }
 
-   .drawer-folder-head {
+   .drawer-input {
+      font-size: $font-size;
+      order: 3;
+      background: none;
+      border: none;
+      outline: none;
+      color: inherit;
+      pointer-events: none;
+      user-select: none;
+      height: 100%;
+      flex: 1;
+      border-radius: 4px;
+
+      &.drawer-input-focused {
+         pointer-events: all;
+         user-select: all;
+         padding: 0 2.5px;
+         background-color: rgba(15, 15, 15, 0.2);
+         border: 1px solid rgba(125, 125, 125, 0.2);
+      }
+   }
+
+   .drawer-folder-head,
+   .drawer-file {
       @include flex-row;
       height: $item-height;
+      gap: 0.25rem;
+      cursor: pointer;
+      color: inherit;
 
-      .drawer-folder-name {
-         font-size: $font-size;
+      .drawer-icon {
+         font-size: $icon-size;
+         @include flex-row;
+         align-items: center;
+         justify-content: center;
+         pointer-events: none;
+         user-select: none;
       }
 
-      .drawer-folder-icon, .drawer-folder-icon-chevron {
-         font-size: $icon-size;
+      &:hover {
+         background-color: rgba(125, 125, 125, 0.1);
+      }
+   }
+
+   .drawer-folder-head {
+      .drawer-folder-icon {
+         order: 2;
+      }
+
+      .drawer-folder-icon-chevron {
+         order: 1;
+         transform: rotate(-90deg);
+      }
+   }
+
+   // Hide folder by default
+   // Make sure it's not the root
+   .drawer-folder-body:not(:first-of-type) {
+      display: none;
+   }
+
+   &.drawer-folder-open {
+      & > .drawer-folder-head > .drawer-folder-icon-chevron {
+         transform: rotate(0deg);
+      }
+
+      & > .drawer-folder-body {
+         display: block;
       }
    }
 }
