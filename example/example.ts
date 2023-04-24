@@ -24,13 +24,11 @@ function createIcon(paths: string, size = 24, color = "red") {
 
 const drawer = new Drawer({
    element: document.querySelector<HTMLDivElement>("#drawer")!,
-   folderIcon: createIcon(mdiFolder, 24, "#fffaa7"),
-   folderIconOpen: createIcon(mdiFolderOpen, 24, "#fffaa7"),
+   //folderIcon: createIcon(mdiFolderOpen, 24, "#fffaa7"),
+   //folderIconClosed: createIcon(mdiFolder, 24, "#fffaa7"),
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: (source) => {
       let ext = path.extname(source);
-      console.log(source);
-
       if (ext == ".html") {
          return createIcon(mdiLanguageHtml5, 24, "#dd7933");
       } else {
@@ -38,37 +36,32 @@ const drawer = new Drawer({
       }
    },
    editFolderNameOnDoubleClick: false,
+   opaqueItemsRegex: /^\./,
+   horizontalScroll: false,
 });
 
+(window as any).root = drawer.root;
 console.log(drawer);
 
-drawer.onFileClick((e) => {
-   console.log("File clicked:", e.file.source);
+drawer.onDidClickItem((e) => {
+   console.log("Item clicked:", e.item.source);
 });
 
-drawer.onFolderClick((e) => {
-   console.log("Folder clicked:", e.folder.source);
+drawer.onDidRightClickItem((e) => {
+   console.log("Item right clicked:", e.item.source);
 });
 
-drawer.onFileRightClick((e) => {
-   console.log("File right clicked:", e.file.source);
-});
-
-drawer.onFolderRightClick((e) => {
-   console.log("Folder right clicked:", e.folder.source);
-});
-
-drawer.onDidChangeFileName((e) => {
-   console.log("File name changed:", e);
+drawer.onDidChangeItemName((e) => {
+   console.log("Item name changed:", e);
 
    if (/\//g.test(e.newName)) {
-      e.file.rename(e.oldName);
+      e.item.rename(e.oldName);
    }
 });
 
-drawer.onDidChangeFolderName((e) => {
-   console.log("Folder name changed:", e);
-});
+drawer.add("zxc.ts");
+drawer.add("abc.ts");
+drawer.add("hello.ts");
 
 // implicit folder
 let folder1 = drawer.add("src/classes/comps");
@@ -76,13 +69,22 @@ drawer.add("src/classes/test");
 
 // force as folder
 let folder2 = drawer.add("src", "folder");
-
+drawer.add("src/z/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
 // implicit file
 if (folder1.type == "folder") {
    let file1 = folder1.add("index.html");
+   folder1.add("hello.scss");
+   folder1.add("file.txt");
+   folder1.add("zlast.cpp");
+   /* let zzz = folder1.add("zzz", "folder");
+   zzz.add("file1.txt");
+   zzz.add("file2.txt");
+   zzz.add("file3.txt");
+   folder1.add("../file1.cpp");
+   folder1.add("../file2.cpp");
+   folder1.add("../file3.cpp"); */
    //let folder3 = drawer.root.add("src/classes", "folder");
    //console.log(folder1.get("/classes/comps"));
-   console.log(folder1.get("/"));
 }
 
 // force as file

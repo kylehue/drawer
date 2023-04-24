@@ -1,44 +1,56 @@
-import Folder from "./Folder.js";
+import Folder, { ItemTypeMap } from "./Folder.js";
 import File from "./File.js";
 import DrawerHooks from "./DrawerHooks.js";
 import FolderWidget from "./FolderWidget.js";
-import { IDrawerOptions, ItemTypeMap } from "./types.js";
+import { IDrawerOptions, defaultOptions } from "./options.js";
+import { DRAWER, DRAWER_FILE, DRAWER_FOLDER, DRAWER_SCROLLABLE } from "./classNames.js";
 
 export default class Drawer
    extends DrawerHooks
-   implements Pick<Folder, "add" | "delete" | "clear" | "get">
+   implements Pick<Folder, "add" | "delete" | "clear" | "get" | "getChildren">
 {
    public options: IDrawerOptions;
    public root: Folder;
    public items: Map<string, Folder | File> = new Map();
+   public focusedItem: Folder | File | null = null;
 
    /**
     *
     * @param options Options for configuring the behavior and appearance of a drawer.
     */
    constructor(options?: Partial<IDrawerOptions>) {
+      super();
+
       // Options defaults
-      let _options = Object.assign<IDrawerOptions, Partial<IDrawerOptions>>(
-         {
-            element: document.createElement("div"),
-            folderClassName: "",
-            folderIcon: "",
-            folderIconOpen: "",
-            folderIconChevron: "",
-            fileClassName: "",
-            fileIcon: "",
-            editFolderNameOnDoubleClick: false,
-            editFileNameOnDoubleClick: true,
-         },
+      this.options = Object.assign<IDrawerOptions, Partial<IDrawerOptions>>(
+         Object.assign({}, defaultOptions),
          options || {}
       );
 
-      super();
-
-      this.options = _options;
       this.root = new Folder(this, null, "/");
 
-      //this.options.element.append(this.);
+      this.options.element.classList.add(DRAWER);
+      
+      if (this.options.horizontalScroll) {
+         this.options.element.classList.add(DRAWER_SCROLLABLE);
+      }
+
+      // Add keyboard support
+      window.addEventListener("keydown", (event) => {
+         let drawerItemHasFocus = document.activeElement?.classList.contains(DRAWER_FOLDER) ||
+            document.activeElement?.classList.contains(DRAWER_FILE);
+
+         // Rename on F2
+         if (drawerItemHasFocus && this.focusedItem) {
+            if (event.key == "F2") {
+               this.focusedItem.widget.focusInput();
+            }
+         }
+      });
+   }
+
+   getChildren(): Array<Folder | File> {
+      return this.root.getChildren();
    }
 
    add<K extends keyof ItemTypeMap>(source: string, type?: K | undefined) {
@@ -52,7 +64,7 @@ export default class Drawer
    clear() {
       this.root.clear();
    }
-   
+
    get<K extends keyof ItemTypeMap>(source: string, type?: K | undefined) {
       return this.root.get(source, type);
    }

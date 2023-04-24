@@ -1,16 +1,32 @@
 @mixin flex {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
+   position: relative;
+   display: flex;
+   flex-shrink: 0;
 }
 
 @mixin flex-row {
-  @include flex;
-  flex-direction: row;
-  align-items: center;
+   @include flex;
+   flex-direction: row;
+   align-items: center;
 }
 
 @mixin flex-column {
-  @include flex;
-  flex-direction: column;
+   @include flex;
+   flex-direction: column;
+}
+
+@mixin truncate-text {
+   text-overflow: ellipsis;
+   overflow: hidden;
+   white-space: nowrap;
+}
+
+@mixin focused-item {
+   background-color: rgba(125, 125, 125, 0.15);
+   box-shadow: 0 0 0 1px rgba(125, 125, 125, 0.3);
+}
+
+@mixin focused-indent-guide {
+   background-color: rgba(125, 125, 125, 0.5);
+   opacity: 1;
 }

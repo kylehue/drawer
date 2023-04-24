@@ -1,36 +1,21 @@
 import Folder from "./Folder.js";
 import File from "./File.js";
 
-export interface IFolderClickEvent {
-   folder: Folder;
-   event: MouseEvent;
-}
-
-export interface IFileClickEvent {
-   file: File;
+export interface IItemClickEvent {
+   item: Folder | File;
    event: MouseEvent;
 }
 
 export interface IItemRenameEvent {
+   item: Folder | File;
    oldName: string;
    newName: string;
 }
 
-export interface IFolderRenameEvent extends IItemRenameEvent {
-   folder: Folder;
-}
-
-export interface IFileRenameEvent extends IItemRenameEvent {
-   file: File;
-}
-
 export const eventMap = {
-   onFolderClick: (payload: IFolderClickEvent) => {},
-   onFolderRightClick: (payload: IFolderClickEvent) => {},
-   onDidChangeFolderName: (payload: IFolderRenameEvent) => {},
-   onFileClick: (payload: IFileClickEvent) => {},
-   onFileRightClick: (payload: IFileClickEvent) => {},
-   onDidChangeFileName: (payload: IFileRenameEvent) => {},
+   onDidClickItem: (payload: IItemClickEvent) => {},
+   onDidRightClickItem: (payload: IItemClickEvent) => {},
+   onDidChangeItemName: (payload: IItemRenameEvent) => {},
 } as const;
 
 export type IEventMap = typeof eventMap;
@@ -77,62 +62,32 @@ export default class DrawerHooks implements IDrawerHooks {
    }
 
    /**
-    * An event emitted when a folder item is clicked.
+    * An event emitted when an item is clicked.
     *
     * @param cb - The function to emit.
     */
-   onFolderClick(cb: IEventMap["onFolderClick"]) {
-      let group = this._getListeners("onFolderClick");
+   onDidClickItem(cb: IEventMap["onDidClickItem"]) {
+      let group = this._getListeners("onDidClickItem");
       group.push(cb);
    }
 
    /**
-    * An event emitted when a folder item is right clicked.
+    * An event emitted when an item is right clicked.
     *
     * @param cb - The function to emit.
     */
-   onFolderRightClick(cb: IEventMap["onFolderRightClick"]) {
-      let group = this._getListeners("onFolderRightClick");
+   onDidRightClickItem(cb: IEventMap["onDidRightClickItem"]) {
+      let group = this._getListeners("onDidRightClickItem");
       group.push(cb);
    }
 
    /**
-    * An event emitted when a file item is clicked.
+    * An event emitted when an item name is changed.
     *
     * @param cb - The function to emit.
     */
-   onFileClick(cb: IEventMap["onFileClick"]) {
-      let group = this._getListeners("onFileClick");
-      group.push(cb);
-   }
-
-   /**
-    * An event emitted when a file item is right clicked.
-    *
-    * @param cb - The function to emit.
-    */
-   onFileRightClick(cb: IEventMap["onFileRightClick"]) {
-      let group = this._getListeners("onFileRightClick");
-      group.push(cb);
-   }
-
-   /**
-    * An event emitted when a file name is changed.
-    *
-    * @param cb - The function to emit.
-    */
-   onDidChangeFileName(cb: IEventMap["onDidChangeFileName"]) {
-      let group = this._getListeners("onDidChangeFileName");
-      group.push(cb);
-   }
-
-   /**
-    * An event emitted when a folder name is changed.
-    *
-    * @param cb - The function to emit.
-    */
-   onDidChangeFolderName(cb: IEventMap["onDidChangeFolderName"]) {
-      let group = this._getListeners("onDidChangeFolderName");
+   onDidChangeItemName(cb: IEventMap["onDidChangeItemName"]) {
+      let group = this._getListeners("onDidChangeItemName");
       group.push(cb);
    }
 }

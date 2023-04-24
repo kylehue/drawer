@@ -1,7 +1,7 @@
-import { basename } from "path-browserify";
 import File from "./File.js";
 import getClassNameTokens from "./utils/getClassNameTokens.js";
 import ItemWidget from "./ItemWidget.js";
+import { DRAWER_ITEM_INPUT, DRAWER_FILE_INPUT, DRAWER_ITEM_ICON, DRAWER_FILE_ICON, DRAWER_ITEM_BLURRED, DRAWER_FILE, DRAWER_ITEM_FOCUSED, DRAWER_ITEM } from "./classNames.js";
 
 export default class FileWidget extends ItemWidget {
    constructor(private file: File) {
@@ -10,15 +10,20 @@ export default class FileWidget extends ItemWidget {
       const options = file.drawer.options;
 
       // Init class names
+      nodes.input.classList.add(DRAWER_ITEM_INPUT, DRAWER_FILE_INPUT);
+      nodes.icon.classList.add(DRAWER_ITEM_ICON, DRAWER_FILE_ICON);
       nodes.container.classList.add(
+         DRAWER_ITEM,
+         DRAWER_FILE,
+         DRAWER_ITEM_BLURRED,
          ...getClassNameTokens(options.fileClassName)
       );
 
       nodes.container.append(nodes.icon, nodes.input);
-      file.parent.widget.domNodes.body.append(nodes.container);
+      file.parent.widget.domNodes.body.prepend(nodes.container);
 
-      this._updateName();
       this._updateIcons();
+      this._updateIndentation();
       this._initEvents();
    }
 
@@ -26,7 +31,7 @@ export default class FileWidget extends ItemWidget {
       const options = this.file.drawer.options;
       // Edit input on double click
       if (options.editFileNameOnDoubleClick) {
-         this._addEventListener(
+         this.addEventListener(
             this.domNodes.container,
             "dblclick",
             (event) => {
@@ -37,34 +42,45 @@ export default class FileWidget extends ItemWidget {
          );
       }
 
-      // Trigger file click event
-      this._addEventListener(this.domNodes.container, "click", (event) => {
-         if (event.target == this.domNodes.container) {
-            this.file.drawer.trigger("onFileClick", {
-               event,
-               file: this.file,
-            });
-         }
+      this.addEventListener(this.domNodes.container, "click", (event) => {
+         if (event.target !== this.domNodes.container) return;
+         // Trigger file click event
+         this.file.drawer.trigger("onDidClickItem", {
+            event,
+            item: this.file,
+         });
+
+         // Handle file focus
+         // First, remove all item focus
+         let focusClass = DRAWER_ITEM_FOCUSED;
+         let blurClass = DRAWER_ITEM_BLURRED;
+         let items = document.querySelectorAll("." + DRAWER_ITEM);
+         items.forEach((el) => {
+            el.classList.remove(focusClass);
+            el.classList.add(blurClass);
+         });
+
+         // Then, add focus class for this file
+         this.domNodes.container.classList.remove(blurClass);
+         this.domNodes.container.classList.add(focusClass);
+
+         // Set drawer focused item
+         this.file.drawer.focusedItem = this.file;
       });
 
       // Trigger file right click event
-      this._addEventListener(
+      this.addEventListener(
          this.domNodes.container,
          "contextmenu",
          (event) => {
             if (event.target == this.domNodes.container) {
-               this.file.drawer.trigger("onFileRightClick", {
+               this.file.drawer.trigger("onDidRightClickItem", {
                   event,
-                  file: this.file,
+                  item: this.file,
                });
             }
          }
       );
-   }
-
-   private _updateName() {
-      let fileName = basename(this.file.source);
-      this.domNodes.input.value = fileName;
    }
 
    private _updateIcons() {
@@ -85,5 +101,11 @@ export default class FileWidget extends ItemWidget {
          let icon = options.fileIcon(this.file.source);
          fixIcon(icon);
       }
+   }
+
+   private _updateIndentation() {
+      let indentSize = this._getCalculatedIndentSize();
+
+      this.domNodes.container.style.paddingLeft = indentSize + "em";
    }
 }
