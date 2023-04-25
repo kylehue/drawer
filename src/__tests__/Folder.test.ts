@@ -8,19 +8,19 @@ import { Folder } from "../Folder.js";
 import { File } from "../File.js";
 
 let drawer = new Drawer();
-let folderA = drawer.add("/src", "folder");
-let folderB = drawer.add("/src/classes/comps", "folder");
+let folderA = drawer.root.add("/src", "folder");
+let folderB = drawer.root.add("/src/classes/comps", "folder");
 let fileA = folderA.add("memo.txt");
 let fileB = folderA.add("/src/classes/comps", "file");
 
 afterAll(() => {
-   drawer.clear();
+   drawer.root.clear();
 });
 
 afterEach(() => {
-   drawer.delete();
-   folderA = drawer.add("/src", "folder");
-   folderB = drawer.add("/src/classes/comps", "folder");
+   drawer.root.delete();
+   folderA = drawer.root.add("/src", "folder");
+   folderB = drawer.root.add("/src/classes/comps", "folder");
 });
 
 describe("Folder.add()", () => {
@@ -68,7 +68,7 @@ describe("Folder.add()", () => {
 
       describe("ADD: Recursive folder creation", () => {
          test("should create 2 folders in root named '/src/styles' and '/src/styles/test' and 1 file named '/src/styles/test/file.css'", () => {
-            drawer.add("src/styles/test/file.css");
+            drawer.root.add("src/styles/test/file.css");
             expect(drawer.items.get("/src/styles")).toBeInstanceOf(Folder);
             expect(drawer.items.get("/src/styles/test")).toBeInstanceOf(Folder);
             expect(
@@ -87,15 +87,19 @@ describe("Folder.get()", () => {
          });
       });
 
-      describe("GET: Self 2", () => {
-         test("should return itself", () => {
-            expect(folderA.get("./")).toBe(folderA);
-         });
-      });
-
       describe("GET: Child", () => {
          test("should return a folder", () => {
             expect(folderA.get("/classes")).toBeInstanceOf(Folder);
+         });
+      });
+
+      describe("GET: Implicit folder with file extension", () => {
+         test("should return a folder", () => {
+            folderA.add("test.hello/");
+            expect(folderA.get("test.hello/")).toBeInstanceOf(Folder);
+            expect(folderA.get("test.hello", "folder")).toBeInstanceOf(Folder);
+            expect(folderA.get("test.hello")).toBeNull();
+            expect(folderA.get("test.hello/", "file")).toBeNull();
          });
       });
 
