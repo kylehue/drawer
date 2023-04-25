@@ -1,12 +1,16 @@
-import Folder, { ItemTypeMap } from "./Folder.js";
-import File from "./File.js";
-import DrawerHooks from "./DrawerHooks.js";
-import FolderWidget from "./FolderWidget.js";
+import { Folder, ItemResult, ItemTypeMap } from "./Folder.js";
+import { File } from "./File.js";
+import { Hooks } from "./Hooks.js";
 import { IDrawerOptions, defaultOptions } from "./options.js";
-import { DRAWER, DRAWER_FILE, DRAWER_FOLDER, DRAWER_SCROLLABLE } from "./classNames.js";
+import {
+   DRAWER,
+   DRAWER_FILE,
+   DRAWER_FOLDER,
+   DRAWER_SCROLLABLE,
+} from "./classNames.js";
 
-export default class Drawer
-   extends DrawerHooks
+export class Drawer
+   extends Hooks
    implements Pick<Folder, "add" | "delete" | "clear" | "get" | "getChildren">
 {
    public options: IDrawerOptions;
@@ -30,14 +34,19 @@ export default class Drawer
       this.root = new Folder(this, null, "/");
 
       this.options.element.classList.add(DRAWER);
-      
+
       if (this.options.horizontalScroll) {
          this.options.element.classList.add(DRAWER_SCROLLABLE);
+      } else {
+         this.options.element.onscroll = () => {
+            this.options.element.scrollLeft = 0;
+         };
       }
 
       // Add keyboard support
       window.addEventListener("keydown", (event) => {
-         let drawerItemHasFocus = document.activeElement?.classList.contains(DRAWER_FOLDER) ||
+         let drawerItemHasFocus =
+            document.activeElement?.classList.contains(DRAWER_FOLDER) ||
             document.activeElement?.classList.contains(DRAWER_FILE);
 
          // Rename on F2
@@ -49,12 +58,15 @@ export default class Drawer
       });
    }
 
-   getChildren(): Array<Folder | File> {
-      return this.root.getChildren();
+   add<S extends string, K extends keyof ItemTypeMap>(
+      source: S,
+      type?: K
+   ): ItemResult<S, K> {
+      return this.root.add(source, type);
    }
 
-   add<K extends keyof ItemTypeMap>(source: string, type?: K | undefined) {
-      return this.root.add(source, type);
+   getChildren(): Array<Folder | File> {
+      return this.root.getChildren();
    }
 
    delete(source?: string) {
@@ -78,3 +90,5 @@ export default class Drawer
       element.append(this.root.widget.domNodes.container);
    }
 }
+
+export { File, Folder };
