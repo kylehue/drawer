@@ -20,6 +20,10 @@
    }
 }
 
+.drawer-item {
+   outline: none;
+}
+
 // Item hover
 .drawer-folder.drawer-item-blurred > .drawer-folder-head:hover,
 .drawer-file.drawer-item-blurred:hover {

@@ -1,12 +1,27 @@
-import { basename } from "path-browserify";
-import Folder from "./Folder.js";
+import { Folder } from "./Folder.js";
 import getClassNameTokens from "./utils/getClassNameTokens.js";
-import ItemWidget from "./ItemWidget.js";
-import { DRAWER_FOLDER, DRAWER_FOLDER_BODY, DRAWER_FOLDER_CLOSED, DRAWER_FOLDER_EMPTY, DRAWER_FOLDER_HEAD, DRAWER_FOLDER_ICON, DRAWER_FOLDER_ICON_CHEVRON, DRAWER_FOLDER_INPUT, DRAWER_FOLDER_OPENED, DRAWER_INDENT_GUIDE, DRAWER_ITEM, DRAWER_ITEM_BLURRED, DRAWER_ITEM_FOCUSED, DRAWER_ITEM_ICON, DRAWER_ITEM_INPUT } from "./classNames.js";
+import { ItemWidget } from "./ItemWidget.js";
+import {
+   DRAWER_FOLDER,
+   DRAWER_FOLDER_BODY,
+   DRAWER_FOLDER_CLOSED,
+   DRAWER_FOLDER_EMPTY,
+   DRAWER_FOLDER_HEAD,
+   DRAWER_FOLDER_ICON,
+   DRAWER_FOLDER_ICON_CHEVRON,
+   DRAWER_FOLDER_INPUT,
+   DRAWER_FOLDER_OPENED,
+   DRAWER_INDENT_GUIDE,
+   DRAWER_ITEM,
+   DRAWER_ITEM_BLURRED,
+   DRAWER_ITEM_FOCUSED,
+   DRAWER_ITEM_ICON,
+   DRAWER_ITEM_INPUT,
+} from "./classNames.js";
 
 type FolderState = "close" | "open";
 
-export default class FolderWidget extends ItemWidget {
+export class FolderWidget extends ItemWidget {
    public declare domNodes: {
       container: HTMLDivElement;
       head: HTMLDivElement;
@@ -50,7 +65,9 @@ export default class FolderWidget extends ItemWidget {
       nodes.indentGuide.classList.add(DRAWER_INDENT_GUIDE);
 
       if (typeof options.folderIconClosed == "string") {
-         nodes.icon.classList.add(...getClassNameTokens(options.folderIconClosed));
+         nodes.icon.classList.add(
+            ...getClassNameTokens(options.folderIconClosed)
+         );
       }
 
       if (typeof options.folderIconChevron == "string") {
@@ -150,9 +167,7 @@ export default class FolderWidget extends ItemWidget {
             // First, remove all item focus
             let focusClass = DRAWER_ITEM_FOCUSED;
             let blurClass = DRAWER_ITEM_BLURRED;
-            let items = document.querySelectorAll(
-               "." + DRAWER_ITEM
-            );
+            let items = document.querySelectorAll("." + DRAWER_ITEM);
             items.forEach((el) => {
                el.classList.remove(focusClass);
                el.classList.add(blurClass);
@@ -164,6 +179,8 @@ export default class FolderWidget extends ItemWidget {
 
             // Set drawer focused item
             this.folder.drawer.focusedItem = this.folder;
+
+            this.focusContainer();
          }
       });
 
@@ -252,7 +269,8 @@ export default class FolderWidget extends ItemWidget {
       this.domNodes.head.style.paddingLeft = indentSize + "em";
 
       let indentGuideOffset = this.folder.drawer.options.indentGuideOffset;
-      this.domNodes.indentGuide.style.left = indentSize + indentGuideOffset + "em";
+      this.domNodes.indentGuide.style.left =
+         indentSize + indentGuideOffset + "em";
    }
 
    sort() {

@@ -1,10 +1,10 @@
-import path from "path-browserify";
-import Drawer from "./Drawer.js";
-import FileWidget from "./FileWidget.js";
-import Folder from "./Folder.js";
+import * as path from "path-browserify";
+import { Drawer } from "./Drawer.js";
+import { FileWidget } from "./FileWidget.js";
+import { Folder } from "./Folder.js";
 
-export default class File {
-   public type: "file" = "file";
+export class File {
+   public type = "file" as const;
    public widget: FileWidget;
    public name: string;
    constructor(
@@ -43,6 +43,7 @@ export default class File {
          this.widget.rename(name);
          this.name = name;
          this.source = newSource;
+         this.widget.updateIcon();
          this.parent.widget.sort();
       } else {
          console.error(`Can't rename ${this.source}`);

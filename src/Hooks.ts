@@ -1,5 +1,11 @@
-import Folder from "./Folder.js";
-import File from "./File.js";
+import { Folder } from "./Folder.js";
+import { File } from "./File.js";
+
+const eventMap = {
+   onDidClickItem: (payload: IItemClickEvent) => {},
+   onDidRightClickItem: (payload: IItemClickEvent) => {},
+   onDidChangeItemName: (payload: IItemRenameEvent) => {},
+} as const;
 
 export interface IItemClickEvent {
    item: Folder | File;
@@ -12,15 +18,9 @@ export interface IItemRenameEvent {
    newName: string;
 }
 
-export const eventMap = {
-   onDidClickItem: (payload: IItemClickEvent) => {},
-   onDidRightClickItem: (payload: IItemClickEvent) => {},
-   onDidChangeItemName: (payload: IItemRenameEvent) => {},
-} as const;
-
 export type IEventMap = typeof eventMap;
 
-export type IDrawerHooks = {
+export type IHooks = {
    [K in keyof IEventMap]: (cb: IEventMap[K]) => void;
 };
 
@@ -29,7 +29,7 @@ export type ListenerMap = Map<
    Array<IEventMap[keyof IEventMap]>
 >;
 
-export default class DrawerHooks implements IDrawerHooks {
+export class Hooks implements IHooks {
    private _listeners: ListenerMap = new Map();
    private _getListeners<K extends keyof IEventMap>(
       key: K
