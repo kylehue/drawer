@@ -1,3 +1,5 @@
+import { FolderState } from "./FolderWidget.js";
+
 export const defaultOptions = {
    /**
     * The HTML element to use as the root element of the drawer.
@@ -56,7 +58,8 @@ export const defaultOptions = {
     * @default true
     */
    horizontalScroll: true,
-   animated: true
+   animated: true,
+   folderState: "open" as FolderState | ((source: string) => FolderState),
 };
 
 /**
