@@ -3,7 +3,7 @@ import { File } from "./File.js";
 import path from "path-browserify";
 import { FolderWidget } from "./FolderWidget.js";
 import { DRAWER_FOLDER_EMPTY } from "./classNames.js";
-import { ItemResult, ItemTypeMap, getItemTypeFromSource } from "./utils/getItemTypeFromSource.js";
+import { ItemResult, ItemTypeMap, getPossibleItemTypesOfSource } from "./utils/getItemTypeFromSource.js";
 
 
 export class Folder {
@@ -40,11 +40,11 @@ export class Folder {
       }
 
       // Get item type
-      let itemType: keyof ItemTypeMap;
+      let possibleItemTypes: (keyof ItemTypeMap)[];
       if (!type) {
-         itemType = getItemTypeFromSource(source);
+         possibleItemTypes = getPossibleItemTypesOfSource(source);
       } else {
-         itemType = type;
+         possibleItemTypes = [type];
       }
 
       let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
@@ -53,7 +53,7 @@ export class Folder {
 
       // Make sure the item we're adding doesn't exist
       let clone = this.drawer.items.get(resolved);
-      if (!!clone && clone.type == itemType) {
+      if (!!clone && possibleItemTypes.includes(clone.type)) {
          console.warn(
             `Cannot add item to drawer. An item with path "${clone.source}" already exists.`
          );
@@ -69,18 +69,18 @@ export class Folder {
             const directory = directories.slice(0, i + 1).join("/");
             // Check if directory exists or not
 
-            if (!this.drawer.get(directory, "folder")) {
+            if (!this.drawer.root.get(directory, "folder")) {
                // ...if it doesn't exist, then create a folder for it
-               this.drawer.add(directory, "folder");
+               this.drawer.root.add(directory, "folder");
             }
          }
       }
 
-      let parent = this.drawer.get(dirname, "folder")!;
+      let parent = this.drawer.root.get(dirname, "folder")!;
 
       // Create main item
       let item: Folder | File;
-      if (itemType == "file") {
+      if (possibleItemTypes.length == 1 && possibleItemTypes[0] == "file") {
          item = new File(this.drawer, parent, resolved);
       } else {
          item = new Folder(this.drawer, parent, resolved);
@@ -100,23 +100,31 @@ export class Folder {
     * @function
     * @returns {ItemTypeMap[K] | null} The retrieved item or null if it does not exist
     */
-   get<K extends keyof ItemTypeMap>(
-      source: string,
+   get<S extends string, K extends keyof ItemTypeMap>(
+      source: S,
       type?: K
-   ): ItemTypeMap[K] | null {
+   ): ItemResult<S, K> | null {
       let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
       let resolved = path.join("/", this.source, sourceWithoutTheLastSlash);
+
+      // Get item type
+      let possibleItemTypes: (keyof ItemTypeMap)[];
+      if (!type) {
+         possibleItemTypes = getPossibleItemTypesOfSource(source);
+      } else {
+         possibleItemTypes = [type];
+      }
 
       let item =
          resolved == "/"
             ? this.drawer.root
             : this.drawer.items.get(resolved) || null;
 
-      if (type && item?.type != type) {
+      if (item?.type && !possibleItemTypes.includes(item.type)) {
          item = null;
       }
 
-      return item as ItemTypeMap[K] | null;
+      return item as ItemResult<S, K> | null;
    }
 
    /**

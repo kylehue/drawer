@@ -26,25 +26,25 @@ export type ItemResult<
       : ItemTypeMap[K]
    : ItemTypeMap[K];
 
-export function getItemTypeFromSource<S extends string>(
+export function getPossibleItemTypesOfSource<S extends string>(
    source: S
-): ItemTypeFromSource<S> {
+): ItemTypeFromSource<S>[] {
    // Get item type
-   let itemType: keyof ItemTypeMap;
+   let itemType: (keyof ItemTypeMap)[] = [];
 
    // If slash is at the end, it's a folder
    if (/\/$/.test(source)) {
-      itemType = "folder";
+      itemType = ["folder"];
    } else {
       // Item will be considered as `file` if it has a file extension
       let extension = path.extname(source);
       let hasFileExtension = !!extension && extension != ".";
       if (hasFileExtension) {
-         itemType = "file";
+         itemType = ["file"];
       } else {
-         itemType = "folder";
+         itemType = ["file", "folder"];
       }
    }
 
-   return itemType as ItemTypeFromSource<S>;
+   return itemType as ItemTypeFromSource<S>[];
 }
