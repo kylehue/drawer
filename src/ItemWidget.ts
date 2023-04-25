@@ -1,9 +1,13 @@
-import path from "path-browserify";
-import File from "./File.js";
-import Folder from "./Folder.js";
-import { DRAWER_ITEM_INPUT_FOCUSED, DRAWER_ITEM_OPAQUE } from "./classNames.js";
+import * as path from "path-browserify";
+import { File } from "./File.js";
+import { Folder } from "./Folder.js";
+import {
+   DRAWER_ITEM,
+   DRAWER_ITEM_INPUT_FOCUSED,
+   DRAWER_ITEM_OPAQUE,
+} from "./classNames.js";
 
-export default class ItemWidget {
+export class ItemWidget {
    public domNodes = {
       container: document.createElement("div"),
       input: document.createElement("input"),
@@ -18,7 +22,6 @@ export default class ItemWidget {
 
    constructor(private item: Folder | File) {
       const nodes = this.domNodes;
-      nodes.container.setAttribute("tabindex", "0");
       // Remove input autocomplete and spellcheck
       nodes.input.setAttribute("spellcheck", "false");
       nodes.input.setAttribute("autofill", "false");
@@ -31,6 +34,9 @@ export default class ItemWidget {
       this.addEventListener(this.domNodes.input, "keypress", (event) => {
          if (event.key == "Enter") {
             this.blurInput();
+            this.domNodes.container.focus({
+               preventScroll: true,
+            });
          }
       });
 
@@ -65,15 +71,30 @@ export default class ItemWidget {
          });
 
          // Trigger folder right click event
-         this.addEventListener(this.domNodes.container, "contextmenu", (event) => {
-            if (event.target === this.domNodes.container) {
-               item.drawer.trigger("onDidRightClickItem", {
-                  event,
-                  item,
-               });
+         this.addEventListener(
+            this.domNodes.container,
+            "contextmenu",
+            (event) => {
+               if (event.target === this.domNodes.container) {
+                  item.drawer.trigger("onDidRightClickItem", {
+                     event,
+                     item,
+                  });
+               }
             }
-         });
+         );
       }
+   }
+
+   protected focusContainer() {
+      let items = document.querySelectorAll("." + DRAWER_ITEM);
+      items.forEach((el) => {
+         el.removeAttribute("tabindex");
+      });
+
+      const nodes = this.domNodes;
+      nodes.container.setAttribute("tabindex", "0");
+      nodes.container.focus();
    }
 
    /**
