@@ -74,7 +74,6 @@ export class Folder {
     * @function
     * @returns {ItemTypeMap[K]} The new item instance.
     */
-
    add<S extends string, K extends keyof ItemTypeMap>(
       source: S,
       type?: K
@@ -150,18 +149,6 @@ export class Folder {
       source: string,
       type?: K
    ): ItemTypeMap[K] | null {
-      // Get proper item type if auto
-      // if (!type) {
-      //    // Item will be considered as `file` if it has a file extension
-      //    let extension = path.extname(source);
-      //    if (extension && extension != ".") {
-      //       type = "file" as K;
-      //    } else {
-      //       type = "folder" as K;
-      //    }
-      // }
-
-      // Scan items
       let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
       let resolved = path.join("/", this.source, sourceWithoutTheLastSlash);
 

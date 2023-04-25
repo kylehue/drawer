@@ -273,7 +273,12 @@ export class FolderWidget extends ItemWidget {
          indentSize + indentGuideOffset + "em";
    }
 
-   sort() {
+   /**
+    * Sort child items.
+    * @function
+    * @returns {void}
+    */
+   sort(): void {
       let children = this.folder.getChildren();
 
       children.sort((a, b) => {

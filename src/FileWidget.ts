@@ -112,8 +112,6 @@ export class FileWidget extends ItemWidget {
 
          // Then append
          nodes.icon.appendChild(icon);
-
-         console.log("bam!");
       }
    };
 
