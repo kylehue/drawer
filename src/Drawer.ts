@@ -1,13 +1,15 @@
-import { Folder, ItemResult, ItemTypeMap } from "./Folder.js";
+import { Folder } from "./Folder.js";
 import { File } from "./File.js";
 import { Hooks } from "./Hooks.js";
 import { IDrawerOptions, defaultOptions } from "./options.js";
 import {
    DRAWER,
+   DRAWER_ANIMATED,
    DRAWER_FILE,
    DRAWER_FOLDER,
    DRAWER_SCROLLABLE,
 } from "./classNames.js";
+import { ItemResult, ItemTypeMap } from "./utils/getItemTypeFromSource.js";
 
 export class Drawer
    extends Hooks
@@ -31,9 +33,19 @@ export class Drawer
          options || {}
       );
 
+      if (!this.options.element) {
+         throw new Error(
+            "The drawer cannot be appended to a null or undefined element. Please provide a valid container element."
+         );
+      }
+
       this.root = new Folder(this, null, "/");
 
       this.options.element.classList.add(DRAWER);
+
+      if (this.options.animated) {
+         this.options.element.classList.add(DRAWER_ANIMATED);
+      }
 
       if (this.options.horizontalScroll) {
          this.options.element.classList.add(DRAWER_SCROLLABLE);

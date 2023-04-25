@@ -1,4 +1,5 @@
 export const DRAWER = "drawer";
+export const DRAWER_ANIMATED = "drawer-animated";
 export const DRAWER_SCROLLABLE = "drawer-scrollable";
 export const DRAWER_INDENT_GUIDE = "drawer-indent-guide";
 export const DRAWER_FILE = "drawer-file";

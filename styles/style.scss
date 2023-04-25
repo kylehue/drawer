@@ -18,6 +18,26 @@
          min-width: 100%;
       }
    }
+
+   &.drawer-animated {
+      .drawer-folder-head,
+      .drawer-file {
+         transition-property: background-color, height, opacity;
+         transition-duration: 200ms;
+         transition-timing-function: ease;
+      }
+
+      .drawer-indent-guide {
+         transition-property: background-color, opacity;
+         transition-duration: 300ms;
+      }
+
+      .drawer-folder-icon-chevron {
+         transition-property: transform;
+         transition-duration: 200ms;
+         transition-timing-function: ease;
+      }
+   }
 }
 
 .drawer-item {
@@ -28,7 +48,6 @@
 .drawer-folder.drawer-item-blurred > .drawer-folder-head:hover,
 .drawer-file.drawer-item-blurred:hover {
    background-color: rgba(125, 125, 125, 0.1);
-   transition: background-color 200ms cubic-bezier(0.1, 0.3, 0.4, 1);
 }
 
 .drawer-folder {
@@ -80,7 +99,7 @@
       position: relative;
       z-index: 1;
 
-      .drawer-icon {
+      .drawer-item-icon {
          font-size: $icon-size;
          @include flex-row;
          align-items: center;
@@ -101,7 +120,20 @@
       }
    }
 
-   .drawer-item-icon {
+   &.drawer-folder-closed {
+      .drawer-folder-body {
+         overflow: hidden;
+
+         .drawer-folder-head,
+         .drawer-file {
+            height: 0;
+            opacity: 0;
+         }
+      }
+   }
+
+   .drawer-item-icon,
+   .drawer-item-icon > span {
       @include flex-row;
       align-items: center;
       justify-content: center;
@@ -149,27 +181,19 @@
       top: 0;
       background-color: rgba(125, 125, 125, 0.15);
       opacity: 0;
-      transition-property: background-color, opacity;
-      transition-duration: 200ms;
    }
 
    &:hover .drawer-indent-guide {
       opacity: 1;
    }
 
-   // Hide folder by default
-   // Make sure it's not the root
-   .drawer-folder-body:not(:first-of-type) {
-      display: none;
+   .drawer-folder-body {
+      @include flex-column;
    }
 
    &.drawer-folder-opened {
       & > .drawer-folder-head > .drawer-folder-icon-chevron {
          transform: rotate(0deg);
-      }
-
-      & > .drawer-folder-body {
-         @include flex-column;
       }
    }
 }
