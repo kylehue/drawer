@@ -1,6 +1,4 @@
-import Drawer from "../build/index.js";
 import * as path from "path-browserify";
-// @ts-ignore
 import {
    mdiFolder,
    mdiFolderOpen,
@@ -8,7 +6,12 @@ import {
    mdiLanguageHtml5,
    mdiFile,
 } from "https://esm.sh/@mdi/js?exports=mdiFolder,mdiFolderOpen,mdiChevronDown,mdiLanguageHtml5,mdiFile";
-console.log(mdiFolder, mdiFolderOpen);
+
+// ESM
+import { Drawer as DrawerESM } from "../build/Drawer.js";
+
+// Bundle
+const DrawerBundle: typeof DrawerESM = Drawer.Drawer;
 
 function createIcon(paths: string, size = 24, color = "red") {
    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -22,10 +25,10 @@ function createIcon(paths: string, size = 24, color = "red") {
    return svg;
 }
 
-const drawer = new Drawer({
+const drawer = new DrawerBundle({
    element: document.querySelector<HTMLDivElement>("#drawer")!,
-   //folderIcon: createIcon(mdiFolderOpen, 24, "#fffaa7"),
-   //folderIconClosed: createIcon(mdiFolder, 24, "#fffaa7"),
+   folderIcon: createIcon(mdiFolderOpen, 24, "#fffaa7"),
+   folderIconClosed: createIcon(mdiFolder, 24, "#fffaa7"),
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: (source) => {
       let ext = path.extname(source);
@@ -36,7 +39,7 @@ const drawer = new Drawer({
       }
    },
    editFolderNameOnDoubleClick: false,
-   opaqueItemsRegex: /^\./,
+   opaqueItemsRegex: /^b/,
    horizontalScroll: false,
 });
 

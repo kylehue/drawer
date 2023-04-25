@@ -3,13 +3,15 @@
  */
 
 import { describe, expect, test, afterAll, afterEach } from "vitest";
-import Drawer from "../Drawer.js";
-import Folder from "../Folder.js";
-import File from "../File.js";
+import { Drawer } from "../Drawer.js";
+import { Folder } from "../Folder.js";
+import { File } from "../File.js";
 
 let drawer = new Drawer();
 let folderA = drawer.add("/src", "folder");
 let folderB = drawer.add("/src/classes/comps", "folder");
+let fileA = folderA.add("memo.txt");
+let fileB = folderA.add("/src/classes/comps", "file");
 
 afterAll(() => {
    drawer.clear();
@@ -23,8 +25,7 @@ afterEach(() => {
 
 describe("Folder.add()", () => {
    describe(`Giver folderA '${folderA.source}' and folderB '${folderB.source}'`, () => {
-      // Duplicates
-      describe("when doing folderA.add('classes')", () => {
+      describe("ADD: Duplicates", () => {
          test("should NOT create a folder", () => {
             let classesFolder = folderA.get("classes", "folder");
             let newFolder = folderA.add("classes");
@@ -33,8 +34,7 @@ describe("Folder.add()", () => {
          });
       });
 
-      // Explicit folder
-      describe("when doing folderA.add('test.git', 'folder')", () => {
+      describe("ADD: Explicit folder", () => {
          test("should create a folder in root named '/src/test.git'", () => {
             folderA.add("test.git", "folder");
 
@@ -42,8 +42,7 @@ describe("Folder.add()", () => {
          });
       });
 
-      // Implicit file
-      describe("when doing folderB.add('../../file.cpp')", () => {
+      describe("ADD: Implicit file", () => {
          test("should create a file in root named '/src/file.cpp'", () => {
             folderB.add("../../file.cpp");
 
@@ -51,8 +50,15 @@ describe("Folder.add()", () => {
          });
       });
 
-      // Explicit file
-      describe("when doing folderA.add('src', 'file')", () => {
+      describe("ADD: Implicit folder with file extension", () => {
+         test("should create a folder, not a file", () => {
+            let folder = folderA.add("test.txt/");
+
+            expect(folder).toBeInstanceOf(Folder);
+         });
+      });
+
+      describe("ADD: Explicit file", () => {
          test("should create a file in root named '/src/src'", () => {
             folderA.add("src", "file");
 
@@ -60,8 +66,7 @@ describe("Folder.add()", () => {
          });
       });
 
-      // Recursive folder creation
-      describe("when doing drawer.root.add('src/styles/test/file.css')", () => {
+      describe("ADD: Recursive folder creation", () => {
          test("should create 2 folders in root named '/src/styles' and '/src/styles/test' and 1 file named '/src/styles/test/file.css'", () => {
             drawer.add("src/styles/test/file.css");
             expect(drawer.items.get("/src/styles")).toBeInstanceOf(Folder);
@@ -76,43 +81,37 @@ describe("Folder.add()", () => {
 
 describe("Folder.get()", () => {
    describe(`Giver folderA '${folderA.source}' and folderB '${folderB.source}'`, () => {
-      describe("when doing folderA.get('/')", () => {
+      describe("GET: Self", () => {
          test("should return itself", () => {
             expect(folderA.get("./")).toBe(folderA);
          });
       });
 
-      describe("when doing folderA.get('/classes')", () => {
+      describe("GET: Self 2", () => {
+         test("should return itself", () => {
+            expect(folderA.get("./")).toBe(folderA);
+         });
+      });
+
+      describe("GET: Child", () => {
          test("should return a folder", () => {
             expect(folderA.get("/classes")).toBeInstanceOf(Folder);
          });
       });
 
-      describe("when doing folderA.get('/classes/comps')", () => {
+      describe("GET: Child of child", () => {
          test("should return folderB", () => {
             expect(folderA.get("/classes/comps")).toBe(folderB);
          });
       });
 
-      describe("when doing folderA.get('../')", () => {
+      describe("GET: Parent", () => {
          test("should return the root", () => {
             expect(folderA.get("../")).toBe(drawer.root);
          });
       });
 
-      describe("when doing folderA.get('./')", () => {
-         test("should return itself", () => {
-            expect(folderA.get("./")).toBe(folderA);
-         });
-      });
-
-      describe("when doing folderA.get('/')", () => {
-         test("should return itself", () => {
-            expect(folderA.get("/")).toBe(folderA);
-         });
-      });
-
-      describe("when doing folderB.get('../../')", () => {
+      describe("GET: Parent of parent", () => {
          test("should return folderA", () => {
             expect(folderB.get("../../")).toBe(folderA);
          });
@@ -130,14 +129,14 @@ describe("Folder.delete()", () => {
          });
       });
 
-      describe("when doing folderB.delete('../../')", () => {
+      describe("DELETE: Parent of parent", () => {
          test("should remove all items", () => {
             folderB.delete("../../");
             expect(drawer.items.size).toBe(0);
          });
       });
 
-      describe("when doing folderA.delete()", () => {
+      describe("DELETE: Emptying", () => {
          test("should remove all items", () => {
             folderA.delete();
             expect(drawer.items.size).toBe(0);

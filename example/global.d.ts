@@ -1,1 +1,0 @@
-declare module "https://esm.sh/@mdi/js?*";

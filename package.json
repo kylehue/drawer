@@ -2,26 +2,27 @@
    "name": "@kylehue/drawer",
    "version": "2.0.0-development",
    "type": "module",
-   "exports": "./build/index.js",
-   "types": "./build/index.d.ts",
+   "main": "./build/Drawer.js",
+   "types": "./build/Drawer.d.ts",
    "license": "MIT",
    "engines": {
-      "node": "^18.15.0",
-      "npm": "^9.5.0"
+      "node": "^16.18.0",
+      "npm": "^8.19.2"
    },
    "volta": {
-      "node": "18.15.0",
-      "npm": "9.5.0"
+      "node": "16.18.0",
+      "npm": "8.19.2"
    },
    "publishConfig": {
       "access": "public"
    },
    "scripts": {
-      "dev": "concurrently \"npm run clean\" \"npm run build:main -- --watch\" \"npm run build:style -- --watch\" \"npm run build:example -- --watch\" \"npm run type:dts -- --watch\"",
-      "build": "npm run clean && npm run type:dts && npm run build:main && npm run build:style",
+      "dev": "set NODE_ENV=development&& concurrently \"npm run clean\" \"npm run build:main -- --watch\" \"npm run build:bundle -- --watch\" \"npm run build:style -- --watch\" \"npm run build:example -- --watch\" \"npm run type:dts -- --watch\"",
+      "build": "set NODE_ENV=production&& npm run clean && npm run type:dts && npm run build:main && npm run build:bundle -- --minify && npm run build:style",
       "build:main": "swc ./src -d ./build",
-      "build:example": "swc ./example -d ./build",
+      "build:example": "swc ./example -d ./example-build",
       "build:style": "sass ./styles/style.scss:./build/styles/style.css",
+      "build:bundle": "esbuild ./src/Drawer.ts --bundle --outdir=build --entry-names=Drawer.bundle --format=iife --global-name=Drawer --platform=browser --sourcemap",
       "clean": "rimraf build coverage nyc_output",
       "type:dts": "tsc --emitDeclarationOnly --project tsconfig.build.json",
       "type:check": "tsc --noEmit",
@@ -52,6 +53,7 @@
       "@typescript-eslint/parser": "^5.59.0",
       "c8": "^7.13.0",
       "concurrently": "^8.0.1",
+      "esbuild": "^0.17.18",
       "eslint": "^8.38.0",
       "eslint-config-prettier": "^8.8.0",
       "eslint-import-resolver-typescript": "^3.5.5",
