@@ -9,12 +9,8 @@ import {
    DRAWER_FOLDER,
    DRAWER_SCROLLABLE,
 } from "./classNames.js";
-import { ItemResult, ItemTypeMap } from "./utils/getItemTypeFromSource.js";
 
-export class Drawer
-   extends Hooks
-   implements Pick<Folder, "add" | "delete" | "clear" | "get" | "getChildren">
-{
+export class Drawer extends Hooks {
    public options: IDrawerOptions;
    public root: Folder;
    public items: Map<string, Folder | File> = new Map();
@@ -68,29 +64,6 @@ export class Drawer
             }
          }
       });
-   }
-
-   add<S extends string, K extends keyof ItemTypeMap>(
-      source: S,
-      type?: K
-   ): ItemResult<S, K> {
-      return this.root.add(source, type);
-   }
-
-   getChildren(): Array<Folder | File> {
-      return this.root.getChildren();
-   }
-
-   delete(source?: string) {
-      this.root.delete(source);
-   }
-
-   clear() {
-      this.root.clear();
-   }
-
-   get<K extends keyof ItemTypeMap>(source: string, type?: K | undefined) {
-      return this.root.get(source, type);
    }
 
    /**
