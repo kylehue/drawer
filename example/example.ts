@@ -5,7 +5,8 @@ import {
    mdiChevronDown,
    mdiLanguageHtml5,
    mdiFile,
-} from "https://esm.sh/@mdi/js?exports=mdiFolder,mdiFolderOpen,mdiChevronDown,mdiLanguageHtml5,mdiFile";
+   mdiDog,
+} from "https://esm.sh/@mdi/js?exports=mdiFolder,mdiFolderOpen,mdiChevronDown,mdiLanguageHtml5,mdiFile,mdiDog";
 
 // ESM
 import { Drawer as DrawerESM } from "../build/Drawer.js";
@@ -25,36 +26,124 @@ function createIcon(paths: string, size = 24, color = "red") {
    return svg;
 }
 
-const drawer = new DrawerBundle({
-   element: document.querySelector<HTMLDivElement>("#drawer")!,
+const drawerA = new DrawerBundle({
+   element: document.querySelector<HTMLDivElement>("#drawera")!,
    folderIcon: createIcon(mdiFolderOpen, 24, "#fffaa7"),
-   folderIconClosed: createIcon(mdiFolder, 24, "#fffaa7"),
+   folderIconClosed: "mdi mdi-folder",
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: (source) => {
       let ext = path.extname(source);
       if (ext == ".html") {
          return createIcon(mdiLanguageHtml5, 24, "#dd7933");
-      } else {
+      } else if (ext == ".cpp") {
          return createIcon(mdiFile, 24, "#d2d3d7");
+      } else {
+         return "mdi mdi-file";
       }
    },
    editFolderNameOnDoubleClick: false,
    opaqueItemsRegex: /^b/,
    horizontalScroll: false,
+   animated: false,
+   folderState: (source) => {
+      if (source !== "/src/classes") {
+         return "open";
+      } else {
+         return "close";
+      }
+   }
 });
 
-(window as any).root = drawer.root;
-console.log(drawer);
+const drawerB = new DrawerBundle({
+   element: document.querySelector<HTMLDivElement>("#drawerb")!,
+   folderIcon: "mdi mdi-folder-open",
+   folderIconClosed: createIcon(mdiFolder, 24, "#fffaa7"),
+   folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
+   fileIcon: createIcon(mdiFile, 24, "#d2d3d7"),
+   editFolderNameOnDoubleClick: false,
+   opaqueItemsRegex: /^b/,
+   horizontalScroll: false,
+});
 
-drawer.onDidClickItem((e) => {
+const drawerC = new DrawerBundle({
+   element: document.querySelector<HTMLDivElement>("#drawerc")!,
+   folderIcon: (source) => {
+      let name = path.basename(source);
+      if (name == "dog") {
+         return createIcon(mdiDog, 24, "#fffaa7");
+      } else if (name == "cat") {
+         return "mdi mdi-cat";
+      } else {
+         return "mdi mdi-mouse";
+      }
+   },
+   folderIconClosed: "mdi mdi-folder",
+   folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
+   fileIcon: "mdi mdi-file",
+   editFolderNameOnDoubleClick: false,
+   opaqueItemsRegex: /^b/,
+   horizontalScroll: false,
+});
+
+const drawerD = new DrawerBundle({
+   element: document.querySelector<HTMLDivElement>("#drawerd")!,
+   folderIcon: (source) => {
+      let name = path.basename(source);
+      if (name == "dog") {
+         return createIcon(mdiDog, 24, "#fffaa7");
+      } else if (name == "cat") {
+         return "mdi mdi-cat";
+      } else {
+         return "mdi mdi-mouse";
+      }
+   },
+   folderIconClosed: (source) => {
+      let name = path.basename(source);
+      if (name == "shark") {
+         return "mdi mdi-shark";
+      } else if (name == "fish") {
+         return "mdi mdi-fish";
+      } else {
+         return "mdi mdi-horse";
+      }
+   },
+   folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
+   fileIcon: "mdi mdi-file",
+   editFolderNameOnDoubleClick: false,
+   opaqueItemsRegex: /^b/,
+   horizontalScroll: false,
+});
+
+(window as any).root = drawerA.root;
+console.log(drawerA);
+
+drawerB.root.add("a/b/c/d/e/f/g/");
+drawerB.root.add("a/b/c/cat.html");
+drawerB.root.add("a/b/c/dog.cpp");
+drawerB.root.add("a/b/c/mice.txt");
+
+drawerC.root.add("a/b/c/d/cat/f/g/");
+drawerC.root.add("a/dog/c/cat.html");
+drawerC.root.add("a/b/test/dog.cpp");
+drawerC.root.add("a/b/c/mice.txt");
+
+drawerD.root.add("a/b/c/d/shark/f/g/");
+drawerD.root.add("a/dog/c/cat.html");
+drawerD.root.add("a/b/fish/dog.cpp/");
+drawerD.root.add("a/b/c/mice.txt");
+drawerD.root.get("a/b/fish", "folder")?.widget.setState("close");
+drawerD.root.get("a/b/c/d/shark", "folder")?.widget.setState("close");
+
+
+drawerA.onDidClickItem((e) => {
    console.log("Item clicked:", e.item.source);
 });
 
-drawer.onDidRightClickItem((e) => {
+drawerA.onDidRightClickItem((e) => {
    console.log("Item right clicked:", e.item.source);
 });
 
-drawer.onDidChangeItemName((e) => {
+drawerA.onDidChangeItemName((e) => {
    console.log("Item name changed:", e);
 
    if (/\//g.test(e.newName)) {
@@ -62,17 +151,17 @@ drawer.onDidChangeItemName((e) => {
    }
 });
 
-drawer.add("zxc.ts");
-drawer.add("abc.ts");
-drawer.add("hello.ts");
+drawerA.root.add("zxc.ts");
+drawerA.root.add("abc.ts");
+drawerA.root.add("hello.ts");
 
 // implicit folder
-let folder1 = drawer.add("src/classes/comps");
-drawer.add("src/classes/test");
+let folder1 = drawerA.root.add("src/classes/comps");
+drawerA.root.add("src/classes/test");
 
 // force as folder
-let folder2 = drawer.add("src", "folder");
-drawer.add("src/z/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
+let folder2 = drawerA.root.add("src", "folder");
+drawerA.root.add("src/z/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
 // implicit file
 if (folder1.type == "folder") {
    let file1 = folder1.add("index.html");
@@ -86,7 +175,7 @@ if (folder1.type == "folder") {
    folder1.add("../file1.cpp");
    folder1.add("../file2.cpp");
    folder1.add("../file3.cpp"); */
-   //let folder3 = drawer.root.add("src/classes", "folder");
+   //let folder3 = drawerA.root.add("src/classes", "folder");
    //console.log(folder1.get("/classes/comps"));
 }
 

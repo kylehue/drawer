@@ -6,6 +6,9 @@ body {
    background-color: #23272e;
    color: #d2d3d7;
    font-family: "Roboto";
+
+   display: flex;
+   flex-direction: row;
 }
 
 * {
@@ -14,6 +17,6 @@ body {
 
 #drawer {
    background-color: #1e2227;
-   width: 400px;
    height: 100%;
+   flex: 1;
 }
