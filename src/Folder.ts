@@ -1,8 +1,7 @@
-import Drawer from "./Drawer.js";
-import File from "./File.js";
-import path from "path-browserify";
-import FolderWidget from "./FolderWidget.js";
-import DrawerHooks, { ListenerMap } from "./DrawerHooks.js";
+import { Drawer } from "./Drawer.js";
+import { File } from "./File.js";
+import * as path from "path-browserify";
+import { FolderWidget } from "./FolderWidget.js";
 import { DRAWER_FOLDER_EMPTY } from "./classNames.js";
 
 export interface ItemTypeMap {
@@ -10,8 +9,50 @@ export interface ItemTypeMap {
    file: File;
 }
 
-export default class Folder {
-   public type: "folder" = "folder";
+export type NonEmptyString<T extends string> = "" extends T ? never : T;
+
+export type ItemTypeFromSource<T extends string> = T extends `${string}/`
+   ? "folder"
+   : T extends `${string}.${infer ext}` // if it has a dot
+   ? NonEmptyString<ext> extends never // if it doesn't have an extension
+      ? "folder" | "file"
+      : "file"
+   : "folder" | "file";
+
+export type ItemResult<
+   S extends string,
+   K extends keyof ItemTypeMap
+> = keyof ItemTypeMap extends K
+   ? S extends string
+      ? ItemTypeMap[ItemTypeFromSource<S>]
+      : ItemTypeMap[K]
+   : ItemTypeMap[K];
+
+function getItemTypeFromSource<S extends string>(
+   source: S
+): ItemTypeFromSource<S> {
+   // Get item type
+   let itemType: keyof ItemTypeMap;
+
+   // If slash is at the end, it's a folder
+   if (/\/$/.test(source)) {
+      itemType = "folder";
+   } else {
+      // Item will be considered as `file` if it has a file extension
+      let extension = path.extname(source);
+      let hasFileExtension = !!extension && extension != ".";
+      if (hasFileExtension) {
+         itemType = "file";
+      } else {
+         itemType = "folder";
+      }
+   }
+
+   return itemType as ItemTypeFromSource<S>;
+}
+
+export class Folder {
+   public type = "folder" as const;
    public widget: FolderWidget;
    public name: string;
    constructor(
@@ -33,16 +74,23 @@ export default class Folder {
     * @function
     * @returns {ItemTypeMap[K]} The new item instance.
     */
-   add<K extends keyof ItemTypeMap>(source: string, type?: K): ItemTypeMap[K] {
-      // Get proper item type if auto
+
+   add<S extends string, K extends keyof ItemTypeMap>(
+      source: S,
+      type?: K
+   ): ItemResult<S, K> {
+      if (!source.length) {
+         throw new Error(
+            "The provided source is empty and cannot be added to the drawer."
+         );
+      }
+
+      // Get item type
+      let itemType: keyof ItemTypeMap;
       if (!type) {
-         // Item will be considered as `file` if it has a file extension
-         let extension = path.extname(source);
-         if (extension && extension != ".") {
-            type = "file" as K;
-         } else {
-            type = "folder" as K;
-         }
+         itemType = getItemTypeFromSource(source);
+      } else {
+         itemType = type;
       }
 
       let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
@@ -51,12 +99,12 @@ export default class Folder {
 
       // Make sure the item we're adding doesn't exist
       let clone = this.drawer.items.get(resolved);
-      if (!!clone && clone.type == type) {
+      if (!!clone && clone.type == itemType) {
          console.warn(
-            `Cannot add item to drawer. An item with path "${clone.source}" already exists.` 
+            `Cannot add item to drawer. An item with path "${clone.source}" already exists.`
          );
 
-         return clone as ItemTypeMap[K];
+         return clone as ItemResult<S, K>;
       }
 
       // Recursively create parent folders of the main item if they don't exist
@@ -78,7 +126,7 @@ export default class Folder {
 
       // Create main item
       let item: Folder | File;
-      if (type == "file") {
+      if (itemType == "file") {
          item = new File(this.drawer, parent, resolved);
       } else {
          item = new Folder(this.drawer, parent, resolved);
@@ -88,7 +136,7 @@ export default class Folder {
       parent.widget.sort();
       parent.widget.domNodes.container.classList.remove(DRAWER_FOLDER_EMPTY);
 
-      return item as ItemTypeMap[K];
+      return item as ItemResult<S, K>;
    }
 
    /**
@@ -103,15 +151,15 @@ export default class Folder {
       type?: K
    ): ItemTypeMap[K] | null {
       // Get proper item type if auto
-      if (!type) {
-         // Item will be considered as `file` if it has a file extension
-         let extension = path.extname(source);
-         if (extension && extension != ".") {
-            type = "file" as K;
-         } else {
-            type = "folder" as K;
-         }
-      }
+      // if (!type) {
+      //    // Item will be considered as `file` if it has a file extension
+      //    let extension = path.extname(source);
+      //    if (extension && extension != ".") {
+      //       type = "file" as K;
+      //    } else {
+      //       type = "folder" as K;
+      //    }
+      // }
 
       // Scan items
       let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
@@ -122,7 +170,7 @@ export default class Folder {
             ? this.drawer.root
             : this.drawer.items.get(resolved) || null;
 
-      if (item?.type != type) {
+      if (type && item?.type != type) {
          item = null;
       }
 
@@ -149,7 +197,9 @@ export default class Folder {
 
             // Empty class
             if (!this.getChildren().length) {
-               this.widget.domNodes.container.classList.add(DRAWER_FOLDER_EMPTY);
+               this.widget.domNodes.container.classList.add(
+                  DRAWER_FOLDER_EMPTY
+               );
             }
          }
       }
