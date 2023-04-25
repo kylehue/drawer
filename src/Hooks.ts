@@ -53,8 +53,7 @@ export class Hooks implements IHooks {
    ) {
       let group = this._getListeners(eventName);
       for (let evt of group) {
-         // @ts-ignore
-         evt(...args);
+         (evt as any)(...args);
       }
    }
 
