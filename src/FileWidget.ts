@@ -4,7 +4,6 @@ import { ItemWidget } from "./ItemWidget.js";
 import {
    DRAWER_ITEM_INPUT,
    DRAWER_FILE_INPUT,
-   DRAWER_ITEM_ICON,
    DRAWER_FILE_ICON,
    DRAWER_ITEM_BLURRED,
    DRAWER_FILE,
@@ -20,7 +19,7 @@ export class FileWidget extends ItemWidget {
 
       // Init class names
       nodes.input.classList.add(DRAWER_ITEM_INPUT, DRAWER_FILE_INPUT);
-      nodes.icon.classList.add(DRAWER_ITEM_ICON, DRAWER_FILE_ICON);
+      nodes.iconContainer.classList.add(DRAWER_FILE_ICON);
       nodes.container.classList.add(
          DRAWER_ITEM,
          DRAWER_FILE,
@@ -28,7 +27,7 @@ export class FileWidget extends ItemWidget {
          ...getClassNameTokens(options.fileClassName)
       );
 
-      nodes.container.append(nodes.icon, nodes.input);
+      nodes.container.append(nodes.iconContainer, nodes.input);
       file.parent.widget.domNodes.body.prepend(nodes.container);
 
       this.updateIcon();
@@ -91,42 +90,23 @@ export class FileWidget extends ItemWidget {
       this.domNodes.container.style.paddingLeft = indentSize + "em";
    }
 
-   private _previousIconClassName?: string;
-
-   private _setIcon = (icon: string | Node) => {
-      const nodes = this.domNodes;
-      if (typeof icon == "string") {
-         // Clear icon class
-         if (this._previousIconClassName) {
-            nodes.icon.classList.remove(this._previousIconClassName);
-         }
-
-         // Then set
-         nodes.icon.classList.add(...getClassNameTokens(icon));
-         this._previousIconClassName = icon;
-      } else if (icon instanceof Node) {
-         // Clear icon first
-         while (nodes.icon.firstChild) {
-            nodes.icon.firstChild.remove();
-         }
-
-         // Then append
-         nodes.icon.appendChild(icon);
-      }
-   };
-
    /**
-    * Update icon in case of rename
+    * Updates the icon of the file.
+    * @function
+    * @returns {void}
     */
-   updateIcon() {
+   updateIcon(): void {
       const options = this.file.drawer.options;
-      const nodes = this.domNodes;
 
       if (typeof options.fileIcon == "function") {
          let icon = options.fileIcon(this.file.source);
-         this._setIcon(icon);
+         this.setIcon(icon);
       } else {
-         this._setIcon(options.fileIcon);
+         this.setIcon(
+            typeof options.fileIcon == "string"
+               ? options.fileIcon
+               : options.fileIcon.cloneNode(true)
+         );
       }
    }
 }

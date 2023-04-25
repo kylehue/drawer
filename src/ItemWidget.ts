@@ -3,14 +3,17 @@ import { File } from "./File.js";
 import { Folder } from "./Folder.js";
 import {
    DRAWER_ITEM,
+   DRAWER_ITEM_ICON,
    DRAWER_ITEM_INPUT_FOCUSED,
    DRAWER_ITEM_OPAQUE,
 } from "./classNames.js";
+import getClassNameTokens from "./utils/getClassNameTokens.js";
 
 export class ItemWidget {
    public domNodes = {
       container: document.createElement("div"),
       input: document.createElement("input"),
+      iconContainer: document.createElement("span"),
       icon: document.createElement("span"),
    };
 
@@ -22,6 +25,10 @@ export class ItemWidget {
 
    constructor(private item: Folder | File) {
       const nodes = this.domNodes;
+
+      nodes.iconContainer.classList.add(DRAWER_ITEM_ICON);
+      nodes.iconContainer.appendChild(nodes.icon);
+
       // Remove input autocomplete and spellcheck
       nodes.input.setAttribute("spellcheck", "false");
       nodes.input.setAttribute("autofill", "false");
@@ -95,6 +102,24 @@ export class ItemWidget {
       const nodes = this.domNodes;
       nodes.container.setAttribute("tabindex", "0");
       nodes.container.focus();
+   }
+
+   protected setIcon(icon: string | Node) {
+      const nodes = this.domNodes;
+      // Clear icon first
+      while (nodes.icon.firstChild) {
+         nodes.icon.removeChild(nodes.icon.firstChild);
+      }
+
+      nodes.icon.className = "";
+      nodes.icon.removeAttribute("class");
+
+      // Then set
+      if (typeof icon == "string") {
+         nodes.icon.classList.add(...getClassNameTokens(icon));
+      } else if (icon instanceof Node) {
+         nodes.icon.appendChild(icon);
+      }
    }
 
    /**
@@ -180,7 +205,10 @@ export class ItemWidget {
          events.forEach((evt) => node.removeEventListener(evt[1], evt[2]));
       }
 
-      this.domNodes.container.remove();
+      let parentNode = this.item.parent?.widget.domNodes.body;
+      if (parentNode && parentNode.contains(this.domNodes.container)) {
+         parentNode.removeChild(this.domNodes.container);
+      }
    }
 
    rename(name: string) {

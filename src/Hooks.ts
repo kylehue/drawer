@@ -7,6 +7,12 @@ const eventMap = {
    onDidChangeItemName: (payload: IItemRenameEvent) => {},
 } as const;
 
+export type IEventMap = typeof eventMap;
+
+export type IHooks = {
+   [K in keyof IEventMap]: (cb: IEventMap[K]) => void;
+};
+
 export interface IItemClickEvent {
    item: Folder | File;
    event: MouseEvent;
@@ -18,19 +24,10 @@ export interface IItemRenameEvent {
    newName: string;
 }
 
-export type IEventMap = typeof eventMap;
-
-export type IHooks = {
-   [K in keyof IEventMap]: (cb: IEventMap[K]) => void;
-};
-
-export type ListenerMap = Map<
-   keyof IEventMap,
-   Array<IEventMap[keyof IEventMap]>
->;
-
 export class Hooks implements IHooks {
-   private _listeners: ListenerMap = new Map();
+   private _listeners: Map<keyof IEventMap, Array<IEventMap[keyof IEventMap]>> =
+      new Map();
+   
    private _getListeners<K extends keyof IEventMap>(
       key: K
    ): Array<IEventMap[K]> {

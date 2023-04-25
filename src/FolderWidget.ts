@@ -27,13 +27,11 @@ export class FolderWidget extends ItemWidget {
       head: HTMLDivElement;
       body: HTMLDivElement;
       input: HTMLInputElement;
+      iconContainer: HTMLSpanElement;
       icon: HTMLSpanElement;
       iconChevron: HTMLSpanElement;
       indentGuide: HTMLSpanElement;
    };
-
-   private _iconClosed: Node | null = null;
-   private _iconOpen: Node | null = null;
 
    constructor(private folder: Folder) {
       super(folder);
@@ -48,7 +46,7 @@ export class FolderWidget extends ItemWidget {
 
       // Init class names
       nodes.input.classList.add(DRAWER_ITEM_INPUT, DRAWER_FOLDER_INPUT);
-      nodes.icon.classList.add(DRAWER_ITEM_ICON, DRAWER_FOLDER_ICON);
+      nodes.iconContainer.classList.add(DRAWER_FOLDER_ICON);
       nodes.container.classList.add(
          DRAWER_ITEM,
          DRAWER_FOLDER,
@@ -76,23 +74,12 @@ export class FolderWidget extends ItemWidget {
          );
       }
 
-      // Append all nodes
-      if (options.folderIconClosed instanceof Node) {
-         this._iconClosed = options.folderIconClosed.cloneNode(true);
-         this.domNodes.icon.appendChild(this._iconClosed);
-      }
-
-      if (options.folderIcon instanceof Node) {
-         this._iconOpen = options.folderIcon.cloneNode(true);
-         this.domNodes.icon.appendChild(this._iconOpen);
-      }
-
       if (options.folderIconChevron instanceof Node) {
          let iconChevron = options.folderIconChevron.cloneNode(true);
          this.domNodes.iconChevron.appendChild(iconChevron);
       }
 
-      nodes.head.append(nodes.icon, nodes.input, nodes.iconChevron);
+      nodes.head.append(nodes.iconContainer, nodes.input, nodes.iconChevron);
 
       // Only append head if not root
       let isRoot = !folder.parent;
@@ -112,7 +99,7 @@ export class FolderWidget extends ItemWidget {
          console.error(`Failed to append domNode of ${folder.source}`);
       }
 
-      this._updateIcons();
+      this.updateIcon();
       this._updateIndentation();
       this._initEvents();
       this.setState("open");
@@ -121,7 +108,7 @@ export class FolderWidget extends ItemWidget {
    private _state: FolderState = "open";
    public setState(state: FolderState) {
       this._state = state;
-      this._updateIcons();
+      this.updateIcon();
 
       if (state == "open") {
          this.domNodes.container.classList.remove(DRAWER_FOLDER_CLOSED);
@@ -195,69 +182,6 @@ export class FolderWidget extends ItemWidget {
       });
    }
 
-   private _updateIcons() {
-      const options = this.folder.drawer.options;
-      const { icon } = this.domNodes;
-      const isOpen = this.state === "open";
-
-      let folderIconClosed = options.folderIconClosed;
-      let folderIconOpen = options.folderIcon;
-
-      if (!folderIconOpen && !folderIconClosed) {
-         if (this.domNodes.head.contains(this.domNodes.icon)) {
-            this.domNodes.icon.remove();
-         }
-         return;
-      }
-
-      // If the icon for the open or closed state of the folder is not specified, then use the icon specified for the other state as the default icon
-      if (folderIconClosed && !folderIconOpen) {
-         if (typeof folderIconClosed == "string") {
-            folderIconOpen = folderIconClosed;
-         } else if (this._iconClosed && !this._iconOpen) {
-            this._iconOpen = this._iconClosed.cloneNode(true);
-         }
-      } else if (!folderIconClosed && folderIconOpen) {
-         if (typeof folderIconOpen == "string") {
-            folderIconClosed = folderIconOpen;
-         } else if (this._iconOpen && !this._iconClosed) {
-            this._iconClosed = this._iconOpen.cloneNode(true);
-         }
-      }
-
-      // Update string icon
-      if (
-         typeof folderIconClosed === "string" &&
-         typeof folderIconOpen === "string"
-      ) {
-         const iconClassToAdd = isOpen ? folderIconOpen : folderIconClosed;
-         const iconClassToRemove = isOpen ? folderIconClosed : folderIconOpen;
-         icon.classList.remove(...getClassNameTokens(iconClassToRemove));
-         icon.classList.add(...getClassNameTokens(iconClassToAdd));
-      } else if (typeof folderIconClosed === "string") {
-         for (let token of getClassNameTokens(folderIconClosed)) {
-            icon.classList.toggle(token, !isOpen);
-         }
-      } else if (typeof folderIconOpen === "string") {
-         for (let token of getClassNameTokens(folderIconOpen)) {
-            icon.classList.toggle(token, isOpen);
-         }
-      }
-
-      // Update node icon
-      if (this._iconClosed && icon.contains(this._iconClosed)) {
-         icon.removeChild(this._iconClosed);
-      }
-      if (this._iconOpen && icon.contains(this._iconOpen)) {
-         icon.removeChild(this._iconOpen);
-      }
-      if (isOpen && this._iconOpen) {
-         icon.appendChild(this._iconOpen);
-      } else if (!isOpen && this._iconClosed) {
-         icon.appendChild(this._iconClosed);
-      }
-   }
-
    private _updateIndentation() {
       let isRoot = !this.folder.parent;
       if (isRoot) {
@@ -271,6 +195,33 @@ export class FolderWidget extends ItemWidget {
       let indentGuideOffset = this.folder.drawer.options.indentGuideOffset;
       this.domNodes.indentGuide.style.left =
          indentSize + indentGuideOffset + "em";
+   }
+
+   /**
+    * Updates the icon of the folder based on the current state.
+    * @function
+    * @returns {void}
+    */
+   updateIcon(): void {
+      const options = this.folder.drawer.options;
+      const isOpen = this.state === "open";
+
+      let iconToUse = isOpen ? options.folderIcon : options.folderIconClosed;
+
+      if (!iconToUse) {
+         iconToUse = options.folderIcon
+            ? options.folderIcon
+            : options.folderIconClosed;
+      }
+
+      if (typeof iconToUse == "function") {
+         let icon = iconToUse(this.folder.source);
+         this.setIcon(icon);
+      } else {
+         this.setIcon(
+            typeof iconToUse == "string" ? iconToUse : iconToUse.cloneNode(true)
+         );
+      }
    }
 
    /**
