@@ -7,7 +7,6 @@ import {
    DRAWER_FILE_ICON,
    DRAWER_ITEM_BLURRED,
    DRAWER_FILE,
-   DRAWER_ITEM_FOCUSED,
    DRAWER_ITEM,
 } from "./classNames.js";
 
@@ -54,23 +53,8 @@ export class FileWidget extends ItemWidget {
             item: this.file,
          });
 
-         // Handle file focus
-         // First, remove all item focus
-         let focusClass = DRAWER_ITEM_FOCUSED;
-         let blurClass = DRAWER_ITEM_BLURRED;
-         let items = document.querySelectorAll("." + DRAWER_ITEM);
-         items.forEach((el) => {
-            el.classList.remove(focusClass);
-            el.classList.add(blurClass);
-         });
-
-         // Then, add focus class for this file
-         this.domNodes.container.classList.remove(blurClass);
-         this.domNodes.container.classList.add(focusClass);
-
-         // Set drawer focused item
-         this.file.drawer.focusedItem = this.file;
-         this.focusContainer();
+         // Focus
+         this.focus();
       });
 
       // Trigger file right click event

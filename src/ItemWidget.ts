@@ -3,6 +3,8 @@ import { File } from "./File.js";
 import { Folder } from "./Folder.js";
 import {
    DRAWER_ITEM,
+   DRAWER_ITEM_BLURRED,
+   DRAWER_ITEM_FOCUSED,
    DRAWER_ITEM_ICON,
    DRAWER_ITEM_INPUT_FOCUSED,
    DRAWER_ITEM_OPAQUE,
@@ -93,17 +95,6 @@ export class ItemWidget {
       }
    }
 
-   protected focusContainer() {
-      let items = document.querySelectorAll("." + DRAWER_ITEM);
-      items.forEach((el) => {
-         el.removeAttribute("tabindex");
-      });
-
-      const nodes = this.domNodes;
-      nodes.container.setAttribute("tabindex", "0");
-      nodes.container.focus();
-   }
-
    protected setIcon(icon: string | Node) {
       const nodes = this.domNodes;
       // Clear icon first
@@ -165,7 +156,45 @@ export class ItemWidget {
    }
 
    /**
-    * Focuses on the input element of the current drawer item.
+    * Focuses the drawer item.
+    * @function
+    * @returns {void}
+    */
+   focus(): void {
+      // Blur all items
+      for (let [source, item] of this.item.drawer.items) {
+         if (item == this.item) continue;
+         item.widget.blur();
+      }
+
+      // Add focus class to this item's container
+      this.domNodes.container.classList.remove(DRAWER_ITEM_BLURRED);
+      this.domNodes.container.classList.add(DRAWER_ITEM_FOCUSED);
+
+      // Make container focusable
+      this.domNodes.container.setAttribute("tabindex", "0");
+      this.domNodes.container.focus();
+
+      this.item.drawer.focusedItem = this.item;
+   }
+
+   /**
+    * Removes the drawer item's focus.
+    * @function
+    * @returns {void}
+    */
+   blur(): void {
+      this.domNodes.container.classList.remove(DRAWER_ITEM_FOCUSED);
+      this.domNodes.container.classList.add(DRAWER_ITEM_BLURRED);
+      this.domNodes.container.removeAttribute("tabindex");
+
+      if (this.item.drawer.focusedItem == this.item) {
+         this.item.drawer.focusedItem = null;
+      }
+   }
+
+   /**
+    * Focuses on the input element of the drawer item.
     * @function
     * @returns {void}
     */
@@ -184,7 +213,7 @@ export class ItemWidget {
    }
 
    /**
-    * Blurs the input element of the current drawer item.
+    * Removes the input element's focus.
     * @function
     * @returns {void}
     */
@@ -194,8 +223,7 @@ export class ItemWidget {
    }
 
    /**
-    * Disposes the current drawer item.
-    * Removes all event listeners attached to its DOM nodes and removes the container from the DOM.
+    * Disposes the drawer item.
     * @function
     * @returns {void}
     */
@@ -211,7 +239,12 @@ export class ItemWidget {
       }
    }
 
-   rename(name: string) {
+   /**
+    * Renames the drawer item in DOM.
+    * @param name The new name
+    * @returns {void}
+    */
+   rename(name: string): void {
       this.domNodes.input.value = name;
 
       // Should be opaque?

@@ -19,7 +19,7 @@ import {
    DRAWER_ITEM_INPUT,
 } from "./classNames.js";
 
-type FolderState = "close" | "open";
+export type FolderState = "close" | "open";
 
 export class FolderWidget extends ItemWidget {
    public declare domNodes: {
@@ -32,6 +32,8 @@ export class FolderWidget extends ItemWidget {
       iconChevron: HTMLSpanElement;
       indentGuide: HTMLSpanElement;
    };
+
+   private _state: FolderState = "open";
 
    constructor(private folder: Folder) {
       super(folder);
@@ -102,11 +104,18 @@ export class FolderWidget extends ItemWidget {
       this.updateIcon();
       this._updateIndentation();
       this._initEvents();
-      this.setState("open");
+      
+      // Set default state
+      if (typeof options.folderState == "function") {
+         this.setState(options.folderState(folder.source));
+      } else {
+         this.setState(options.folderState);
+      }
    }
 
-   private _state: FolderState = "open";
    public setState(state: FolderState) {
+      if (!this.folder.parent) return;
+
       this._state = state;
       this.updateIcon();
 
@@ -150,24 +159,8 @@ export class FolderWidget extends ItemWidget {
                this.setState("open");
             }
 
-            // Handle folder focus
-            // First, remove all item focus
-            let focusClass = DRAWER_ITEM_FOCUSED;
-            let blurClass = DRAWER_ITEM_BLURRED;
-            let items = document.querySelectorAll("." + DRAWER_ITEM);
-            items.forEach((el) => {
-               el.classList.remove(focusClass);
-               el.classList.add(blurClass);
-            });
-
-            // Then, add focus class for this folder
-            this.domNodes.container.classList.remove(blurClass);
-            this.domNodes.container.classList.add(focusClass);
-
-            // Set drawer focused item
-            this.folder.drawer.focusedItem = this.folder;
-
-            this.focusContainer();
+            // Focus
+            this.focus();
          }
       });
 
