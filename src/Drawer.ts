@@ -28,14 +28,13 @@ export class Drawer extends Hooks {
          Object.assign({}, defaultOptions),
          options || {}
       );
-
+      
+      // Setup element
       if (!this.options.element) {
          throw new Error(
             "The drawer cannot be appended to a null or undefined element. Please provide a valid container element."
          );
       }
-
-      this.root = new Folder(this, null, "/");
 
       this.options.element.classList.add(DRAWER);
 
@@ -50,6 +49,10 @@ export class Drawer extends Hooks {
             this.options.element.scrollLeft = 0;
          };
       }
+
+      // Setup root
+      this.root = new Folder(this, null, "/");
+      this.items.set("/", this.root);
 
       // Add keyboard support
       window.addEventListener("keydown", (event) => {
