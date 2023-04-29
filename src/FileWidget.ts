@@ -1,5 +1,5 @@
 import { File } from "./File.js";
-import getClassNameTokens from "./utils/getClassNameTokens.js";
+import { getClassNameTokens } from "./utils.js";
 import { ItemWidget } from "./ItemWidget.js";
 import {
    DRAWER_ITEM_INPUT,

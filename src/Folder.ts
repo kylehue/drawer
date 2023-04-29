@@ -3,7 +3,7 @@ import { File } from "./File.js";
 import path from "path-browserify";
 import { FolderWidget } from "./FolderWidget.js";
 import { DRAWER_FOLDER_EMPTY } from "./classNames.js";
-import { ItemResult, ItemTypeMap, getPossibleItemTypesOfSource } from "./utils/getItemTypeFromSource.js";
+import { ItemResult, ItemTypeMap, getPossibleItemTypesOfSource } from "./utils.js";
 
 export class Folder {
    public type = "folder" as const;

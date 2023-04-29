@@ -1,6 +1,18 @@
-import { Folder } from "../Folder.js";
-import { File } from "../File.js";
+import { Folder } from "./Folder.js";
+import { File } from "./File.js";
 import path from "path-browserify";
+
+export function getClassNameTokens(className: string) {
+   let classNameTokens: string[] = [];
+
+   className.split(" ").forEach((token) => {
+      if (token) {
+         classNameTokens.push(token);
+      }
+   });
+
+   return classNameTokens;
+}
 
 export interface ItemTypeMap {
    folder: Folder;
@@ -47,4 +59,8 @@ export function getPossibleItemTypesOfSource<S extends string>(
    }
 
    return itemType as ItemTypeFromSource<S>[];
+}
+
+export function isValidItemName(name: string) {
+   return !/[/\\:*?"<>]/.test(name);
 }

@@ -2,14 +2,13 @@ import * as path from "path-browserify";
 import { File } from "./File.js";
 import { Folder } from "./Folder.js";
 import {
-   DRAWER_ITEM,
    DRAWER_ITEM_BLURRED,
    DRAWER_ITEM_FOCUSED,
    DRAWER_ITEM_ICON,
    DRAWER_ITEM_INPUT_FOCUSED,
    DRAWER_ITEM_OPAQUE,
 } from "./classNames.js";
-import getClassNameTokens from "./utils/getClassNameTokens.js";
+import { getClassNameTokens } from "./utils.js";
 
 export class ItemWidget {
    public domNodes = {
