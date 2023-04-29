@@ -34,6 +34,13 @@ describe("ADDING:", () => {
       });
    });
 
+   describe("ADD: Empty string source", () => {
+      test("should be null", () => {
+         let newFolder = folderA.add("");
+         expect(newFolder).toBeNull();
+      });
+   });
+
    describe("ADD: Explicit folder", () => {
       test("should create a folder in root named '/src/test.git'", () => {
          folderA.add("test.git", "folder");
