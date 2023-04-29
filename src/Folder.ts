@@ -162,6 +162,7 @@ export class Folder {
     */
    move(source: string): void {
       if (!source) return;
+      if (this === this.drawer.root) return;
 
       const oldSource = this.source;
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
