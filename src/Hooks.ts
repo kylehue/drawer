@@ -5,6 +5,7 @@ const eventMap = {
    onDidClickItem: (payload: IItemClickEvent) => {},
    onDidRightClickItem: (payload: IItemClickEvent) => {},
    onDidChangeItemName: (payload: IItemRenameEvent) => {},
+   onError: (payload: IErrorEvent) => {},
 } as const;
 
 export type IEventMap = typeof eventMap;
@@ -24,10 +25,15 @@ export interface IItemRenameEvent {
    newName: string;
 }
 
+export interface IErrorEvent {
+   code: number;
+   reason: string;
+}
+
 export class Hooks implements IHooks {
    private _listeners: Map<keyof IEventMap, Array<IEventMap[keyof IEventMap]>> =
       new Map();
-   
+
    private _getListeners<K extends keyof IEventMap>(
       key: K
    ): Array<IEventMap[K]> {
@@ -84,6 +90,16 @@ export class Hooks implements IHooks {
     */
    onDidChangeItemName(cb: IEventMap["onDidChangeItemName"]) {
       let group = this._getListeners("onDidChangeItemName");
+      group.push(cb);
+   }
+
+   /**
+    * An event emitted when an error occured.
+    *
+    * @param cb - The function to emit.
+    */
+   onError(cb: IEventMap["onError"]) {
+      let group = this._getListeners("onError");
       group.push(cb);
    }
 }

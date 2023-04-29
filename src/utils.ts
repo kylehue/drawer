@@ -34,7 +34,9 @@ export type ItemResult<
    K extends keyof ItemTypeMap
 > = keyof ItemTypeMap extends K
    ? S extends string
-      ? ItemTypeMap[ItemTypeFromSource<S>]
+      ? NonEmptyString<S> extends never
+         ? null
+         : ItemTypeMap[ItemTypeFromSource<S>]
       : ItemTypeMap[K]
    : ItemTypeMap[K];
 
@@ -61,6 +63,6 @@ export function getPossibleItemTypesOfSource<S extends string>(
    return itemType as ItemTypeFromSource<S>[];
 }
 
-export function isValidItemName(name: string) {
-   return !/[/\\:*?"<>]/.test(name);
+export function isValidItemName(name: string, allowSeperator = false) {
+   return allowSeperator ? !/[\\:*?"<>]/.test(name) : !/[/\\:*?"<>]/.test(name);
 }

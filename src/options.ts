@@ -1,5 +1,7 @@
 import { FolderState } from "./FolderWidget.js";
 
+type IconType = string | Node | ((source: string) => string | Node);
+
 export const defaultOptions = {
    /**
     * The HTML element to use as the root element of the drawer.
@@ -12,11 +14,11 @@ export const defaultOptions = {
    /**
     * The icon to use for closed folders. This can be a string representing a CSS class, or a Node representing an HTML element, or a function that takes a file source and returns either a string or a Node.
     */
-   folderIconClosed: "" as string | Node | ((source: string) => string | Node),
+   folderIconClosed: "" as IconType,
    /**
     * The icon to use for folders. This can be a string representing a CSS class, or a Node representing an HTML element, or a function that takes a file source and returns either a string or a Node.
     */
-   folderIcon: "" as string | Node | ((source: string) => string | Node),
+   folderIcon: "" as IconType,
    /**
     * The icon to use for the chevron on folder items. This can be a string representing a CSS class, or a Node representing an HTML element.
     */
@@ -28,7 +30,7 @@ export const defaultOptions = {
    /**
     * The icon to use for file items. This can be a string representing a CSS class, a Node representing an HTML element, or a function that takes a file source and returns either a string or a Node.
     */
-   fileIcon: "" as string | Node | ((source: string) => string | Node),
+   fileIcon: "" as IconType,
    /**
     * Whether or not to allow editing the name of a folder item by double-clicking on it.
     * @default false

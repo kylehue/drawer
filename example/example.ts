@@ -151,6 +151,10 @@ drawerA.onDidChangeItemName((e) => {
    }
 });
 
+drawerA.onError((e) => {
+   console.error(e.reason);
+})
+
 drawerA.root.add("zxc.ts");
 drawerA.root.add("abc.ts");
 drawerA.root.add("hello.ts");

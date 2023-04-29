@@ -2,6 +2,7 @@ import * as path from "path-browserify";
 import { Drawer } from "./Drawer.js";
 import { FileWidget } from "./FileWidget.js";
 import { Folder } from "./Folder.js";
+import { ERR_MOVE_INSIDE_CURRENT_DIR, ERR_MOVE_TO_CURRENT_DIR } from "./errors.js";
 
 export class File {
    public type = "file" as const;
@@ -37,19 +38,14 @@ export class File {
    rename(name: string): void {
       let dirname = path.dirname(this.source);
       let newSource = path.join(dirname, name);
-      let mapItem = this.drawer.items.get(this.source);
 
-      if (mapItem) {
-         this.drawer.items.set(newSource, mapItem);
-         this.drawer.items.delete(this.source);
-         this.widget.rename(name);
-         this.name = name;
-         this.source = newSource;
-         this.widget.updateIcon();
-         this.parent.widget.sort();
-      } else {
-         console.error(`Can't rename ${this.source}`);
-      }
+      this.drawer.items.set(newSource, this);
+      this.drawer.items.delete(this.source);
+      this.name = name;
+      this.source = newSource;
+      this.parent.widget.sort();
+      this.widget.updateIcon();
+      this.widget.rename(name);
    }
 
    /**
@@ -66,13 +62,13 @@ export class File {
 
       // Make sure we're not moving it to its current directory
       if (targetSource == path.dirname(this.source)) {
-         console.warn("Cannot move a file inside its current directory.");
+         this.drawer.trigger("onError", ERR_MOVE_TO_CURRENT_DIR(this.type))
          return;
       }
 
       // Make sure we're not moving it inside itself
       if (targetSource.startsWith(this.source)) {
-         console.warn("Cannot move a file inside itself.");
+         this.drawer.trigger("onError", ERR_MOVE_INSIDE_CURRENT_DIR(this.type));
          return;
       }
 

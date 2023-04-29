@@ -3,7 +3,18 @@ import { File } from "./File.js";
 import path from "path-browserify";
 import { FolderWidget } from "./FolderWidget.js";
 import { DRAWER_FOLDER_EMPTY } from "./classNames.js";
-import { ItemResult, ItemTypeMap, getPossibleItemTypesOfSource } from "./utils.js";
+import {
+   ItemResult,
+   ItemTypeMap,
+   getPossibleItemTypesOfSource,
+   isValidItemName,
+} from "./utils.js";
+import {
+   ERR_ADD_CLONE,
+   ERR_ADD_EMPTY,
+   ERR_MOVE_INSIDE_CURRENT_DIR,
+   ERR_MOVE_TO_CURRENT_DIR,
+} from "./errors.js";
 
 export class Folder {
    public type = "folder" as const;
@@ -35,9 +46,8 @@ export class Folder {
       type?: K
    ): ItemResult<S, K> {
       if (!source.length) {
-         throw new Error(
-            "The provided source is empty and cannot be added to the drawer."
-         );
+         this.drawer.trigger("onError", ERR_ADD_EMPTY());
+         return null as ItemResult<S, K>;
       }
 
       // Get item type
@@ -59,10 +69,7 @@ export class Folder {
       // Make sure the item we're adding doesn't exist
       let clone = this.drawer.items.get(relativePath);
       if (!!clone && possibleItemTypes.includes(clone.type)) {
-         console.warn(
-            `Cannot add item to drawer. An item with path "${clone.source}" already exists.`
-         );
-
+         this.drawer.trigger("onError", ERR_ADD_CLONE(clone.source));
          return clone as ItemResult<S, K>;
       }
 
@@ -138,7 +145,7 @@ export class Folder {
 
    /**
     * Moves a folder to the specified source.
-    * 
+    *
     * **Note: The specified source must be in absolute form.**
     * @param source The path where to move the item
     * @returns {void}
@@ -150,13 +157,13 @@ export class Folder {
 
       // Make sure we're not moving it to its current directory
       if (targetSource == path.dirname(this.source)) {
-         console.warn("Cannot move a folder inside its current directory.");
+         this.drawer.trigger("onError", ERR_MOVE_TO_CURRENT_DIR(this.type));
          return;
       }
 
       // Make sure we're not moving it inside itself or its children
       if (targetSource.startsWith(this.source)) {
-         console.warn("Cannot move a folder inside itself or its children.");
+         this.drawer.trigger("onError", ERR_MOVE_INSIDE_CURRENT_DIR(this.type));
          return;
       }
 
@@ -238,19 +245,14 @@ export class Folder {
    rename(name: string): void {
       let dirname = path.dirname(this.source);
       let newSource = path.join(dirname, name);
-      let mapItem = this.drawer.items.get(this.source);
 
-      if (mapItem) {
-         this.drawer.items.set(newSource, mapItem);
-         this.drawer.items.delete(this.source);
-         this.widget.rename(name);
-         this.name = name;
-         this.source = newSource;
-         this.widget.updateIcon();
-         this.parent?.widget.sort();
-      } else {
-         console.error(`Can't rename ${this.source}`);
-      }
+      this.drawer.items.set(newSource, this);
+      this.drawer.items.delete(this.source);
+      this.name = name;
+      this.source = newSource;
+      this.parent?.widget.sort();
+      this.widget.updateIcon();
+      this.widget.rename(name);
    }
 
    /**
