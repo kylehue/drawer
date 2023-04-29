@@ -22,7 +22,7 @@
       "build:main": "swc ./src -d ./build",
       "build:example": "swc ./example -d ./example-build",
       "build:style": "sass ./styles/style.scss:./build/styles/style.css",
-      "build:bundle": "esbuild ./src/Drawer.ts --bundle --outdir=build --entry-names=Drawer.bundle --format=iife --global-name=Drawer --platform=browser --sourcemap",
+      "build:bundle": "esbuild ./src/Drawer.ts --bundle --outdir=browser --format=iife --global-name=Drawer --platform=browser --sourcemap",
       "clean": "rimraf build coverage nyc_output",
       "type:dts": "tsc --emitDeclarationOnly --project tsconfig.build.json",
       "type:check": "tsc --noEmit",
