@@ -2,7 +2,8 @@ import * as path from "path-browserify";
 import { Drawer } from "./Drawer.js";
 import { FileWidget } from "./FileWidget.js";
 import { Folder } from "./Folder.js";
-import { ERR_MOVE_INSIDE_CURRENT_DIR, ERR_MOVE_TO_CURRENT_DIR } from "./errors.js";
+import { ERR_INVALID_CHARS, ERR_MOVE_INSIDE_CURRENT_DIR, ERR_MOVE_TO_CURRENT_DIR } from "./errors.js";
+import { isValidItemName } from "./utils.js";
 
 export class File {
    public type = "file" as const;
@@ -38,6 +39,11 @@ export class File {
    rename(name: string): void {
       let dirname = path.dirname(this.source);
       let newSource = path.join(dirname, name);
+
+      if (!isValidItemName(name)) {
+         this.drawer.trigger("onError", ERR_INVALID_CHARS(name, true));
+         return;
+      }
 
       this.drawer.items.set(newSource, this);
       this.drawer.items.delete(this.source);

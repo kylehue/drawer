@@ -12,6 +12,7 @@ import {
 import {
    ERR_ADD_CLONE,
    ERR_ADD_EMPTY,
+   ERR_INVALID_CHARS,
    ERR_MOVE_INSIDE_CURRENT_DIR,
    ERR_MOVE_TO_CURRENT_DIR,
 } from "./errors.js";
@@ -47,6 +48,11 @@ export class Folder {
    ): ItemResult<S, K> {
       if (!source.length) {
          this.drawer.trigger("onError", ERR_ADD_EMPTY());
+         return null as ItemResult<S, K>;
+      }
+
+      if (!isValidItemName(source, true)) {
+         this.drawer.trigger("onError", ERR_INVALID_CHARS(source));
          return null as ItemResult<S, K>;
       }
 
@@ -245,6 +251,11 @@ export class Folder {
    rename(name: string): void {
       let dirname = path.dirname(this.source);
       let newSource = path.join(dirname, name);
+
+      if (!isValidItemName(name)) {
+         this.drawer.trigger("onError", ERR_INVALID_CHARS(name, true));
+         return;
+      }
 
       this.drawer.items.set(newSource, this);
       this.drawer.items.delete(this.source);

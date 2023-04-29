@@ -27,3 +27,12 @@ export function ERR_MOVE_INSIDE_CURRENT_DIR(itemType: string): IErrorEvent {
       reason: `Cannot move a ${itemType} inside itself or its children.`,
    };
 }
+
+export function ERR_INVALID_CHARS(source: string, isName = false): IErrorEvent {
+   return {
+      code: 4,
+      reason: `The ${
+         isName ? "name" : "path"
+      } '${source}' is invalid because it contains characters that are not allowed.`,
+   };
+}
