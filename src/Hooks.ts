@@ -1,5 +1,5 @@
-import { Folder } from "./Folder.js";
 import { File } from "./File.js";
+import { Folder } from "./Folder.js";
 
 const eventMap = {
    onDidClickItem: (payload: IClickItemEvent) => {},
@@ -41,18 +41,18 @@ export interface IErrorEvent {
 }
 
 export class Hooks implements IHooks {
-   private _listeners: Map<keyof IEventMap, Array<IEventMap[keyof IEventMap]>> =
-      new Map();
+   private _listeners =
+      new Map<keyof IEventMap, IEventMap[keyof IEventMap][]>();
 
    private _getListeners<K extends keyof IEventMap>(
       key: K
-   ): Array<IEventMap[K]> {
-      return this._listeners.get(key) as Array<IEventMap[K]>;
+   ): IEventMap[K][] {
+      return this._listeners.get(key) as IEventMap[K][];
    }
 
    constructor() {
       // Instantiate listener arrays
-      for (let key in eventMap) {
+      for (const key in eventMap) {
          this._listeners.set(key as keyof IEventMap, []);
       }
    }
@@ -67,8 +67,8 @@ export class Hooks implements IHooks {
       eventName: K,
       ...args: Parameters<IEventMap[K]>
    ) {
-      let group = this._getListeners(eventName);
-      for (let evt of group) {
+      const group = this._getListeners(eventName);
+      for (const evt of group) {
          (evt as any)(...args);
       }
    }
@@ -79,7 +79,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onDidClickItem(cb: IEventMap["onDidClickItem"]) {
-      let group = this._getListeners("onDidClickItem");
+      const group = this._getListeners("onDidClickItem");
       group.push(cb);
    }
 
@@ -89,7 +89,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onDidRightClickItem(cb: IEventMap["onDidRightClickItem"]) {
-      let group = this._getListeners("onDidRightClickItem");
+      const group = this._getListeners("onDidRightClickItem");
       group.push(cb);
    }
 
@@ -99,7 +99,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onDidRenameItem(cb: IEventMap["onDidRenameItem"]) {
-      let group = this._getListeners("onDidRenameItem");
+      const group = this._getListeners("onDidRenameItem");
       group.push(cb);
    }
 
@@ -109,7 +109,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onDidAddItem(cb: IEventMap["onDidAddItem"]) {
-      let group = this._getListeners("onDidAddItem");
+      const group = this._getListeners("onDidAddItem");
       group.push(cb);
    }
 
@@ -119,7 +119,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onDidDeleteItem(cb: IEventMap["onDidDeleteItem"]) {
-      let group = this._getListeners("onDidDeleteItem");
+      const group = this._getListeners("onDidDeleteItem");
       group.push(cb);
    }
 
@@ -129,7 +129,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onDidMoveItem(cb: IEventMap["onDidMoveItem"]) {
-      let group = this._getListeners("onDidMoveItem");
+      const group = this._getListeners("onDidMoveItem");
       group.push(cb);
    }
 
@@ -139,7 +139,7 @@ export class Hooks implements IHooks {
     * @param cb - The function to emit.
     */
    onError(cb: IEventMap["onError"]) {
-      let group = this._getListeners("onError");
+      const group = this._getListeners("onError");
       group.push(cb);
    }
 }

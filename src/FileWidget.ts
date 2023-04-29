@@ -1,6 +1,3 @@
-import { File } from "./File.js";
-import { getClassNameTokens } from "./utils.js";
-import { ItemWidget } from "./ItemWidget.js";
 import {
    DRAWER_ITEM_INPUT,
    DRAWER_FILE_INPUT,
@@ -9,6 +6,9 @@ import {
    DRAWER_FILE,
    DRAWER_ITEM,
 } from "./classNames.js";
+import { File } from "./File.js";
+import { ItemWidget } from "./ItemWidget.js";
+import { getClassNameTokens } from "./utils.js";
 
 export class FileWidget extends ItemWidget {
    constructor(private file: File) {
@@ -73,7 +73,7 @@ export class FileWidget extends ItemWidget {
     * @returns {void}
     */
    updateIndentation(): void {
-      let indentSize = this._getCalculatedIndentSize();
+      const indentSize = this._getCalculatedIndentSize();
 
       this.domNodes.container.style.paddingLeft = indentSize + "em";
    }
@@ -87,7 +87,7 @@ export class FileWidget extends ItemWidget {
       const options = this.file.drawer.options;
 
       if (typeof options.fileIcon == "function") {
-         let icon = options.fileIcon(this.file.source);
+         const icon = options.fileIcon(this.file.source);
          this.setIcon(icon);
       } else {
          this.setIcon(

@@ -2,17 +2,17 @@
  * @vitest-environment jsdom
  */
 
+import path from "path-browserify";
 import { describe, expect, test, afterAll, afterEach } from "vitest";
 import { Drawer } from "../Drawer.js";
-import { Folder } from "../Folder.js";
 import { File } from "../File.js";
-import path from "path-browserify";
+import { Folder } from "../Folder.js";
 
-let drawer = new Drawer();
+const drawer = new Drawer();
 let folderA = drawer.root.add("/src", "folder");
 let folderB = drawer.root.add("/src/classes/comps", "folder");
-let fileA = folderA.add("memo.txt");
-let fileB = folderA.add("/src/classes/comps", "file");
+const fileA = folderA.add("memo.txt");
+const fileB = folderA.add("/src/classes/comps", "file");
 
 afterAll(() => {
    drawer.root.clear();
@@ -27,8 +27,8 @@ afterEach(() => {
 describe("ADDING:", () => {
    describe("ADD: Duplicates", () => {
       test("should NOT create a folder", () => {
-         let classesFolder = folderA.get("classes", "folder");
-         let newFolder = folderA.add("classes");
+         const classesFolder = folderA.get("classes", "folder");
+         const newFolder = folderA.add("classes");
 
          expect(newFolder).toBe(classesFolder);
       });
@@ -36,7 +36,7 @@ describe("ADDING:", () => {
 
    describe("ADD: Empty string source", () => {
       test("should be null", () => {
-         let newFolder = folderA.add("");
+         const newFolder = folderA.add("");
          expect(newFolder).toBeNull();
       });
    });
@@ -59,7 +59,7 @@ describe("ADDING:", () => {
 
    describe("ADD: Implicit folder with file extension", () => {
       test("should create a folder, not a file", () => {
-         let folder = folderA.add("test.txt/");
+         const folder = folderA.add("test.txt/");
 
          expect(folder).toBeInstanceOf(Folder);
       });
@@ -154,8 +154,8 @@ describe("DELETING:", () => {
 describe("MOVING:", () => {
    describe("MOVE: folderB to folderA", () => {
       test("should work properly", () => {
-         let folderBOldSource = folderB.source;
-         let expectedNewSource = path.join(folderA.source, folderB.name);
+         const folderBOldSource = folderB.source;
+         const expectedNewSource = path.join(folderA.source, folderB.name);
          folderB.move(folderA.source);
          expect(folderB.source).toBe(expectedNewSource);
          expect(folderB.parent).toBe(folderA);
@@ -166,8 +166,8 @@ describe("MOVING:", () => {
 
    describe("MOVE: fileA to folderB", () => {
       test("should work properly", () => {
-         let fileAOldSource = fileA.source;
-         let expectedFileNewSource = path.join(folderB.source, fileA.name);
+         const fileAOldSource = fileA.source;
+         const expectedFileNewSource = path.join(folderB.source, fileA.name);
          fileA.move(folderB.source);
          expect(fileA.source).toBe(expectedFileNewSource);
          expect(fileA.parent).toBe(folderB);
@@ -178,7 +178,7 @@ describe("MOVING:", () => {
 
    describe("MOVE: inside itself", () => {
       test("should not be allowed", () => {
-         let folderBOldSource = folderB.source;
+         const folderBOldSource = folderB.source;
          folderB.move(folderB.source);
          expect(folderB.source).toBe(folderBOldSource);
       });
@@ -186,7 +186,7 @@ describe("MOVING:", () => {
 
    describe("MOVE: inside its children", () => {
       test("should not be allowed", () => {
-         let folderBOldSource = folderB.source;
+         const folderBOldSource = folderB.source;
          folderB.move(path.join(folderB.source, "foo", "bar"));
          expect(folderB.source).toBe(folderBOldSource);
       });
@@ -194,7 +194,7 @@ describe("MOVING:", () => {
 
    describe("MOVE: inside its current directory", () => {
       test("should not be allowed", () => {
-         let folderBOldSource = folderB.source;
+         const folderBOldSource = folderB.source;
          folderB.move(path.dirname(folderB.source));
          expect(folderB.source).toBe(folderBOldSource);
       });

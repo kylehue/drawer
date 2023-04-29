@@ -1,9 +1,9 @@
-import { Folder } from "./Folder.js";
-import { File } from "./File.js";
 import path from "path-browserify";
+import { File } from "./File.js";
+import { Folder } from "./Folder.js";
 
 export function getClassNameTokens(className: string) {
-   let classNameTokens: string[] = [];
+   const classNameTokens: string[] = [];
 
    className.split(" ").forEach((token) => {
       if (token) {
@@ -47,12 +47,12 @@ export function getPossibleItemTypesOfSource<S extends string>(
    let itemType: (keyof ItemTypeMap)[] = [];
 
    // If slash is at the end, it's a folder
-   if (/\/$/.test(source)) {
+   if (source.endsWith("/")) {
       itemType = ["folder"];
    } else {
       // Item will be considered as `file` if it has a file extension
-      let extension = path.extname(source);
-      let hasFileExtension = !!extension && extension != ".";
+      const extension = path.extname(source);
+      const hasFileExtension = !!extension && extension != ".";
       if (hasFileExtension) {
          itemType = ["file"];
       } else {

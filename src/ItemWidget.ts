@@ -1,6 +1,4 @@
 import * as path from "path-browserify";
-import { File } from "./File.js";
-import { Folder } from "./Folder.js";
 import {
    DRAWER_ITEM_BLURRED,
    DRAWER_ITEM_FOCUSED,
@@ -8,6 +6,8 @@ import {
    DRAWER_ITEM_INPUT_FOCUSED,
    DRAWER_ITEM_OPAQUE,
 } from "./classNames.js";
+import { File } from "./File.js";
+import { Folder } from "./Folder.js";
 import { getClassNameTokens } from "./utils.js";
 
 export class ItemWidget {
@@ -53,15 +53,15 @@ export class ItemWidget {
          this.blurInput();
 
          // Emit event if name changed
-         let oldName = item.name;
-         let newName = this.domNodes.input.value;
+         const oldName = item.name;
+         const newName = this.domNodes.input.value;
          if (oldName != newName) {
             item.rename(newName);
          }
       });
 
       // If root, trigger clicks on root container
-      let isRoot = !item.parent;
+      const isRoot = !item.parent;
       if (isRoot && item.type == "folder") {
          this.addEventListener(this.domNodes.container, "click", (event) => {
             // Trigger folder click event
@@ -113,10 +113,10 @@ export class ItemWidget {
     * @returns {number} The indent size
     */
    protected _getCalculatedIndentSize(): number {
-      let source = this.item.source;
-      let sourceWithoutLeadingTrailingSlash = source.replace(/^\/|\/$/g, "");
-      let level = sourceWithoutLeadingTrailingSlash.split("/").length - 1;
-      let indentSize = level * this.item.drawer.options.indentSize;
+      const source = this.item.source;
+      const sourceWithoutLeadingTrailingSlash = source.replace(/^\/|\/$/g, "");
+      const level = sourceWithoutLeadingTrailingSlash.split("/").length - 1;
+      const indentSize = level * this.item.drawer.options.indentSize;
 
       return indentSize;
    }
@@ -135,11 +135,11 @@ export class ItemWidget {
       type: K,
       listener: (ev: HTMLElementEventMap[K]) => any
    ): void {
-      let elements: HTMLElement[] = Array.isArray(element)
+      const elements: HTMLElement[] = Array.isArray(element)
          ? element
          : [element];
 
-      for (let el of elements) {
+      for (const el of elements) {
          this._events.push([
             el,
             type,
@@ -156,7 +156,7 @@ export class ItemWidget {
     */
    focus(): void {
       // Blur all items
-      for (let [source, item] of this.item.drawer.items) {
+      for (const [source, item] of this.item.drawer.items) {
          if (item == this.item) continue;
          item.widget.blur();
       }
@@ -196,7 +196,7 @@ export class ItemWidget {
       this.domNodes.input.classList.add(DRAWER_ITEM_INPUT_FOCUSED);
       this.domNodes.input.focus();
       let selectRange = 0;
-      let extname = path.extname(this.domNodes.input.value);
+      const extname = path.extname(this.domNodes.input.value);
       if (this.item.type != "file" || !extname) {
          selectRange = this.domNodes.input.value.length;
       } else {
@@ -222,12 +222,12 @@ export class ItemWidget {
     * @returns {void}
     */
    dispose(): void {
-      for (let node of Object.values(this.domNodes)) {
+      for (const node of Object.values(this.domNodes)) {
          const events = this._events.filter((evt) => evt[0] === node);
          events.forEach((evt) => node.removeEventListener(evt[1], evt[2]));
       }
 
-      let parentNode = this.item.parent?.widget.domNodes.body;
+      const parentNode = this.item.parent?.widget.domNodes.body;
       if (parentNode && parentNode.contains(this.domNodes.container)) {
          parentNode.removeChild(this.domNodes.container);
       }
@@ -242,9 +242,9 @@ export class ItemWidget {
       this.domNodes.input.value = name;
 
       // Should be opaque?
-      let opaqueItemsRegex = this.item.drawer.options.opaqueItemsRegex;
+      const opaqueItemsRegex = this.item.drawer.options.opaqueItemsRegex;
       if (opaqueItemsRegex) {
-         if (opaqueItemsRegex?.test(name)) {
+         if (opaqueItemsRegex.test(name)) {
             this.domNodes.container.classList.add(DRAWER_ITEM_OPAQUE);
          } else {
             this.domNodes.container.classList.remove(DRAWER_ITEM_OPAQUE);
@@ -253,7 +253,7 @@ export class ItemWidget {
    }
 
    move(source: string) {
-      let item = this.item.drawer.root.get(source, "folder");
+      const item = this.item.drawer.root.get(source, "folder");
 
       if (item) {
          item.widget.domNodes.body.prepend(this.domNodes.container);

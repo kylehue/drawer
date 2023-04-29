@@ -1,6 +1,3 @@
-import { Folder } from "./Folder.js";
-import { getClassNameTokens } from "./utils.js";
-import { ItemWidget } from "./ItemWidget.js";
 import {
    DRAWER_FOLDER,
    DRAWER_FOLDER_BODY,
@@ -18,6 +15,9 @@ import {
    DRAWER_ITEM_ICON,
    DRAWER_ITEM_INPUT,
 } from "./classNames.js";
+import { Folder } from "./Folder.js";
+import { ItemWidget } from "./ItemWidget.js";
+import { getClassNameTokens } from "./utils.js";
 
 export type FolderState = "close" | "open";
 
@@ -77,14 +77,14 @@ export class FolderWidget extends ItemWidget {
       }
 
       if (options.folderIconChevron instanceof Node) {
-         let iconChevron = options.folderIconChevron.cloneNode(true);
+         const iconChevron = options.folderIconChevron.cloneNode(true);
          this.domNodes.iconChevron.appendChild(iconChevron);
       }
 
       nodes.head.append(nodes.iconContainer, nodes.input, nodes.iconChevron);
 
       // Only append head if not root
-      let isRoot = !folder.parent;
+      const isRoot = !folder.parent;
 
       if (!isRoot) {
          nodes.container.append(nodes.head);
@@ -181,21 +181,21 @@ export class FolderWidget extends ItemWidget {
     * @returns {void}
     */
    updateIndentation(recursive = true): void {
-      let isRoot = !this.folder.parent;
+      const isRoot = !this.folder.parent;
       if (isRoot) {
          this.domNodes.indentGuide.style.display = "none";
          return;
       }
 
-      let indentSize = this._getCalculatedIndentSize();
+      const indentSize = this._getCalculatedIndentSize();
       this.domNodes.head.style.paddingLeft = indentSize + "em";
 
-      let indentGuideOffset = this.folder.drawer.options.indentGuideOffset;
+      const indentGuideOffset = this.folder.drawer.options.indentGuideOffset;
       this.domNodes.indentGuide.style.left =
          indentSize + indentGuideOffset + "em";
 
       if (recursive) {
-         for (let [_, item] of this.folder.drawer.items) {
+         for (const [_, item] of this.folder.drawer.items) {
             if (!item.source.startsWith(this.folder.source)) continue;
             item.widget.updateIndentation(false);
          }
@@ -220,7 +220,7 @@ export class FolderWidget extends ItemWidget {
       }
 
       if (typeof iconToUse == "function") {
-         let icon = iconToUse(this.folder.source);
+         const icon = iconToUse(this.folder.source);
          this.setIcon(icon);
       } else {
          this.setIcon(
@@ -235,7 +235,7 @@ export class FolderWidget extends ItemWidget {
     * @returns {void}
     */
    sort(): void {
-      let children = this.folder.getChildren();
+      const children = this.folder.getChildren();
 
       children.sort((a, b) => {
          if (a.type === "folder" && b.type !== "folder") {

@@ -1,7 +1,3 @@
-import { Folder } from "./Folder.js";
-import { File } from "./File.js";
-import { Hooks } from "./Hooks.js";
-import { IDrawerOptions, defaultOptions } from "./options.js";
 import {
    DRAWER,
    DRAWER_ANIMATED,
@@ -9,11 +5,15 @@ import {
    DRAWER_FOLDER,
    DRAWER_SCROLLABLE,
 } from "./classNames.js";
+import { File } from "./File.js";
+import { Folder } from "./Folder.js";
+import { Hooks } from "./Hooks.js";
+import { IDrawerOptions, defaultOptions } from "./options.js";
 
 export class Drawer extends Hooks {
    public options: IDrawerOptions;
    public root: Folder;
-   public items: Map<string, Folder | File> = new Map();
+   public items = new Map<string, Folder | File>();
    public focusedItem: Folder | File | null = null;
 
    /**
@@ -56,7 +56,7 @@ export class Drawer extends Hooks {
 
       // Add keyboard support
       window.addEventListener("keydown", (event) => {
-         let drawerItemHasFocus =
+         const drawerItemHasFocus =
             document.activeElement?.classList.contains(DRAWER_FOLDER) ||
             document.activeElement?.classList.contains(DRAWER_FILE);
 

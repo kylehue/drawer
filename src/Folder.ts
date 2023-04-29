@@ -1,14 +1,6 @@
-import { Drawer } from "./Drawer.js";
-import { File } from "./File.js";
 import path from "path-browserify";
-import { FolderWidget } from "./FolderWidget.js";
 import { DRAWER_FOLDER_EMPTY } from "./classNames.js";
-import {
-   ItemResult,
-   ItemTypeMap,
-   getPossibleItemTypesOfSource,
-   isValidItemName,
-} from "./utils.js";
+import { Drawer } from "./Drawer.js";
 import {
    ERR_ADD_CLONE,
    ERR_ADD_EMPTY,
@@ -16,6 +8,14 @@ import {
    ERR_MOVE_INSIDE_CURRENT_DIR,
    ERR_MOVE_TO_CURRENT_DIR,
 } from "./errors.js";
+import { File } from "./File.js";
+import { FolderWidget } from "./FolderWidget.js";
+import {
+   ItemResult,
+   ItemTypeMap,
+   getPossibleItemTypesOfSource,
+   isValidItemName,
+} from "./utils.js";
 
 export class Folder {
    public type = "folder" as const;
@@ -64,16 +64,16 @@ export class Folder {
          possibleItemTypes = [type];
       }
 
-      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
-      let relativePath = path.join(
+      const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      const relativePath = path.join(
          "/",
          this.source,
          sourceWithoutTrailingSlash
       );
-      let dirname = path.dirname(relativePath);
+      const dirname = path.dirname(relativePath);
 
       // Make sure the item we're adding doesn't exist
-      let clone = this.drawer.items.get(relativePath);
+      const clone = this.drawer.items.get(relativePath);
       if (!!clone && possibleItemTypes.includes(clone.type)) {
          this.drawer.trigger("onError", ERR_ADD_CLONE(clone.source));
          return clone as ItemResult<S, K>;
@@ -81,8 +81,8 @@ export class Folder {
 
       // Recursively create parent folders of the main item if they don't exist
       if (dirname != "/") {
-         let dirnameWithoutTheFirstSlash = dirname.replace(/^\//, "");
-         let directories = dirnameWithoutTheFirstSlash.split("/");
+         const dirnameWithoutTheFirstSlash = dirname.replace(/^\//, "");
+         const directories = dirnameWithoutTheFirstSlash.split("/");
          for (let i = 0; i < directories.length; i++) {
             const directory = directories.slice(0, i + 1).join("/");
             // Check if directory exists or not
@@ -94,7 +94,7 @@ export class Folder {
          }
       }
 
-      let parent = this.drawer.root.get(dirname, "folder")!;
+      const parent = this.drawer.root.get(dirname, "folder")!;
 
       // Create main item
       let item: Folder | File;
@@ -126,8 +126,8 @@ export class Folder {
       source: S,
       type?: K
    ): ItemResult<S, K> | null {
-      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
-      let relativePath = path.join(
+      const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      const relativePath = path.join(
          "/",
          this.source,
          sourceWithoutTrailingSlash
@@ -163,9 +163,9 @@ export class Folder {
    move(source: string): void {
       if (!source) return;
 
-      let oldSource = this.source;
-      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
-      let targetSource = path.join("/", sourceWithoutTrailingSlash);
+      const oldSource = this.source;
+      const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      const targetSource = path.join("/", sourceWithoutTrailingSlash);
 
       // Make sure we're not moving it to its current directory
       if (targetSource == path.dirname(this.source)) {
@@ -179,7 +179,7 @@ export class Folder {
          return;
       }
 
-      let newSource = path.join(targetSource, path.basename(this.source));
+      const newSource = path.join(targetSource, path.basename(this.source));
 
       // If the target source doesn't exist, create it
       if (!this.drawer.root.get(targetSource)) {
@@ -187,16 +187,16 @@ export class Folder {
       }
 
       // Move itself and its children
-      for (let [_, item] of this.drawer.items) {
+      for (const [_, item] of this.drawer.items) {
          if (item.source.startsWith(oldSource)) {
-            let oldItemSource = item.source;
-            let newItemSource = path.join(
+            const oldItemSource = item.source;
+            const newItemSource = path.join(
                "/",
                oldItemSource.replace(oldSource, newSource)
             );
 
-            let parentSource = path.dirname(newItemSource);
-            let parent = this.drawer.root.get(parentSource, "folder")!;
+            const parentSource = path.dirname(newItemSource);
+            const parent = this.drawer.root.get(parentSource, "folder")!;
             item.parent = parent;
             item.source = newItemSource;
             this.drawer.items.delete(oldItemSource);
@@ -218,11 +218,11 @@ export class Folder {
     * @function
     * @returns {void}
     */
-   delete(source: string = "/"): void {
-      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
-      let resolved = path.join("/", this.source, sourceWithoutTrailingSlash);
+   delete(source = "/"): void {
+      const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      const resolved = path.join("/", this.source, sourceWithoutTrailingSlash);
 
-      for (let [source, item] of this.drawer.items) {
+      for (const [source, item] of this.drawer.items) {
          if (source.startsWith(resolved)) {
             // Dispose widget
             item.widget.dispose();
@@ -250,7 +250,7 @@ export class Folder {
     * @returns {void}
     */
    clear(): void {
-      for (let [source, item] of this.drawer.items) {
+      for (const [source, item] of this.drawer.items) {
          if (source.startsWith(this.source) && this !== item) {
             // Remove
             item.delete();
@@ -265,10 +265,10 @@ export class Folder {
     * @returns {void}
     */
    rename(name: string): void {
-      let dirname = path.dirname(this.source);
-      let newSource = path.join(dirname, name);
+      const dirname = path.dirname(this.source);
+      const newSource = path.join(dirname, name);
 
-      let oldName = this.name;
+      const oldName = this.name;
       if (!isValidItemName(name)) {
          this.drawer.trigger("onError", ERR_INVALID_CHARS(name, true));
          this.widget.rename(oldName);
@@ -295,10 +295,10 @@ export class Folder {
     * @function
     * @returns An array of folder items.
     */
-   getChildren(): Array<Folder | File> {
-      let children: Array<Folder | File> = [];
+   getChildren(): (Folder | File)[] {
+      const children: (Folder | File)[] = [];
 
-      for (let [source, item] of this.drawer.items) {
+      for (const [source, item] of this.drawer.items) {
          if (
             source != this.source &&
             source.startsWith(path.join(this.source, "/")) &&
