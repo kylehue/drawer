@@ -5,10 +5,11 @@ import { FolderWidget } from "./FolderWidget.js";
 import { DRAWER_FOLDER_EMPTY } from "./classNames.js";
 import { ItemResult, ItemTypeMap, getPossibleItemTypesOfSource } from "./utils/getItemTypeFromSource.js";
 
-
 export class Folder {
    public type = "folder" as const;
    public widget: FolderWidget;
+
+   /** The name of the folder. */
    public name: string;
    constructor(
       public drawer: Drawer,
@@ -23,7 +24,7 @@ export class Folder {
    }
 
    /**
-    * Adds a new file or folder to this folder instance.
+    * Adds a new item to this folder instance.
     * @param {string} source The source of the new item.
     * @param {string} [type] The type of the new item, either "file" or "folder". If not provided, the type will be determined automatically based on the file extension.
     * @function
@@ -47,12 +48,16 @@ export class Folder {
          possibleItemTypes = [type];
       }
 
-      let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
-      let resolved = path.join("/", this.source, sourceWithoutTheLastSlash);
-      let dirname = path.dirname(resolved);
+      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      let relativePath = path.join(
+         "/",
+         this.source,
+         sourceWithoutTrailingSlash
+      );
+      let dirname = path.dirname(relativePath);
 
       // Make sure the item we're adding doesn't exist
-      let clone = this.drawer.items.get(resolved);
+      let clone = this.drawer.items.get(relativePath);
       if (!!clone && possibleItemTypes.includes(clone.type)) {
          console.warn(
             `Cannot add item to drawer. An item with path "${clone.source}" already exists.`
@@ -81,12 +86,12 @@ export class Folder {
       // Create main item
       let item: Folder | File;
       if (possibleItemTypes.length == 1 && possibleItemTypes[0] == "file") {
-         item = new File(this.drawer, parent, resolved);
+         item = new File(this.drawer, parent, relativePath);
       } else {
-         item = new Folder(this.drawer, parent, resolved);
+         item = new Folder(this.drawer, parent, relativePath);
       }
 
-      this.drawer.items.set(resolved, item);
+      this.drawer.items.set(relativePath, item);
       parent.widget.sort();
       parent.widget.domNodes.container.classList.remove(DRAWER_FOLDER_EMPTY);
 
@@ -104,8 +109,12 @@ export class Folder {
       source: S,
       type?: K
    ): ItemResult<S, K> | null {
-      let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
-      let resolved = path.join("/", this.source, sourceWithoutTheLastSlash);
+      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      let relativePath = path.join(
+         "/",
+         this.source,
+         sourceWithoutTrailingSlash
+      );
 
       // Get item type
       let possibleItemTypes: (keyof ItemTypeMap)[];
@@ -116,9 +125,9 @@ export class Folder {
       }
 
       let item =
-         resolved == "/"
+         relativePath == "/"
             ? this.drawer.root
-            : this.drawer.items.get(resolved) || null;
+            : this.drawer.items.get(relativePath) || null;
 
       if (item?.type && !possibleItemTypes.includes(item.type)) {
          item = null;
@@ -128,14 +137,65 @@ export class Folder {
    }
 
    /**
-    * Delete an item and its children from the folder by its source
+    * Moves a folder to the specified source.
+    * 
+    * **Note: The specified source must be in absolute form.**
+    * @param source The path where to move the item
+    * @returns {void}
+    */
+   move(source: string): void {
+      let oldSource = this.source;
+      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      let targetSource = path.join("/", sourceWithoutTrailingSlash);
+
+      // Make sure we're not moving it to its current directory
+      if (targetSource == path.dirname(this.source)) {
+         console.warn("Cannot move a folder inside its current directory.");
+         return;
+      }
+
+      // Make sure we're not moving it inside itself or its children
+      if (targetSource.startsWith(this.source)) {
+         console.warn("Cannot move a folder inside itself or its children.");
+         return;
+      }
+
+      let newSource = path.join(targetSource, path.basename(this.source));
+
+      // If the target source doesn't exist, create it
+      if (!this.drawer.root.get(targetSource)) {
+         this.drawer.root.add(targetSource, "folder");
+      }
+
+      // Move itself and its children
+      for (let [_, item] of this.drawer.items) {
+         if (item.source.startsWith(oldSource)) {
+            let oldItemSource = item.source;
+            let newItemSource = path.join(
+               "/",
+               oldItemSource.replace(oldSource, newSource)
+            );
+
+            let parentSource = path.dirname(newItemSource);
+            let parent = this.drawer.root.get(parentSource, "folder")!;
+            item.parent = parent;
+            item.source = newItemSource;
+            this.drawer.items.delete(oldItemSource);
+            this.drawer.items.set(newItemSource, item);
+            item.widget.move(parentSource);
+         }
+      }
+   }
+
+   /**
+    * Delete an item and its children from the folder.
     * @param {string} [source="/"] - the source of the item to delete
     * @function
     * @returns {void}
     */
    delete(source: string = "/"): void {
-      let sourceWithoutTheLastSlash = source.replace(/\/$/, "");
-      let resolved = path.join("/", this.source, sourceWithoutTheLastSlash);
+      let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
+      let resolved = path.join("/", this.source, sourceWithoutTrailingSlash);
 
       for (let [source, item] of this.drawer.items) {
          if (source.startsWith(resolved)) {
@@ -194,9 +254,9 @@ export class Folder {
    }
 
    /**
-    * Returns an array of items (folders or files) in this folder.
+    * Returns an array of folder items (folders or files) in this folder.
     * @function
-    * @returns An array of items.
+    * @returns An array of folder items.
     */
    getChildren(): Array<Folder | File> {
       let children: Array<Folder | File> = [];

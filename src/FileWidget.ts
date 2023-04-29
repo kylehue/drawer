@@ -30,7 +30,7 @@ export class FileWidget extends ItemWidget {
       file.parent.widget.domNodes.body.prepend(nodes.container);
 
       this.updateIcon();
-      this._updateIndentation();
+      this.updateIndentation();
       this._initEvents();
    }
 
@@ -68,7 +68,11 @@ export class FileWidget extends ItemWidget {
       });
    }
 
-   private _updateIndentation() {
+   /**
+    * Update the indentation based on its source.
+    * @returns {void}
+    */
+   updateIndentation(): void {
       let indentSize = this._getCalculatedIndentSize();
 
       this.domNodes.container.style.paddingLeft = indentSize + "em";

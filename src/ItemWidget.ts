@@ -257,4 +257,14 @@ export class ItemWidget {
          }
       }
    }
+
+   move(source: string) {
+      let item = this.item.drawer.root.get(source, "folder");
+
+      if (item) {
+         item.widget.domNodes.body.prepend(this.domNodes.container);
+         item.widget.updateIndentation();
+         item.widget.sort();
+      }
+   }
 }

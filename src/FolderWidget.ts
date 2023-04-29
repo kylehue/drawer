@@ -102,9 +102,9 @@ export class FolderWidget extends ItemWidget {
       }
 
       this.updateIcon();
-      this._updateIndentation();
+      this.updateIndentation();
       this._initEvents();
-      
+
       // Set default state
       if (typeof options.folderState == "function") {
          this.setState(options.folderState(folder.source));
@@ -175,7 +175,12 @@ export class FolderWidget extends ItemWidget {
       });
    }
 
-   private _updateIndentation() {
+   /**
+    * Update the indentation based on its source.
+    * @param recursive Controls if it should recursively update the indentation of its children. Defaults to true.
+    * @returns {void}
+    */
+   updateIndentation(recursive = true): void {
       let isRoot = !this.folder.parent;
       if (isRoot) {
          this.domNodes.indentGuide.style.display = "none";
@@ -188,6 +193,13 @@ export class FolderWidget extends ItemWidget {
       let indentGuideOffset = this.folder.drawer.options.indentGuideOffset;
       this.domNodes.indentGuide.style.left =
          indentSize + indentGuideOffset + "em";
+
+      if (recursive) {
+         for (let [_, item] of this.folder.drawer.items) {
+            if (!item.source.startsWith(this.folder.source)) continue;
+            item.widget.updateIndentation(false);
+         }
+      }
    }
 
    /**
