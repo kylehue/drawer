@@ -143,12 +143,28 @@ drawerA.onDidRightClickItem((e) => {
    console.log("Item right clicked:", e.item.source);
 });
 
-drawerA.onDidChangeItemName((e) => {
+drawerA.onDidRenameItem((e) => {
    console.log("Item name changed:", e);
 
+   if (/^c/.test(e.newName)) {
+      e.item.rename("i cant start with c");
+   }
+   
    if (/\//g.test(e.newName)) {
       e.item.rename(e.oldName);
    }
+});
+
+drawerA.onDidMoveItem((e) => {
+   console.log("Item moved:", e);
+});
+
+drawerA.onDidAddItem((e) => {
+   console.log("Item added:", e);
+});
+
+drawerA.onDidDeleteItem((e) => {
+   console.log("Item deleted:", e);
 });
 
 drawerA.onError((e) => {

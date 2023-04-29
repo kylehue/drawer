@@ -2,7 +2,11 @@ import * as path from "path-browserify";
 import { Drawer } from "./Drawer.js";
 import { FileWidget } from "./FileWidget.js";
 import { Folder } from "./Folder.js";
-import { ERR_INVALID_CHARS, ERR_MOVE_INSIDE_CURRENT_DIR, ERR_MOVE_TO_CURRENT_DIR } from "./errors.js";
+import {
+   ERR_INVALID_CHARS,
+   ERR_MOVE_INSIDE_CURRENT_DIR,
+   ERR_MOVE_TO_CURRENT_DIR,
+} from "./errors.js";
 import { isValidItemName } from "./utils.js";
 
 export class File {
@@ -28,6 +32,10 @@ export class File {
    delete(): void {
       this.drawer.items.delete(this.source);
       this.widget.dispose();
+
+      this.drawer.trigger("onDidDeleteItem", {
+         item: this,
+      });
    }
 
    /**
@@ -40,8 +48,10 @@ export class File {
       let dirname = path.dirname(this.source);
       let newSource = path.join(dirname, name);
 
+      let oldName = this.name;
       if (!isValidItemName(name)) {
          this.drawer.trigger("onError", ERR_INVALID_CHARS(name, true));
+         this.widget.rename(oldName);
          return;
       }
 
@@ -52,6 +62,12 @@ export class File {
       this.parent.widget.sort();
       this.widget.updateIcon();
       this.widget.rename(name);
+
+      this.drawer.trigger("onDidRenameItem", {
+         item: this,
+         newName: name,
+         oldName,
+      });
    }
 
    /**
@@ -62,13 +78,15 @@ export class File {
     * @returns {void}
     */
    move(source: string): void {
+      if (!source) return;
+      
       let oldSource = this.source;
       let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
       let targetSource = path.join("/", sourceWithoutTrailingSlash);
 
       // Make sure we're not moving it to its current directory
       if (targetSource == path.dirname(this.source)) {
-         this.drawer.trigger("onError", ERR_MOVE_TO_CURRENT_DIR(this.type))
+         this.drawer.trigger("onError", ERR_MOVE_TO_CURRENT_DIR(this.type));
          return;
       }
 
@@ -91,5 +109,11 @@ export class File {
       this.drawer.items.delete(oldSource);
       this.drawer.items.set(newSource, this);
       this.widget.move(targetSource);
+
+      this.drawer.trigger("onDidMoveItem", {
+         item: this,
+         newSource,
+         oldSource,
+      });
    }
 }

@@ -2,9 +2,12 @@ import { Folder } from "./Folder.js";
 import { File } from "./File.js";
 
 const eventMap = {
-   onDidClickItem: (payload: IItemClickEvent) => {},
-   onDidRightClickItem: (payload: IItemClickEvent) => {},
-   onDidChangeItemName: (payload: IItemRenameEvent) => {},
+   onDidClickItem: (payload: IClickItemEvent) => {},
+   onDidRightClickItem: (payload: IClickItemEvent) => {},
+   onDidRenameItem: (payload: IRenameItemEvent) => {},
+   onDidMoveItem: (payload: IMoveItemEvent) => {},
+   onDidAddItem: (payload: IItemEvent) => {},
+   onDidDeleteItem: (payload: IItemEvent) => {},
    onError: (payload: IErrorEvent) => {},
 } as const;
 
@@ -14,15 +17,22 @@ export type IHooks = {
    [K in keyof IEventMap]: (cb: IEventMap[K]) => void;
 };
 
-export interface IItemClickEvent {
+export interface IItemEvent {
    item: Folder | File;
+}
+
+export interface IClickItemEvent extends IItemEvent {
    event: MouseEvent;
 }
 
-export interface IItemRenameEvent {
-   item: Folder | File;
+export interface IRenameItemEvent extends IItemEvent {
    oldName: string;
    newName: string;
+}
+
+export interface IMoveItemEvent extends IItemEvent {
+   oldSource: string;
+   newSource: string;
 }
 
 export interface IErrorEvent {
@@ -88,8 +98,38 @@ export class Hooks implements IHooks {
     *
     * @param cb - The function to emit.
     */
-   onDidChangeItemName(cb: IEventMap["onDidChangeItemName"]) {
-      let group = this._getListeners("onDidChangeItemName");
+   onDidRenameItem(cb: IEventMap["onDidRenameItem"]) {
+      let group = this._getListeners("onDidRenameItem");
+      group.push(cb);
+   }
+
+   /**
+    * An event emitted when an item name is added.
+    *
+    * @param cb - The function to emit.
+    */
+   onDidAddItem(cb: IEventMap["onDidAddItem"]) {
+      let group = this._getListeners("onDidAddItem");
+      group.push(cb);
+   }
+
+   /**
+    * An event emitted when an item name is deleted.
+    *
+    * @param cb - The function to emit.
+    */
+   onDidDeleteItem(cb: IEventMap["onDidDeleteItem"]) {
+      let group = this._getListeners("onDidDeleteItem");
+      group.push(cb);
+   }
+
+   /**
+    * An event emitted when an item name is moved.
+    *
+    * @param cb - The function to emit.
+    */
+   onDidMoveItem(cb: IEventMap["onDidMoveItem"]) {
+      let group = this._getListeners("onDidMoveItem");
       group.push(cb);
    }
 

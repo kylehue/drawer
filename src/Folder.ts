@@ -108,6 +108,10 @@ export class Folder {
       parent.widget.sort();
       parent.widget.domNodes.container.classList.remove(DRAWER_FOLDER_EMPTY);
 
+      this.drawer.trigger("onDidAddItem", {
+         item
+      });
+
       return item as ItemResult<S, K>;
    }
 
@@ -157,6 +161,8 @@ export class Folder {
     * @returns {void}
     */
    move(source: string): void {
+      if (!source) return;
+
       let oldSource = this.source;
       let sourceWithoutTrailingSlash = source.replace(/\/$/, "");
       let targetSource = path.join("/", sourceWithoutTrailingSlash);
@@ -196,6 +202,12 @@ export class Folder {
             this.drawer.items.delete(oldItemSource);
             this.drawer.items.set(newItemSource, item);
             item.widget.move(parentSource);
+
+            item.drawer.trigger("onDidMoveItem", {
+               item,
+               newSource: newItemSource,
+               oldSource: oldItemSource,
+            });
          }
       }
    }
@@ -224,6 +236,10 @@ export class Folder {
                   DRAWER_FOLDER_EMPTY
                );
             }
+
+            item.drawer.trigger("onDidDeleteItem", {
+               item,
+            });
          }
       }
    }
@@ -252,8 +268,10 @@ export class Folder {
       let dirname = path.dirname(this.source);
       let newSource = path.join(dirname, name);
 
+      let oldName = this.name;
       if (!isValidItemName(name)) {
          this.drawer.trigger("onError", ERR_INVALID_CHARS(name, true));
+         this.widget.rename(oldName);
          return;
       }
 
@@ -264,6 +282,12 @@ export class Folder {
       this.parent?.widget.sort();
       this.widget.updateIcon();
       this.widget.rename(name);
+
+      this.drawer.trigger("onDidRenameItem", {
+         item: this,
+         newName: name,
+         oldName,
+      });
    }
 
    /**

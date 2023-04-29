@@ -57,11 +57,6 @@ export class ItemWidget {
          let newName = this.domNodes.input.value;
          if (oldName != newName) {
             item.rename(newName);
-            item.drawer.trigger("onDidChangeItemName", {
-               item,
-               newName,
-               oldName,
-            });
          }
       });
 
