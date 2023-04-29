@@ -14,7 +14,7 @@ const eventMap = {
 export type IEventMap = typeof eventMap;
 
 export type IHooks = {
-   [K in keyof IEventMap]: (cb: IEventMap[K]) => void;
+   [K in keyof IEventMap]: (callback: IEventMap[K]) => void;
 };
 
 export interface IItemEvent {
@@ -76,70 +76,70 @@ export class Hooks implements IHooks {
    /**
     * An event emitted when an item is clicked.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onDidClickItem(cb: IEventMap["onDidClickItem"]) {
+   onDidClickItem(callback: IEventMap["onDidClickItem"]) {
       const group = this._getListeners("onDidClickItem");
-      group.push(cb);
+      group.push(callback);
    }
 
    /**
     * An event emitted when an item is right clicked.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onDidRightClickItem(cb: IEventMap["onDidRightClickItem"]) {
+   onDidRightClickItem(callback: IEventMap["onDidRightClickItem"]) {
       const group = this._getListeners("onDidRightClickItem");
-      group.push(cb);
+      group.push(callback);
    }
 
    /**
     * An event emitted when an item name is changed.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onDidRenameItem(cb: IEventMap["onDidRenameItem"]) {
+   onDidRenameItem(callback: IEventMap["onDidRenameItem"]) {
       const group = this._getListeners("onDidRenameItem");
-      group.push(cb);
+      group.push(callback);
    }
 
    /**
     * An event emitted when an item name is added.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onDidAddItem(cb: IEventMap["onDidAddItem"]) {
+   onDidAddItem(callback: IEventMap["onDidAddItem"]) {
       const group = this._getListeners("onDidAddItem");
-      group.push(cb);
+      group.push(callback);
    }
 
    /**
     * An event emitted when an item name is deleted.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onDidDeleteItem(cb: IEventMap["onDidDeleteItem"]) {
+   onDidDeleteItem(callback: IEventMap["onDidDeleteItem"]) {
       const group = this._getListeners("onDidDeleteItem");
-      group.push(cb);
+      group.push(callback);
    }
 
    /**
     * An event emitted when an item name is moved.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onDidMoveItem(cb: IEventMap["onDidMoveItem"]) {
+   onDidMoveItem(callback: IEventMap["onDidMoveItem"]) {
       const group = this._getListeners("onDidMoveItem");
-      group.push(cb);
+      group.push(callback);
    }
 
    /**
     * An event emitted when an error occured.
     *
-    * @param cb - The function to emit.
+    * @param callback - The function to emit.
     */
-   onError(cb: IEventMap["onError"]) {
+   onError(callback: IEventMap["onError"]) {
       const group = this._getListeners("onError");
-      group.push(cb);
+      group.push(callback);
    }
 }
