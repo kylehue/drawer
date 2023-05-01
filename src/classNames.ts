@@ -21,3 +21,5 @@ export const DRAWER_ITEM_ICON = "drawer-item-icon";
 export const DRAWER_ITEM_INPUT = "drawer-item-input";
 export const DRAWER_ITEM_INPUT_FOCUSED = "drawer-item-input-focused";
 export const DRAWER_ITEM = "drawer-item";
+export const DRAWER_DROP_TARGET = "drawer-drop-target";
+export const DRAWER_DRAG_LABEL = "drawer-drag-label";

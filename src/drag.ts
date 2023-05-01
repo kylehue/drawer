@@ -2,12 +2,13 @@ import { Folder } from "./Folder.js";
 import { File } from "./File.js";
 import path from "path-browserify";
 import { isChildOf } from "./utils.js";
+import { DRAWER_DRAG_LABEL, DRAWER_DROP_TARGET } from "./classNames.js";
 
 interface IDraggableOptions {
    cloneLocation: HTMLElement;
    onDrop: Function;
    onDrag: Function;
-   offset: number;
+   buffer: number;
 }
 
 interface IDraggable {
@@ -18,9 +19,6 @@ interface IDraggable {
    onDrag: (event: MouseEvent) => void;
    onDrop: () => void;
 }
-
-const DRAWER_DROP_TARGET = "drawer-drop-target";
-const DRAWER_DRAG_LABEL = "drawer-drag-label";
 
 // 1 group = 1 drawer
 const draggableGroups = new Map<string, Map<string, IDraggable>>();
@@ -58,7 +56,7 @@ export function makeDrawerItemDraggable(
          cloneLocation: document.body,
          onDrop: () => {},
          onDrag: () => {},
-         offset: 20,
+         buffer: 5,
       },
       options
    );
@@ -106,6 +104,15 @@ export function makeDrawerItemDraggable(
       })
    );
 
+   item.bindDisposeEvent(
+      item.drawer.onDidDeleteItem((e) => {
+         if (e.item !== item) return;
+         let draggableGroup = draggableGroups.get(e.item.drawer.id);
+         if (!draggableGroup) return;
+         draggableGroup.delete(e.item.source);
+      })
+   );
+
    const removeAllDropTargetClasses = () => {
       document
          .querySelectorAll(".drawer ." + DRAWER_DROP_TARGET)
@@ -117,14 +124,15 @@ export function makeDrawerItemDraggable(
    // Triggers when dragging
    let outOfRangeFired = false;
    let dropTarget: Folder | null = null;
+   let isInRoot = path.dirname(item.source) == "/";
    const onDrag = (event: MouseEvent) => {
       let mouseX = event.clientX;
       let mouseY = event.clientY;
       let mouseDownPositionDeltaX = Math.abs(mouseDownPosition.x - mouseX);
       let mouseDownPositionDeltaY = Math.abs(mouseDownPosition.y - mouseY);
       let outOfRange =
-         mouseDownPositionDeltaX > opts.offset ||
-         mouseDownPositionDeltaY > opts.offset;
+         mouseDownPositionDeltaX > opts.buffer ||
+         mouseDownPositionDeltaY > opts.buffer;
 
       // Only fires once
       if (outOfRange && !outOfRangeFired) {
@@ -132,6 +140,7 @@ export function makeDrawerItemDraggable(
          dragLabel.textContent = item.name;
          document.body.appendChild(dragLabel);
          outOfRangeFired = true;
+         isInRoot = path.dirname(item.source) == "/";
       }
 
       // Fires on mousemove
@@ -172,7 +181,10 @@ export function makeDrawerItemDraggable(
          }
 
          // If target element is the root's container, make the root the drop target
-         if (targetElement === item.drawer.root.widget.domNodes.container) {
+         if (
+            targetElement === item.drawer.root.widget.domNodes.container &&
+            !isInRoot
+         ) {
             dropTarget = item.drawer.root;
          }
 
@@ -199,7 +211,6 @@ export function makeDrawerItemDraggable(
       }
    };
 
-   // Set mousedown flag to true on mousedown
    element.addEventListener("mousedown", (event) => {
       dragLabel.textContent = item.name;
       let draggableGroup = draggableGroups.get(item.drawer.id);
@@ -221,106 +232,4 @@ export function makeDrawerItemDraggable(
       onDrag,
       onDrop,
    });
-
-   // const initClone = () => {
-   //    nodeCopy = element.cloneNode(true) as HTMLElement;
-   //    nodeCopy.classList.add("drawer-ghost");
-
-   //    // Replace node copy's inputs with a span
-   //    nodeCopy.querySelectorAll("input").forEach((input, i) => {
-   //       let span = document.createElement("span");
-   //       span.textContent = input.value;
-   //       nodeCopy.append(span);
-   //       input.remove();
-   //    });
-   // };
-
-   // initClone();
-
-   // let markX = 0;
-   // let markY = 0;
-
-   // element.addEventListener("mousedown", (event) => {
-   //    let target = event.target as HTMLElement;
-   //    if (target.tagName.toLowerCase() !== "input") {
-   //       isMouseDown = true;
-   //       markX = event.clientX;
-   //       markY = event.clientY;
-   //    }
-
-   //    if (element.textContent != nodeCopy.textContent) {
-   //       initClone();
-   //    }
-   // });
-
-   // window.addEventListener("mouseup", (event) => {
-   //    isMouseDown = false;
-   //    isDragging = false;
-   //    if (document.body.contains(nodeCopy)) {
-   //       document.body.removeChild(nodeCopy);
-   //       element.style.opacity = "1";
-   //       // Reset all highlight class
-   //       document.querySelectorAll("." + DRAWER_DROP_TARGET).forEach((item) => {
-   //          item.classList.remove(DRAWER_DROP_TARGET);
-   //       });
-
-   //       if (typeof opts.onDrop == "function") {
-   //          opts.onDrop(element, event);
-   //       }
-   //    }
-   // });
-
-   // window.addEventListener("mousemove", (event) => {
-   //    let mouseX = event.clientX;
-   //    let mouseY = event.clientY;
-   //    let fromMarkX = Math.abs(markX - mouseX);
-   //    let fromMarkY = Math.abs(markY - mouseY);
-   //    let outOfRange = fromMarkX > opts.offset || fromMarkY > opts.offset;
-   //    if (isMouseDown && outOfRange) {
-   //       event.preventDefault();
-   //       markX = Infinity;
-   //       markY = Infinity;
-   //       isDragging = true;
-
-   //       // highlight
-   //       // Reset all highlight class
-   //       document
-   //          .querySelectorAll("." + DRAWER_DROP_TARGET)
-   //          .forEach((item) => {
-   //             item.classList.remove(DRAWER_DROP_TARGET);
-   //          });
-
-   //       let target = event.target as HTMLElement | null;
-   //       while (target?.parentElement) {
-   //          if (target.matches(".drawer-folder")) {
-   //             break;
-   //          }
-
-   //          target = target.parentElement;
-   //       }
-
-   //       if (target) {
-   //          target.classList.add(DRAWER_DROP_TARGET);
-   //       }
-
-   //       // Append clone to DOM
-   //       if (!document.body.contains(nodeCopy)) {
-   //          document.body.append(nodeCopy);
-   //          element.style.opacity = "0.5";
-   //       }
-
-   //       // Follow mouse
-   //       let targetX = mouseX - nodeCopy.offsetWidth / 2;
-   //       let targetY = mouseY - nodeCopy.offsetHeight / 2;
-   //       nodeCopy.style.top = targetY + "px";
-   //       nodeCopy.style.left = targetX + "px";
-
-   //       // Callback
-   //       if (typeof opts.onDrag == "function") {
-   //          opts.onDrag(element, event);
-   //       }
-   //    } else {
-   //       isDragging = false;
-   //    }
-   // });
 }

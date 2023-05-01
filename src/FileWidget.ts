@@ -6,6 +6,7 @@ import {
    DRAWER_FILE,
    DRAWER_ITEM,
 } from "./classNames.js";
+import { makeDrawerItemDraggable } from "./drag.js";
 import { File } from "./File.js";
 import { ItemWidget } from "./ItemWidget.js";
 import { getClassNameTokens } from "./utils.js";
@@ -32,6 +33,10 @@ export class FileWidget extends ItemWidget {
       this.updateIcon();
       this.updateIndentation();
       this._initEvents();
+
+      if (options.draggable) {
+         makeDrawerItemDraggable(this.file, this.domNodes.container);
+      }
    }
 
    private _initEvents() {

@@ -106,7 +106,7 @@ export class FolderWidget extends ItemWidget {
       this.updateIndentation();
       this._initEvents();
 
-      if (!isRoot) {
+      if (!isRoot && options.draggable) {
          makeDrawerItemDraggable(this.folder, this.domNodes.head);
       }
 
