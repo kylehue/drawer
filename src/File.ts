@@ -68,6 +68,14 @@ export class File {
          return;
       }
 
+      // Make sure the new name doesn't exist
+      const clone = this.drawer.items.get(newSource);
+      if (!!clone) {
+         this.drawer.trigger("onError", ERR_ADD_CLONE(clone.source));
+         this.widget.rename(oldName);
+         return;
+      }
+
       const oldSource = this.source;
 
       this.drawer.items.set(newSource, this);
@@ -83,7 +91,7 @@ export class File {
          newName: name,
          oldName,
          oldSource,
-         newSource
+         newSource,
       });
    }
 
@@ -134,3 +142,7 @@ export class File {
       });
    }
 }
+function ERR_ADD_CLONE(source: string): import("./Hooks.js").IErrorEvent {
+   throw new Error("Function not implemented.");
+}
+

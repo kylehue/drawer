@@ -75,7 +75,7 @@ export class Folder {
 
       // Make sure the item we're adding doesn't exist
       const clone = this.drawer.items.get(relativePath);
-      if (!!clone && possibleItemTypes.includes(clone.type)) {
+      if (!!clone) {
          this.drawer.trigger("onError", ERR_ADD_CLONE(clone.source));
          return clone as ItemResult<S, K>;
       }
@@ -210,6 +210,8 @@ export class Folder {
                newSource: newItemSource,
                oldSource: oldItemSource,
             });
+
+            console.log(item);
          }
       }
    }
@@ -289,6 +291,14 @@ export class Folder {
       const oldName = this.name;
       if (!isValidItemName(name)) {
          this.drawer.trigger("onError", ERR_INVALID_CHARS(name, true));
+         this.widget.rename(oldName);
+         return;
+      }
+
+      // Make sure the new name doesn't exist
+      const clone = this.drawer.items.get(newSource);
+      if (!!clone) {
+         this.drawer.trigger("onError", ERR_ADD_CLONE(clone.source));
          this.widget.rename(oldName);
          return;
       }
