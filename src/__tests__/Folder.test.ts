@@ -3,7 +3,7 @@
  */
 
 import path from "path-browserify";
-import { describe, expect, test, afterAll, afterEach } from "vitest";
+import { describe, expect, test, beforeEach, beforeAll } from "vitest";
 import { Drawer } from "../Drawer.js";
 import { File } from "../File.js";
 import { Folder } from "../Folder.js";
@@ -11,17 +11,17 @@ import { Folder } from "../Folder.js";
 const drawer = new Drawer();
 let folderA = drawer.root.add("/src", "folder");
 let folderB = drawer.root.add("/src/classes/comps", "folder");
-const fileA = folderA.add("memo.txt");
-const fileB = folderA.add("/src/classes/comps", "file");
+let fileA = folderA.add("c_memo.txt");
 
-afterAll(() => {
+beforeAll(() => {
    drawer.root.clear();
 });
 
-afterEach(() => {
+beforeEach(() => {
    drawer.root.delete();
    folderA = drawer.root.add("/src", "folder");
    folderB = drawer.root.add("/src/classes/comps", "folder");
+   fileA = folderA.add("c_memo.txt");
 });
 
 describe("ADDING:", () => {
@@ -67,8 +67,7 @@ describe("ADDING:", () => {
 
    describe("ADD: Explicit file", () => {
       test("should create a file in root named '/src/src'", () => {
-         folderA.add("src", "file");
-
+         let p = folderA.add("src", "file");
          expect(drawer.items.get("/src/src")).toBeInstanceOf(File);
       });
    });
@@ -173,6 +172,13 @@ describe("MOVING:", () => {
          expect(fileA.parent).toBe(folderB);
          expect(drawer.items.get(fileAOldSource)).toBeUndefined();
          expect(drawer.items.get(expectedFileNewSource)).toBe(fileA);
+      });
+   });
+
+   describe("MOVE: moving classes (a folder that begins with c) to root", () => {
+      test("shouldn't move its sibling file c_memo.txt to root (a file that begins with c)", () => {
+         drawer.root.get("src/classes/")!.move("/");
+         expect(fileA.source).toEqual("/src/c_memo.txt");
       });
    });
 
