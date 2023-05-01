@@ -20,6 +20,7 @@ import {
 export class Folder {
    public type = "folder" as const;
    public widget: FolderWidget;
+   protected _disposeEvents: Function[] = [];
 
    /** The name of the folder. */
    public name: string;
@@ -109,7 +110,7 @@ export class Folder {
       parent.widget.domNodes.container.classList.remove(DRAWER_FOLDER_EMPTY);
 
       this.drawer.trigger("onDidAddItem", {
-         item
+         item,
       });
 
       return item as ItemResult<S, K>;
@@ -214,6 +215,14 @@ export class Folder {
    }
 
    /**
+    * Bind a function that will be called when this folder gets disposed.
+    * @param disposeEvent The function to be called.
+    */
+   bindDisposeEvent(disposeEvent: Function) {
+      this._disposeEvents.push(disposeEvent);
+   }
+
+   /**
     * Delete an item and its children from the folder.
     * @param {string} [source="/"] - the source of the item to delete
     * @function
@@ -225,22 +234,30 @@ export class Folder {
 
       for (const [source, item] of this.drawer.items) {
          if (source.startsWith(resolved)) {
-            // Dispose widget
-            item.widget.dispose();
+            if (item.type == "folder") {
+               // Dispose widget
+               item.widget.dispose();
 
-            // Delete in map
-            this.drawer.items.delete(source);
+               for (let evt of item._disposeEvents) {
+                  evt();
+               }
 
-            // Empty class
-            if (!this.getChildren().length) {
-               this.widget.domNodes.container.classList.add(
-                  DRAWER_FOLDER_EMPTY
-               );
+               // Delete in map
+               this.drawer.items.delete(source);
+
+               // Empty class
+               if (!this.getChildren().length) {
+                  this.widget.domNodes.container.classList.add(
+                     DRAWER_FOLDER_EMPTY
+                  );
+               }
+
+               item.drawer.trigger("onDidDeleteItem", {
+                  item,
+               });
+            } else {
+               item.delete();
             }
-
-            item.drawer.trigger("onDidDeleteItem", {
-               item,
-            });
          }
       }
    }
@@ -276,6 +293,8 @@ export class Folder {
          return;
       }
 
+      const oldSource = this.source;
+
       this.drawer.items.set(newSource, this);
       this.drawer.items.delete(this.source);
       this.name = name;
@@ -284,11 +303,26 @@ export class Folder {
       this.widget.updateIcon();
       this.widget.rename(name);
 
+      // Rename hook should trigger first before move hooks
+      // Trigger rename hook first...
       this.drawer.trigger("onDidRenameItem", {
          item: this,
          newName: name,
          oldName,
+         oldSource,
+         newSource,
       });
+
+      // ...then move children
+      for (const [source, item] of this.drawer.items) {
+         if (
+            source != oldSource &&
+            source.startsWith(path.join(oldSource, "/")) &&
+            !source.slice(oldSource.length + 1).includes("/")
+         ) {
+            item.move(newSource);
+         }
+      }
    }
 
    /**

@@ -12,6 +12,7 @@ import { isValidItemName } from "./utils.js";
 export class File {
    public type = "file" as const;
    public widget: FileWidget;
+   protected _disposeEvents: Function[] = [];
 
    /** The name of the file. */
    public name: string;
@@ -22,6 +23,14 @@ export class File {
    ) {
       this.name = path.basename(source);
       this.widget = new FileWidget(this);
+   }
+
+   /**
+    * Bind a function that will be called when this file gets disposed.
+    * @param disposeEvent The function to be called.
+    */
+   bindDisposeEvent(disposeEvent: Function) {
+      this._disposeEvents.push(disposeEvent);
    }
 
    /**
@@ -36,6 +45,10 @@ export class File {
       this.drawer.trigger("onDidDeleteItem", {
          item: this,
       });
+
+      for (let evt of this._disposeEvents) {
+         evt();
+      }
    }
 
    /**
@@ -55,6 +68,8 @@ export class File {
          return;
       }
 
+      const oldSource = this.source;
+
       this.drawer.items.set(newSource, this);
       this.drawer.items.delete(this.source);
       this.name = name;
@@ -67,6 +82,8 @@ export class File {
          item: this,
          newName: name,
          oldName,
+         oldSource,
+         newSource
       });
    }
 
