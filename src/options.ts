@@ -67,12 +67,17 @@ export const defaultOptions = {
    animated: true,
    /**
     * The initial state of folders in the drawer.
-    * 
+    *
     * Can be set to "open" to have all folders expanded, "close" to have all folders collapsed, or a function that receives a folder source path as its parameter and should return "open" or "close".
     *
     * @default "open"
     */
    folderState: "open" as FolderState | ((source: string) => FolderState),
+   /**
+    * Whether or not to allow item drag & drop.
+    * @default true
+    */
+   draggable: true,
 };
 
 /**
