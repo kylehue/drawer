@@ -14,7 +14,7 @@ const eventMap = {
 export type IEventMap = typeof eventMap;
 
 export type IHooks = {
-   [K in keyof IEventMap]: (callback: IEventMap[K]) => void;
+   [K in keyof IEventMap]: (callback: IEventMap[K]) => Function;
 };
 
 export interface IItemEvent {
@@ -28,6 +28,8 @@ export interface IClickItemEvent extends IItemEvent {
 export interface IRenameItemEvent extends IItemEvent {
    oldName: string;
    newName: string;
+   oldSource: string;
+   newSource: string;
 }
 
 export interface IMoveItemEvent extends IItemEvent {
@@ -41,12 +43,12 @@ export interface IErrorEvent {
 }
 
 export class Hooks implements IHooks {
-   private _listeners =
-      new Map<keyof IEventMap, IEventMap[keyof IEventMap][]>();
+   private _listeners = new Map<
+      keyof IEventMap,
+      IEventMap[keyof IEventMap][]
+   >();
 
-   private _getListeners<K extends keyof IEventMap>(
-      key: K
-   ): IEventMap[K][] {
+   private _getListeners<K extends keyof IEventMap>(key: K): IEventMap[K][] {
       return this._listeners.get(key) as IEventMap[K][];
    }
 
@@ -77,69 +79,146 @@ export class Hooks implements IHooks {
     * An event emitted when an item is clicked.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onDidClickItem(callback: IEventMap["onDidClickItem"]) {
+   onDidClickItem(callback: IEventMap["onDidClickItem"]): Function {
       const group = this._getListeners("onDidClickItem");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 
    /**
     * An event emitted when an item is right clicked.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onDidRightClickItem(callback: IEventMap["onDidRightClickItem"]) {
+   onDidRightClickItem(callback: IEventMap["onDidRightClickItem"]): Function {
       const group = this._getListeners("onDidRightClickItem");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 
    /**
     * An event emitted when an item name is changed.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onDidRenameItem(callback: IEventMap["onDidRenameItem"]) {
+   onDidRenameItem(callback: IEventMap["onDidRenameItem"]): Function {
       const group = this._getListeners("onDidRenameItem");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 
    /**
     * An event emitted when an item name is added.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onDidAddItem(callback: IEventMap["onDidAddItem"]) {
+   onDidAddItem(callback: IEventMap["onDidAddItem"]): Function {
       const group = this._getListeners("onDidAddItem");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 
    /**
     * An event emitted when an item name is deleted.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onDidDeleteItem(callback: IEventMap["onDidDeleteItem"]) {
+   onDidDeleteItem(callback: IEventMap["onDidDeleteItem"]): Function {
       const group = this._getListeners("onDidDeleteItem");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 
    /**
     * An event emitted when an item name is moved.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onDidMoveItem(callback: IEventMap["onDidMoveItem"]) {
+   onDidMoveItem(callback: IEventMap["onDidMoveItem"]): Function {
       const group = this._getListeners("onDidMoveItem");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 
    /**
     * An event emitted when an error occured.
     *
     * @param callback - The function to emit.
+    * @returns {Function} A dispose function.
     */
-   onError(callback: IEventMap["onError"]) {
+   onError(callback: IEventMap["onError"]): Function {
       const group = this._getListeners("onError");
       group.push(callback);
+
+      return () => {
+         for (let i = 0; i < group.length; i++) {
+            let cb = group[i];
+            if (cb === callback) {
+               group.splice(i, 1);
+               break;
+            }
+         }
+      };
    }
 }
