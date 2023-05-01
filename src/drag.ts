@@ -1,6 +1,7 @@
 import { Folder } from "./Folder.js";
 import { File } from "./File.js";
 import path from "path-browserify";
+import { isChildOf } from "./utils.js";
 
 interface IDraggableOptions {
    cloneLocation: HTMLElement;
@@ -161,7 +162,7 @@ export function makeDrawerItemDraggable(
                if (drag.item.widget.domNodes.container !== targetElement)
                   continue;
                // Make sure we're not dropping inside itself or its children
-               if (drag.item.source.startsWith(item.source)) continue;
+               if (isChildOf(item.source, drag.item.source)) continue;
                // Make sure we're not dropping inside its current directory
                if (path.dirname(item.source) == drag.item.source) continue;
                // Make sure they're in the same drawer

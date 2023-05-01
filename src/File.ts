@@ -7,7 +7,7 @@ import {
 } from "./errors.js";
 import { FileWidget } from "./FileWidget.js";
 import { Folder } from "./Folder.js";
-import { isValidItemName } from "./utils.js";
+import { isChildOf, isValidItemName } from "./utils.js";
 
 export class File {
    public type = "file" as const;
@@ -116,7 +116,7 @@ export class File {
       }
 
       // Make sure we're not moving it inside itself
-      if (targetSource.startsWith(this.source)) {
+      if (isChildOf(this.source, targetSource)) {
          this.drawer.trigger("onError", ERR_MOVE_INSIDE_CURRENT_DIR(this.type));
          return;
       }

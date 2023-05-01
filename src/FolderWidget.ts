@@ -18,7 +18,7 @@ import {
 import { makeDrawerItemDraggable } from "./drag.js";
 import { Folder } from "./Folder.js";
 import { ItemWidget } from "./ItemWidget.js";
-import { getClassNameTokens } from "./utils.js";
+import { getClassNameTokens, isChildOf } from "./utils.js";
 
 export type FolderState = "close" | "open";
 
@@ -202,7 +202,7 @@ export class FolderWidget extends ItemWidget {
 
       if (recursive) {
          for (const [_, item] of this.folder.drawer.items) {
-            if (!item.source.startsWith(this.folder.source)) continue;
+            if (!isChildOf(this.folder.source, item.source)) continue;
             item.widget.updateIndentation(false);
          }
       }

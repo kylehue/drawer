@@ -14,6 +14,7 @@ import {
    ItemResult,
    ItemTypeMap,
    getPossibleItemTypesOfSource,
+   isChildOf,
    isValidItemName,
 } from "./utils.js";
 
@@ -176,7 +177,7 @@ export class Folder {
       }
 
       // Make sure we're not moving it inside itself or its children
-      if (targetSource.startsWith(this.source)) {
+      if (isChildOf(this.source, targetSource)) {
          this.drawer.trigger("onError", ERR_MOVE_INSIDE_CURRENT_DIR(this.type));
          return;
       }
@@ -190,7 +191,7 @@ export class Folder {
 
       // Move itself and its children
       for (const [_, item] of this.drawer.items) {
-         if (item.source.startsWith(oldSource)) {
+         if (isChildOf(oldSource, item.source)) {
             const oldItemSource = item.source;
             const newItemSource = path.join(
                "/",
@@ -210,8 +211,6 @@ export class Folder {
                newSource: newItemSource,
                oldSource: oldItemSource,
             });
-
-            console.log(item);
          }
       }
    }
@@ -232,10 +231,10 @@ export class Folder {
     */
    delete(source = "/"): void {
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
-      const resolved = path.join("/", this.source, sourceWithoutTrailingSlash);
+      const relativePath = path.join("/", this.source, sourceWithoutTrailingSlash);
 
       for (const [source, item] of this.drawer.items) {
-         if (source.startsWith(resolved)) {
+         if (isChildOf(relativePath, source)) {
             if (item.type == "folder") {
                // Dispose widget
                item.widget.dispose();
@@ -271,7 +270,7 @@ export class Folder {
     */
    clear(): void {
       for (const [source, item] of this.drawer.items) {
-         if (source.startsWith(this.source) && this !== item) {
+         if (isChildOf(this.source, source) && this !== item) {
             // Remove
             item.delete();
          }

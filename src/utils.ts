@@ -63,6 +63,26 @@ export function getPossibleItemTypesOfSource<S extends string>(
    return itemType as ItemTypeFromSource<S>[];
 }
 
-export function isValidItemName(name: string, allowSeperator = false) {
+/**
+ * Checks if the name only contains valid characters.
+ * @param name The name to check.
+ * @param allowSeperator Set to true to allow the path seperator (`/`) character.
+ * @returns {boolean}
+ */
+export function isValidItemName(name: string, allowSeperator = false): boolean {
    return allowSeperator ? !/[\\:*?"<>]/.test(name) : !/[/\\:*?"<>]/.test(name);
+}
+
+/**
+ * Returns true if the testSource is a child of parentSource.
+ * @param parentSource The parent source.
+ * @param testSource The source to test.
+ * @returns {boolean}
+ */
+export function isChildOf(parentSource: string, testSource: string): boolean {
+   return (
+      testSource.startsWith(parentSource) &&
+      testSource.split("/").slice(parentSource.split("/").length - 1)[0] ==
+         path.basename(parentSource)
+   );
 }
