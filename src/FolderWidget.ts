@@ -190,7 +190,6 @@ export class FolderWidget extends ItemWidget {
       const isRoot = !this.folder.parent;
       if (isRoot) {
          this.domNodes.indentGuide.style.display = "none";
-         return;
       }
 
       const indentSize = this._getCalculatedIndentSize();
