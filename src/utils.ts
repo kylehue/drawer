@@ -2,7 +2,12 @@ import path from "path-browserify";
 import { File } from "./File.js";
 import { Folder } from "./Folder.js";
 
-export function getClassNameTokens(className: string) {
+/**
+ * Get the tokens of a class name string.
+ * @param className The class name string.
+ * @returns {string[]} An array of string
+ */
+export function getClassNameTokens(className: string): string[] {
    const classNameTokens: string[] = [];
 
    className.split(" ").forEach((token) => {
@@ -40,6 +45,11 @@ export type ItemResult<
       : ItemTypeMap[K]
    : ItemTypeMap[K];
 
+/**
+ * Get the possible types of a drawer item by evaluating its source.
+ * @param source - The source to evaluate.
+ * @returns {Array} An array containing the possible types.
+ */
 export function getPossibleItemTypesOfSource<S extends string>(
    source: S
 ): ItemTypeFromSource<S>[] {
