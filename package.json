@@ -71,5 +71,9 @@
    },
    "dependencies": {
       "path-browserify": "^1.0.1"
-   }
+   },
+   "files": [
+      "./build",
+      "./browser"
+   ]
 }
