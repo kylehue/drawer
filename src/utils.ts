@@ -90,9 +90,11 @@ export function isValidItemName(name: string, allowSeperator = false): boolean {
  * @returns {boolean}
  */
 export function isChildOf(parentSource: string, testSource: string): boolean {
-   return (
+   parentSource = path.join("/", parentSource);
+   testSource = path.join("/", testSource);
+   return parentSource == "/" ? true : (
       testSource.startsWith(parentSource) &&
-      testSource.split("/").slice(parentSource.split("/").length - 1)[0] ==
-         path.basename(parentSource)
+         testSource.split("/").slice(parentSource.split("/").length - 1)[0] ==
+            path.basename(parentSource)
    );
 }

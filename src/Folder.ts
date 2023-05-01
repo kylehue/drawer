@@ -224,12 +224,12 @@ export class Folder {
    }
 
    /**
-    * Delete an item and its children from the folder.
+    * Deletes an item and its children from the folder.
     * @param {string} [source="/"] - the source of the item to delete
     * @function
     * @returns {void}
     */
-   delete(source = "/"): void {
+   delete(source: string = "/"): void {
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
       const relativePath = path.join("/", this.source, sourceWithoutTrailingSlash);
 
@@ -264,7 +264,7 @@ export class Folder {
    }
 
    /**
-    * Delete all children from this folder
+    * Deletes all children from this folder.
     * @function
     * @returns {void}
     */
