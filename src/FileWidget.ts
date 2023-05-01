@@ -46,6 +46,7 @@ export class FileWidget extends ItemWidget {
       }
 
       this.addEventListener(this.domNodes.container, "click", (event) => {
+         if (this._isFrozen) return;
          if (event.target !== this.domNodes.container) return;
          // Trigger file click event
          this.file.drawer.trigger("onDidClickItem", {

@@ -24,6 +24,8 @@ export class ItemWidget {
       EventListenerOrEventListenerObject
    ][] = [];
 
+   protected _isFrozen = false;
+
    constructor(private item: Folder | File) {
       const nodes = this.domNodes;
 
@@ -155,6 +157,8 @@ export class ItemWidget {
     * @returns {void}
     */
    focus(): void {
+      if (this._isFrozen) return;
+
       // Blur all items
       for (const [source, item] of this.item.drawer.items) {
          if (item == this.item) continue;
@@ -170,6 +174,20 @@ export class ItemWidget {
       this.domNodes.container.focus();
 
       this.item.drawer.focusedItem = this.item;
+   }
+
+   /**
+    * Disables focus events.
+    */
+   freeze() {
+      this._isFrozen = true;
+   }
+
+   /**
+    * Enables focus events.
+    */
+   unfreeze() {
+      this._isFrozen = false;
    }
 
    /**
@@ -217,7 +235,7 @@ export class ItemWidget {
    }
 
    /**
-    * Disposes the drawer item.
+    * Disposes the drawer item's DOM node.
     * @function
     * @returns {void}
     */
@@ -252,7 +270,13 @@ export class ItemWidget {
       }
    }
 
-   move(source: string) {
+   /**
+    * Moves the drawer item's DOM node to the specified source.
+    *
+    * @param source The path where to move the item
+    * @returns {void}
+    */
+   move(source: string): void {
       const item = this.item.drawer.root.get(source, "folder");
 
       if (item) {

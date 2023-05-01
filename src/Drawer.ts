@@ -10,7 +10,10 @@ import { Folder } from "./Folder.js";
 import { Hooks } from "./Hooks.js";
 import { IDrawerOptions, defaultOptions } from "./options.js";
 
+let lastId = 0;
+
 export class Drawer extends Hooks {
+   public id = "$drawer" + lastId++;
    public options: IDrawerOptions;
    public root: Folder;
    public items = new Map<string, Folder | File>();

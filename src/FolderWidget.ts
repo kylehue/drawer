@@ -15,6 +15,7 @@ import {
    DRAWER_ITEM_ICON,
    DRAWER_ITEM_INPUT,
 } from "./classNames.js";
+import { makeDrawerItemDraggable } from "./drag.js";
 import { Folder } from "./Folder.js";
 import { ItemWidget } from "./ItemWidget.js";
 import { getClassNameTokens } from "./utils.js";
@@ -105,6 +106,10 @@ export class FolderWidget extends ItemWidget {
       this.updateIndentation();
       this._initEvents();
 
+      if (!isRoot) {
+         makeDrawerItemDraggable(this.folder, this.domNodes.head);
+      }
+
       // Set default state
       if (typeof options.folderState == "function") {
          this.setState(options.folderState(folder.source));
@@ -144,6 +149,7 @@ export class FolderWidget extends ItemWidget {
       }
 
       this.addEventListener(this.domNodes.head, "click", (event) => {
+         if (this._isFrozen) return;
          // Things that should be done if and only if the head is clicked
          if (event.target === this.domNodes.head) {
             // Trigger folder click event
@@ -238,9 +244,9 @@ export class FolderWidget extends ItemWidget {
       const children = this.folder.getChildren();
 
       children.sort((a, b) => {
-         if (a.type === "folder" && b.type !== "folder") {
+         if (a.type === "folder" && b.type === "file") {
             return -1;
-         } else if (a.type !== "folder" && b.type === "folder") {
+         } else if (a.type === "file" && b.type === "folder") {
             return 1;
          } else {
             return a.name.localeCompare(b.name);
