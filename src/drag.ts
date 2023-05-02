@@ -140,7 +140,7 @@ export function makeDrawerItemDraggable(
 
       // Only fires once
       if (outOfRange && !outOfRangeFired) {
-         item.widget.freeze();
+         if (item.type == "folder") item.widget.freeze();
          dragLabel.textContent = item.name;
          document.body.appendChild(dragLabel);
          outOfRangeFired = true;
