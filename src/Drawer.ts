@@ -3,6 +3,7 @@ import {
    DRAWER_ANIMATED,
    DRAWER_FILE,
    DRAWER_FOLDER,
+   DRAWER_HIDDEN,
    DRAWER_SCROLLABLE,
 } from "./classNames.js";
 import { File } from "./File.js";
@@ -31,7 +32,7 @@ export class Drawer extends Hooks {
          Object.assign({}, defaultOptions),
          options || {}
       );
-      
+
       // Setup element
       if (!this.options.element) {
          throw new Error(
@@ -79,6 +80,47 @@ export class Drawer extends Hooks {
     */
    appendTo(element: HTMLElement) {
       element.append(this.root.widget.domNodes.container);
+   }
+
+   /**
+    * Filters the drawer items based on the search value. If search value is not provided, all items will be shown.
+    * @param {string} searchValue The search value.
+    * @returns An array of items that matches the search value.
+    */
+   filter(searchValue?: string) {
+      let matchedItems: (Folder | File)[] = [];
+      for (let [_, item] of this.items) {
+         // Reset all if searchValue is empty
+         if (!searchValue) {
+            item.widget.domNodes.container.classList.remove(DRAWER_HIDDEN);
+            matchedItems.push(item);
+            continue;
+         }
+
+         // Skip if root
+         if (item.source == "/") continue;
+
+         let matches = item.name.match(searchValue);
+
+         // If it matches...
+         if (matches) {
+            // ...show it
+            item.widget.domNodes.container.classList.remove(DRAWER_HIDDEN);
+            let parent = item.parent;
+
+            matchedItems.push(item);
+
+            // Show parents recursively
+            while (parent?.parent) {
+               parent.widget.domNodes.container.classList.remove(DRAWER_HIDDEN);
+               parent = parent.parent;
+            }
+         } else {
+            item.widget.domNodes.container.classList.add(DRAWER_HIDDEN);
+         }
+      }
+
+      return matchedItems;
    }
 }
 
