@@ -5,6 +5,7 @@ import {
    ERR_ADD_CLONE,
    ERR_ADD_EMPTY,
    ERR_INVALID_CHARS,
+   ERR_MOVE_CLONE,
    ERR_MOVE_INSIDE_CURRENT_DIR,
    ERR_MOVE_TO_CURRENT_DIR,
 } from "./errors.js";
@@ -183,6 +184,12 @@ export class Folder {
       }
 
       const newSource = path.join(targetSource, path.basename(this.source));
+
+      // Make sure it doesn't have a duplicate
+      if (this.drawer.root.get(newSource)) {
+         this.drawer.trigger("onError", ERR_MOVE_CLONE(newSource));
+         return;
+      }
 
       // If the target source doesn't exist, create it
       if (!this.drawer.root.get(targetSource)) {
