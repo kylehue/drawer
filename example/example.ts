@@ -1,4 +1,4 @@
-import * as path from "path-browserify";
+import path from "path-browserify";
 import {
    mdiFolder,
    mdiFolderOpen,
@@ -7,6 +7,8 @@ import {
    mdiFile,
    mdiDog,
 } from "https://esm.sh/@mdi/js?exports=mdiFolder,mdiFolderOpen,mdiChevronDown,mdiLanguageHtml5,mdiFile,mdiDog";
+
+(window as any).path = path;
 
 // ESM
 import { Drawer as DrawerESM } from "../build/Drawer.js";
@@ -65,7 +67,9 @@ const drawerB = new DrawerBundle({
    horizontalScroll: false,
 });
 
-const drawerC = new DrawerBundle({
+(window as any).drawerB = drawerB;
+
+const drawerC = new DrawerESM({
    element: document.querySelector<HTMLDivElement>("#drawerc")!,
    folderIcon: (source) => {
       let name = path.basename(source);
@@ -85,7 +89,7 @@ const drawerC = new DrawerBundle({
    horizontalScroll: false,
 });
 
-const drawerD = new DrawerBundle({
+const drawerD = new DrawerESM({
    element: document.querySelector<HTMLDivElement>("#drawerd")!,
    folderIcon: (source) => {
       let name = path.basename(source);
@@ -109,7 +113,7 @@ const drawerD = new DrawerBundle({
    },
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: "mdi mdi-file",
-   editFolderNameOnDoubleClick: false,
+   editFolderNameOnDoubleClick: true,
    opaqueItemsRegex: /^b/,
    horizontalScroll: false,
 });
@@ -126,14 +130,6 @@ drawerC.root.add("a/b/c/d/cat/f/g/");
 drawerC.root.add("a/dog/c/cat.html");
 drawerC.root.add("a/b/test/dog.cpp");
 drawerC.root.add("a/b/c/mice.txt");
-
-drawerD.root.add("a/b/c/d/shark/f/g/");
-drawerD.root.add("a/dog/c/cat.html");
-drawerD.root.add("a/b/fish/dog.cpp/");
-drawerD.root.add("a/b/c/mice.txt");
-drawerD.root.get("a/b/fish", "folder")?.widget.setState("close");
-drawerD.root.get("a/b/c/d/shark", "folder")?.widget.setState("close");
-
 
 drawerA.onDidClickItem((e) => {
    console.log("Item clicked:", e.item.source);
@@ -171,17 +167,22 @@ drawerA.onError((e) => {
    console.error(e.reason);
 })
 
-drawerA.root.add("zxc.ts");
-drawerA.root.add("abc.ts");
-drawerA.root.add("hello.ts");
+let folderA = drawerA.root.add("/src", "folder");
+let folderB = drawerA.root.add("/src/classes/comps", "folder");
+let fileA = folderA.add("c_memo.txt");
+drawerA.root.add("src/src", "file");
+
+drawerD.root.add("zxc.ts");
+drawerD.root.add("abc.ts");
+drawerD.root.add("hello.ts");
 
 // implicit folder
-let folder1 = drawerA.root.add("src/classes/comps");
-drawerA.root.add("src/classes/test");
+let folder1 = drawerD.root.add("src/classes/comps");
+drawerD.root.add("src/classes/test");
 
 // force as folder
-let folder2 = drawerA.root.add("src", "folder");
-drawerA.root.add("src/z/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
+let folder2 = drawerD.root.add("src", "folder");
+drawerD.root.add("src/z/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
 // implicit file
 if (folder1.type == "folder") {
    let file1 = folder1.add("index.html");
