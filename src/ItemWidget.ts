@@ -11,7 +11,7 @@ import { Folder } from "./Folder.js";
 import { getClassNameTokens } from "./utils.js";
 
 export class ItemWidget {
-   public domNodes = {
+   public readonly domNodes = {
       container: document.createElement("div"),
       input: document.createElement("input"),
       iconContainer: document.createElement("span"),

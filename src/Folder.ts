@@ -20,8 +20,8 @@ import {
 } from "./utils.js";
 
 export class Folder {
-   public type = "folder" as const;
-   public widget: FolderWidget;
+   public readonly type = "folder" as const;
+   public readonly widget: FolderWidget;
    protected _disposeEvents: Function[] = [];
 
    /** The name of the folder. */
@@ -238,7 +238,11 @@ export class Folder {
     */
    delete(source: string = "/"): void {
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
-      const relativePath = path.join("/", this.source, sourceWithoutTrailingSlash);
+      const relativePath = path.join(
+         "/",
+         this.source,
+         sourceWithoutTrailingSlash
+      );
 
       for (const [source, item] of this.drawer.items) {
          if (isChildOf(relativePath, source)) {

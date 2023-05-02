@@ -23,7 +23,7 @@ import { getClassNameTokens, isChildOf } from "./utils.js";
 export type FolderState = "close" | "open";
 
 export class FolderWidget extends ItemWidget {
-   public declare domNodes: {
+   public declare readonly domNodes: {
       container: HTMLDivElement;
       head: HTMLDivElement;
       body: HTMLDivElement;

@@ -11,8 +11,8 @@ import { Folder } from "./Folder.js";
 import { isChildOf, isValidItemName } from "./utils.js";
 
 export class File {
-   public type = "file" as const;
-   public widget: FileWidget;
+   public readonly type = "file" as const;
+   public readonly widget: FileWidget;
    protected _disposeEvents: Function[] = [];
 
    /** The name of the file. */
@@ -105,7 +105,7 @@ export class File {
     */
    move(source: string): void {
       if (!source) return;
-      
+
       const oldSource = this.source;
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
       const targetSource = path.join("/", sourceWithoutTrailingSlash);
