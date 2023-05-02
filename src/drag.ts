@@ -5,10 +5,14 @@ import { isChildOf } from "./utils.js";
 import { DRAWER_DRAG_LABEL, DRAWER_DROP_TARGET } from "./classNames.js";
 
 interface IDraggableOptions {
-   cloneLocation: HTMLElement;
-   onDrop: Function;
-   onDrag: Function;
+   /**
+    * The offset distance before the drag gets activated.
+    */
    buffer: number;
+   /**
+    * Time limit (in ms) before a closed drop target folder opens.
+    */
+   closedFolderTimeLimitBeforeOpen: number;
 }
 
 interface IDraggable {
@@ -53,10 +57,8 @@ export function makeDrawerItemDraggable(
 ) {
    let opts = Object.assign<IDraggableOptions, Partial<IDraggableOptions>>(
       {
-         cloneLocation: document.body,
-         onDrop: () => {},
-         onDrag: () => {},
          buffer: 5,
+         closedFolderTimeLimitBeforeOpen: 500,
       },
       options
    );
@@ -124,7 +126,9 @@ export function makeDrawerItemDraggable(
    // Triggers when dragging
    let outOfRangeFired = false;
    let dropTarget: Folder | null = null;
+   let lastClosedDropTarget: Folder | null = null;
    let isInRoot = path.dirname(item.source) == "/";
+   let openClosedDropTargetTimeouts: NodeJS.Timeout[] = [];
    const onDrag = (event: MouseEvent) => {
       let mouseX = event.clientX;
       let mouseY = event.clientY;
@@ -186,6 +190,27 @@ export function makeDrawerItemDraggable(
             !isInRoot
          ) {
             dropTarget = item.drawer.root;
+         }
+
+         // If drop target's state is closed, open it after some time of hovering
+         if (dropTarget?.widget.state == "close") {
+            if (!lastClosedDropTarget) {
+               lastClosedDropTarget = dropTarget;
+               openClosedDropTargetTimeouts.push(
+                  setTimeout(() => {
+                     dropTarget?.widget.setState("open");
+                  }, opts.closedFolderTimeLimitBeforeOpen)
+               );
+            }
+         } else {
+            for (let i = 0; i < openClosedDropTargetTimeouts.length; i++) {
+               clearTimeout(openClosedDropTargetTimeouts[i]);
+               openClosedDropTargetTimeouts.splice(i, 1);
+            }
+         }
+
+         if (dropTarget != lastClosedDropTarget) {
+            lastClosedDropTarget = null;
          }
 
          // Drop target styling
