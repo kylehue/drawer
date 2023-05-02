@@ -237,6 +237,7 @@ export function makeDrawerItemDraggable(
    };
 
    element.addEventListener("mousedown", (event) => {
+      if (event.target !== element) return;
       dragLabel.textContent = item.name;
       let draggableGroup = draggableGroups.get(item.drawer.id);
       let draggableInstance = draggableGroup?.get(item.source);
