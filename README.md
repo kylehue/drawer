@@ -2,6 +2,8 @@
 
 > Drawer is a front-end library for creating dynamic file explorers.
 
+![Sample Drawer](./public/sample.jpg)
+
 ### Install
 **NPM:**
 ```bash
