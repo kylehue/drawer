@@ -26,8 +26,13 @@ export class FileWidget extends ItemWidget {
          DRAWER_ITEM_BLURRED,
          ...getClassNameTokens(options.fileClassName)
       );
+      
+      // Append
+      if (options.fileIcon) {
+         nodes.container.append(nodes.iconContainer);
+      }
 
-      nodes.container.append(nodes.iconContainer, nodes.input);
+      nodes.container.append(nodes.input);
       file.parent.widget.domNodes.body.prepend(nodes.container);
 
       this.updateIcon();

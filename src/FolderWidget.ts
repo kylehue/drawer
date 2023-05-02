@@ -77,12 +77,19 @@ export class FolderWidget extends ItemWidget {
          );
       }
 
-      if (options.folderIconChevron instanceof Node) {
-         const iconChevron = options.folderIconChevron.cloneNode(true);
-         this.domNodes.iconChevron.appendChild(iconChevron);
+      // Append icons
+      if (options.folderIcon || options.folderIconClosed) {
+         nodes.head.append(nodes.iconContainer);
       }
 
-      nodes.head.append(nodes.iconContainer, nodes.input, nodes.iconChevron);
+      nodes.head.append(nodes.input);
+      if (options.folderIconChevron) {
+         if (options.folderIconChevron instanceof Node) {
+            const iconChevron = options.folderIconChevron.cloneNode(true);
+            this.domNodes.iconChevron.appendChild(iconChevron);
+         }
+         nodes.head.append(nodes.iconChevron);
+      }
 
       // Only append head if not root
       const isRoot = !folder.parent;
