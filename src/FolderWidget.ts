@@ -157,6 +157,7 @@ export class FolderWidget extends ItemWidget {
 
       this.addEventListener(this.domNodes.head, "click", (event) => {
          if (this._isFrozen) return;
+         if (this.domNodes.input === document.activeElement) return;
          // Things that should be done if and only if the head is clicked
          if (event.target === this.domNodes.head) {
             // Trigger folder click event

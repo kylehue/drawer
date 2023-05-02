@@ -171,7 +171,9 @@ export class ItemWidget {
 
       // Make container focusable
       this.domNodes.container.setAttribute("tabindex", "0");
-      this.domNodes.container.focus();
+      this.domNodes.container.focus({
+         preventScroll: true
+      });
 
       this.item.drawer.focusedItem = this.item;
    }

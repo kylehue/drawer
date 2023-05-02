@@ -5,6 +5,7 @@ import {
    DRAWER_ITEM_BLURRED,
    DRAWER_FILE,
    DRAWER_ITEM,
+   DRAWER_ITEM_INPUT_FOCUSED,
 } from "./classNames.js";
 import { makeDrawerItemDraggable } from "./drag.js";
 import { File } from "./File.js";
@@ -58,6 +59,7 @@ export class FileWidget extends ItemWidget {
       this.addEventListener(this.domNodes.container, "click", (event) => {
          if (this._isFrozen) return;
          if (event.target !== this.domNodes.container) return;
+         if (this.domNodes.input === document.activeElement) return;
          // Trigger file click event
          this.file.drawer.trigger("onDidClickItem", {
             event,
