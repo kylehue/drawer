@@ -52,9 +52,9 @@ export const defaultOptions = {
     */
    indentGuideOffset: 0.75,
    /**
-    * A regular expression to match items that should be opaque in the drawer.
+    * A regular expression to match items that should be transluscent in the drawer.
     */
-   opaqueItemsRegex: undefined as RegExp | undefined,
+   transluscentItemsRegex: undefined as RegExp | undefined,
    /**
     * Controls whether the drawer can be scrolled horizontally or not. You would probably want to set this to false if the drawer container is resizable.
     * @default true

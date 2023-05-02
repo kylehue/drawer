@@ -261,6 +261,7 @@ export class FolderWidget extends ItemWidget {
       });
 
       children.forEach((child, i) => {
+         child.widget.order = i;
          child.widget.domNodes.container.style.order = i.toString();
       });
    }

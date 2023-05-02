@@ -4,7 +4,7 @@ import {
    DRAWER_ITEM_FOCUSED,
    DRAWER_ITEM_ICON,
    DRAWER_ITEM_INPUT_FOCUSED,
-   DRAWER_ITEM_OPAQUE,
+   DRAWER_ITEM_TRANSLUSCENT,
 } from "./classNames.js";
 import { File } from "./File.js";
 import { Folder } from "./Folder.js";
@@ -25,6 +25,7 @@ export class ItemWidget {
    ][] = [];
 
    protected _isFrozen = false;
+   public order = 0;
 
    constructor(private item: Folder | File) {
       const nodes = this.domNodes;
@@ -261,13 +262,13 @@ export class ItemWidget {
    rename(name: string): void {
       this.domNodes.input.value = name;
 
-      // Should be opaque?
-      const opaqueItemsRegex = this.item.drawer.options.opaqueItemsRegex;
-      if (opaqueItemsRegex) {
-         if (opaqueItemsRegex.test(name)) {
-            this.domNodes.container.classList.add(DRAWER_ITEM_OPAQUE);
+      // Should be transluscent?
+      const transluscentItemsRegex = this.item.drawer.options.transluscentItemsRegex;
+      if (transluscentItemsRegex) {
+         if (transluscentItemsRegex.test(name)) {
+            this.domNodes.container.classList.add(DRAWER_ITEM_TRANSLUSCENT);
          } else {
-            this.domNodes.container.classList.remove(DRAWER_ITEM_OPAQUE);
+            this.domNodes.container.classList.remove(DRAWER_ITEM_TRANSLUSCENT);
          }
       }
    }
