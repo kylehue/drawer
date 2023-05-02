@@ -1,6 +1,6 @@
 {
    "name": "@kylehue/drawer",
-   "version": "2.0.0-development",
+   "version": "2.0.0",
    "type": "module",
    "main": "./build/Drawer.js",
    "types": "./build/Drawer.d.ts",
