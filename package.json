@@ -1,19 +1,11 @@
 {
    "name": "@kylehue/drawer",
    "description": "Drawer is a front-end library for creating dynamic file explorers.",
-   "version": "2.1.0",
+   "version": "2.1.4",
    "type": "module",
    "main": "./build/Drawer.js",
    "types": "./build/Drawer.d.ts",
    "license": "MIT",
-   "engines": {
-      "node": "^16.18.0",
-      "npm": "^8.19.2"
-   },
-   "volta": {
-      "node": "16.18.0",
-      "npm": "8.19.2"
-   },
    "publishConfig": {
       "access": "public"
    },
@@ -34,17 +26,11 @@
       "test": "vitest run",
       "test:watch": "vitest watch",
       "test:coverage": "vitest run --coverage",
-      "cz": "cz",
-      "semantic-release": "semantic-release"
+      "cz": "cz"
    },
    "devDependencies": {
       "@ryansonshine/commitizen": "^4.2.8",
       "@ryansonshine/cz-conventional-changelog": "^3.3.4",
-      "@semantic-release/changelog": "^6.0.3",
-      "@semantic-release/commit-analyzer": "^9.0.2",
-      "@semantic-release/github": "^8.0.7",
-      "@semantic-release/npm": "^10.0.0-beta.4",
-      "@semantic-release/release-notes-generator": "^10.0.3",
       "@swc/cli": "^0.1.62",
       "@swc/core": "^1.3.52",
       "@types/node": "^18.15.12",
@@ -65,7 +51,6 @@
       "prettier": "^2.8.7",
       "rimraf": "^4.4.1",
       "sass": "^1.62.0",
-      "semantic-release": "^21.0.1",
       "source-map-support": "^0.5.21",
       "typescript": "^5.0.4",
       "vitest": "^0.29.8"
