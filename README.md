@@ -2,7 +2,7 @@
 
 > Drawer is a front-end library for creating dynamic file explorers.
 
-![Sample Drawer](./public/sample.jpg)
+![Sample Drawer](https://raw.githubusercontent.com/kylehue/drawer/main/public/sample.jpg)
 
 ### Install
 **NPM:**
