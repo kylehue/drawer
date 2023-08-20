@@ -1,7 +1,7 @@
 {
    "name": "@kylehue/drawer",
    "description": "Drawer is a front-end library for creating dynamic file explorers.",
-   "version": "2.1.4",
+   "version": "2.1.5",
    "type": "module",
    "main": "./build/Drawer.js",
    "types": "./build/Drawer.d.ts",
