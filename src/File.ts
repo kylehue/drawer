@@ -13,6 +13,7 @@ import { isChildOf, isValidItemName } from "./utils.js";
 export class File {
    public readonly type = "file" as const;
    public readonly widget: FileWidget;
+   public isDeleted = false;
    protected _disposeEvents: Function[] = [];
 
    /** The name of the file. */
@@ -40,6 +41,8 @@ export class File {
     * @returns {void}
     */
    delete(): void {
+      if (this.isDeleted) return;
+      this.isDeleted = true;
       this.drawer.items.delete(this.source);
       this.widget.dispose();
 

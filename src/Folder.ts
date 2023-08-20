@@ -22,6 +22,7 @@ import {
 export class Folder {
    public readonly type = "folder" as const;
    public readonly widget: FolderWidget;
+   public isDeleted = false;
    protected _disposeEvents: Function[] = [];
 
    /** The name of the folder. */
@@ -245,31 +246,32 @@ export class Folder {
       );
 
       for (const [source, item] of this.drawer.items) {
-         if (isChildOf(relativePath, source)) {
-            if (item.type == "folder") {
-               // Dispose widget
-               item.widget.dispose();
+         if (!isChildOf(relativePath, source)) continue;
+         if (item.isDeleted) continue;
+         if (item.type == "folder") {
+            // Dispose widget
+            item.widget.dispose();
 
-               for (let evt of item._disposeEvents) {
-                  evt();
-               }
-
-               // Delete in map
-               this.drawer.items.delete(source);
-
-               // Empty class
-               if (!this.getChildren().length) {
-                  this.widget.domNodes.container.classList.add(
-                     DRAWER_FOLDER_EMPTY
-                  );
-               }
-
-               item.drawer.trigger("onDidDeleteItem", {
-                  item,
-               });
-            } else {
-               item.delete();
+            for (let evt of item._disposeEvents) {
+               evt();
             }
+
+            // Delete in map
+            this.drawer.items.delete(source);
+
+            // Empty class
+            if (!this.getChildren().length) {
+               this.widget.domNodes.container.classList.add(
+                  DRAWER_FOLDER_EMPTY
+               );
+            }
+
+            item.drawer.trigger("onDidDeleteItem", {
+               item,
+            });
+            item.isDeleted = true;
+         } else {
+            item.delete();
          }
       }
    }

@@ -69,6 +69,7 @@ export class ItemWidget {
          this.addEventListener(this.domNodes.container, "click", (event) => {
             // Trigger folder click event
             if (event.target === this.domNodes.container) {
+               if (item.isDeleted) return;
                item.drawer.trigger("onDidClickItem", {
                   event,
                   item,
@@ -82,6 +83,7 @@ export class ItemWidget {
             "contextmenu",
             (event) => {
                if (event.target === this.domNodes.container) {
+                  if (item.isDeleted) return;
                   item.drawer.trigger("onDidRightClickItem", {
                      event,
                      item,
@@ -173,7 +175,7 @@ export class ItemWidget {
       // Make container focusable
       this.domNodes.container.setAttribute("tabindex", "0");
       this.domNodes.container.focus({
-         preventScroll: true
+         preventScroll: true,
       });
 
       this.item.drawer.focusedItem = this.item;
@@ -263,7 +265,8 @@ export class ItemWidget {
       this.domNodes.input.value = name;
 
       // Should be transluscent?
-      const transluscentItemsRegex = this.item.drawer.options.transluscentItemsRegex;
+      const transluscentItemsRegex =
+         this.item.drawer.options.transluscentItemsRegex;
       if (transluscentItemsRegex) {
          if (transluscentItemsRegex.test(name)) {
             this.domNodes.container.classList.add(DRAWER_ITEM_TRANSLUSCENT);
