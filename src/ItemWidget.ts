@@ -9,6 +9,7 @@ import {
 import { File } from "./File.js";
 import { Folder } from "./Folder.js";
 import { getClassNameTokens } from "./utils.js";
+import { ERR_INVALID_TYPE } from "./errors.js";
 
 export class ItemWidget {
    public readonly domNodes = {
@@ -286,7 +287,14 @@ export class ItemWidget {
     * @returns {void}
     */
    move(source: string): void {
-      const item = this.item.drawer.getRoot().get(source, "folder");
+      const item = this.item.drawer.getRoot().get(source);
+
+      if (!item) return;
+
+      if (item.type != "folder") {
+         item.drawer.trigger("onError", ERR_INVALID_TYPE(source));
+         return;
+      }
 
       if (item) {
          item.widget.domNodes.body.prepend(this.domNodes.container);

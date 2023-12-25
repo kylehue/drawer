@@ -46,3 +46,10 @@ export function ERR_INVALID_CHARS(source: string, isName = false): IErrorEvent {
       } '${source}' is invalid because it contains characters that are not allowed.`,
    };
 }
+
+export function ERR_INVALID_TYPE(source: string): IErrorEvent {
+   return {
+      code: 6,
+      reason: `Invalid item type at ${source}.`,
+   };
+}

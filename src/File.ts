@@ -2,6 +2,7 @@ import * as path from "path-browserify";
 import { Drawer } from "./Drawer.js";
 import {
    ERR_INVALID_CHARS,
+   ERR_INVALID_TYPE,
    ERR_MOVE_CLONE,
    ERR_MOVE_INSIDE_CURRENT_DIR,
    ERR_MOVE_TO_CURRENT_DIR,
@@ -138,7 +139,12 @@ export class File {
          this.drawer.getRoot().add(targetSource, "folder");
       }
 
-      const parent = this.drawer.getRoot().get(targetSource, "folder")!;
+      const parent = this.drawer.getRoot().get(targetSource);
+      if (parent?.type != "folder") {
+         this.drawer.trigger("onError", ERR_INVALID_TYPE(targetSource));
+         return;
+      }
+      
       this.source = newSource;
       this.parent = parent;
       this.drawer.items.delete(oldSource);
@@ -155,4 +161,3 @@ export class File {
 function ERR_ADD_CLONE(source: string): import("./Hooks.js").IErrorEvent {
    throw new Error("Function not implemented.");
 }
-

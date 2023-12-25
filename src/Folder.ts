@@ -5,19 +5,14 @@ import {
    ERR_ADD_CLONE,
    ERR_ADD_EMPTY,
    ERR_INVALID_CHARS,
+   ERR_INVALID_TYPE,
    ERR_MOVE_CLONE,
    ERR_MOVE_INSIDE_CURRENT_DIR,
    ERR_MOVE_TO_CURRENT_DIR,
 } from "./errors.js";
 import { File } from "./File.js";
 import { FolderWidget } from "./FolderWidget.js";
-import {
-   ItemResult,
-   ItemTypeMap,
-   getPossibleItemTypesOfSource,
-   isChildOf,
-   isValidItemName,
-} from "./utils.js";
+import { ItemTypeMap, isChildOf, isValidItemName } from "./utils.js";
 
 export class Folder {
    public readonly type = "folder" as const;
@@ -42,30 +37,20 @@ export class Folder {
    /**
     * Adds a new item to this folder instance.
     * @param {string} source The source of the new item.
-    * @param {string} [type] The type of the new item, either "file" or "folder". If not provided, the type will be determined automatically based on the file extension.
-    * @function
-    * @returns {ItemTypeMap[K]} The new item instance.
+    * @param {string} [type] The type of the new item, either "file" or "folder".
     */
-   add<S extends string, K extends keyof ItemTypeMap>(
-      source: S,
-      type?: K
-   ): ItemResult<S, K> {
+   add<K extends keyof ItemTypeMap>(
+      source: string,
+      type: K
+   ): ItemTypeMap[K] {
       if (!source.length) {
          this.drawer.trigger("onError", ERR_ADD_EMPTY());
-         return null as ItemResult<S, K>;
+         return null as any;
       }
 
       if (!isValidItemName(source, true)) {
          this.drawer.trigger("onError", ERR_INVALID_CHARS(source));
-         return null as ItemResult<S, K>;
-      }
-
-      // Get item type
-      let possibleItemTypes: (keyof ItemTypeMap)[];
-      if (!type) {
-         possibleItemTypes = getPossibleItemTypesOfSource(source);
-      } else {
-         possibleItemTypes = [type];
+         return null as any;
       }
 
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
@@ -80,7 +65,7 @@ export class Folder {
       const clone = this.drawer.items.get(relativePath);
       if (!!clone) {
          this.drawer.trigger("onError", ERR_ADD_CLONE(clone.source));
-         return clone as ItemResult<S, K>;
+         return clone as ItemTypeMap[K];
       }
 
       // Recursively create parent folders of the main item if they don't exist
@@ -90,19 +75,23 @@ export class Folder {
          for (let i = 0; i < directories.length; i++) {
             const directory = directories.slice(0, i + 1).join("/");
             // Check if directory exists or not
-
-            if (!this.drawer.getRoot().get(directory, "folder")) {
+            if (this.drawer.getRoot().get(directory)?.type != "folder") {
                // ...if it doesn't exist, then create a folder for it
                this.drawer.getRoot().add(directory, "folder");
             }
          }
       }
 
-      const parent = this.drawer.getRoot().get(dirname, "folder")!;
+      // dirnames are always a folder so we infer its type as Folder
+      const parent = this.drawer.getRoot().get(dirname);
+      if (parent?.type != "folder") {
+         this.drawer.trigger("onError", ERR_INVALID_TYPE(dirname));
+         return null as any;
+      }
 
       // Create main item
       let item: Folder | File;
-      if (possibleItemTypes.length == 1 && possibleItemTypes[0] == "file") {
+      if (type == "file") {
          item = new File(this.drawer, parent, relativePath);
       } else {
          item = new Folder(this.drawer, parent, relativePath);
@@ -116,20 +105,14 @@ export class Folder {
          item,
       });
 
-      return item as ItemResult<S, K>;
+      return item as ItemTypeMap[K];
    }
 
    /**
     * Get an item from the folder by its source and type (if specified)
     * @param {string} source The source of the item to retrieve
-    * @param {K} [type] The type of the item to retrieve (if not specified, it is determined based on the file extension)
-    * @function
-    * @returns {ItemTypeMap[K] | null} The retrieved item or null if it does not exist
     */
-   get<S extends string, K extends keyof ItemTypeMap>(
-      source: S,
-      type?: K
-   ): ItemResult<S, K> | null {
+   get(source: string) {
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
       const relativePath = path.join(
          "/",
@@ -137,24 +120,12 @@ export class Folder {
          sourceWithoutTrailingSlash
       );
 
-      // Get item type
-      let possibleItemTypes: (keyof ItemTypeMap)[];
-      if (!type) {
-         possibleItemTypes = getPossibleItemTypesOfSource(source);
-      } else {
-         possibleItemTypes = [type];
-      }
-
       let item =
          relativePath == "/"
             ? this.drawer.getRoot()
             : this.drawer.items.get(relativePath) || null;
 
-      if (item?.type && !possibleItemTypes.includes(item.type)) {
-         item = null;
-      }
-
-      return item as ItemResult<S, K> | null;
+      return item;
    }
 
    /**
@@ -207,7 +178,12 @@ export class Folder {
             );
 
             const parentSource = path.dirname(newItemSource);
-            const parent = this.drawer.getRoot().get(parentSource, "folder")!;
+            const parent = this.drawer.getRoot().get(parentSource);
+            if (parent?.type != "folder") {
+               this.drawer.trigger("onError", ERR_INVALID_TYPE(parentSource));
+               return;
+            }
+
             item.parent = parent;
             item.source = newItemSource;
             this.drawer.items.delete(oldItemSource);

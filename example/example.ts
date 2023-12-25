@@ -119,7 +119,8 @@ const drawerD = new DrawerESM({
 });
 
 drawerD.initRoot(document.querySelector<HTMLDivElement>("#drawerd")!);
-
+let test = "a/b";
+const t = drawerB.getRoot().add(test);
 
 (window as any).drawerA = drawerA;
 (window as any).drawerB = drawerB;

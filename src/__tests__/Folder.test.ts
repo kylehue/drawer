@@ -13,7 +13,7 @@ const root = drawer.initRoot(document.createElement("div"));
 
 let folderA = root.add("/src", "folder");
 let folderB = root.add("/src/classes/comps", "folder");
-let fileA = folderA.add("c_memo.txt");
+let fileA = folderA.add("c_memo.txt", "file");
 
 beforeAll(() => {
    root.clear();
@@ -23,14 +23,14 @@ beforeEach(() => {
    root.delete();
    folderA = root.add("/src", "folder");
    folderB = root.add("/src/classes/comps", "folder");
-   fileA = folderA.add("c_memo.txt");
+   fileA = folderA.add("c_memo.txt", "file");
 });
 
 describe("ADDING:", () => {
    describe("ADD: Duplicates", () => {
       test("should NOT create a folder", () => {
-         const classesFolder = folderA.get("classes", "folder");
-         const newFolder = folderA.add("classes");
+         const classesFolder = folderA.get("classes");
+         const newFolder = folderA.add("classes", "folder");
 
          expect(newFolder).toBe(classesFolder);
       });
@@ -38,7 +38,7 @@ describe("ADDING:", () => {
 
    describe("ADD: Empty string source", () => {
       test("should be null", () => {
-         const newFolder = folderA.add("");
+         const newFolder = folderA.add("", "folder");
          expect(newFolder).toBeNull();
       });
    });
@@ -53,30 +53,22 @@ describe("ADDING:", () => {
 
    describe("ADD: Implicit file", () => {
       test("should create a file in root named '/src/file.cpp'", () => {
-         folderB.add("../../file.cpp");
+         folderB.add("../../file.cpp", "file");
 
          expect(drawer.items.get("/src/file.cpp")).toBeInstanceOf(File);
       });
    });
 
-   describe("ADD: Implicit folder with file extension", () => {
-      test("should create a folder, not a file", () => {
-         const folder = folderA.add("test.txt/");
-
-         expect(folder).toBeInstanceOf(Folder);
-      });
-   });
-
    describe("ADD: Explicit file", () => {
       test("should create a file in root named '/src/src'", () => {
-         let p = folderA.add("src", "file");
+         folderA.add("src", "file");
          expect(drawer.items.get("/src/src")).toBeInstanceOf(File);
       });
    });
 
    describe("ADD: Recursive folder creation", () => {
       test("should create 2 folders in root named '/src/styles' and '/src/styles/test' and 1 file named '/src/styles/test/file.css'", () => {
-         root.add("src/styles/test/file.css");
+         root.add("src/styles/test/file.css", "file");
          expect(drawer.items.get("/src/styles")).toBeInstanceOf(Folder);
          expect(drawer.items.get("/src/styles/test")).toBeInstanceOf(Folder);
          expect(drawer.items.get("/src/styles/test/file.css")).toBeInstanceOf(
@@ -101,11 +93,9 @@ describe("GETTING:", () => {
 
    describe("GET: Implicit folder with file extension", () => {
       test("should return a folder", () => {
-         folderA.add("test.hello/");
+         folderA.add("test.hello/", "folder");
          expect(folderA.get("test.hello/")).toBeInstanceOf(Folder);
-         expect(folderA.get("test.hello", "folder")).toBeInstanceOf(Folder);
-         expect(folderA.get("test.hello")).toBeNull();
-         expect(folderA.get("test.hello/", "file")).toBeNull();
+         expect(folderA.get("test.hello")).toBeInstanceOf(Folder);
       });
    });
 
