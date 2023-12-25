@@ -29,7 +29,6 @@ function createIcon(paths: string, size = 24, color = "red") {
 }
 
 const drawerA = new DrawerBundle({
-   element: document.querySelector<HTMLDivElement>("#drawera")!,
    folderIcon: createIcon(mdiFolderOpen, 24, "#fffaa7"),
    folderIconClosed: "mdi mdi-folder",
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
@@ -44,7 +43,7 @@ const drawerA = new DrawerBundle({
       }
    },
    editFolderNameOnDoubleClick: false,
-   opaqueItemsRegex: /^b/,
+   transluscentItemsRegex: /^b/,
    horizontalScroll: false,
    animated: false,
    folderState: (source) => {
@@ -56,21 +55,21 @@ const drawerA = new DrawerBundle({
    }
 });
 
+drawerA.initRoot(document.querySelector<HTMLDivElement>("#drawera")!);
+
 const drawerB = new DrawerBundle({
-   element: document.querySelector<HTMLDivElement>("#drawerb")!,
    folderIcon: "mdi mdi-folder-open",
    folderIconClosed: createIcon(mdiFolder, 24, "#fffaa7"),
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: createIcon(mdiFile, 24, "#d2d3d7"),
    editFolderNameOnDoubleClick: false,
-   opaqueItemsRegex: /^b/,
+   transluscentItemsRegex: /^b/,
    horizontalScroll: false,
 });
 
-(window as any).drawerB = drawerB;
+drawerB.initRoot(document.querySelector<HTMLDivElement>("#drawerb")!);
 
 const drawerC = new DrawerESM({
-   element: document.querySelector<HTMLDivElement>("#drawerc")!,
    folderIcon: (source) => {
       let name = path.basename(source);
       if (name == "dog") {
@@ -84,13 +83,14 @@ const drawerC = new DrawerESM({
    folderIconClosed: "mdi mdi-folder",
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: "mdi mdi-file",
-   editFolderNameOnDoubleClick: false,
-   opaqueItemsRegex: /^b/,
+   editFolderNameOnDoubleClick: true,
+   transluscentItemsRegex: /^b/,
    horizontalScroll: false,
 });
 
+drawerC.initRoot(document.querySelector<HTMLDivElement>("#drawerc")!);
+
 const drawerD = new DrawerESM({
-   element: document.querySelector<HTMLDivElement>("#drawerd")!,
    folderIcon: (source) => {
       let name = path.basename(source);
       if (name == "dog") {
@@ -114,22 +114,27 @@ const drawerD = new DrawerESM({
    folderIconChevron: createIcon(mdiChevronDown, 24, "#d2d3d7"),
    fileIcon: "mdi mdi-file",
    editFolderNameOnDoubleClick: true,
-   opaqueItemsRegex: /^b/,
+   transluscentItemsRegex: /^\./,
    horizontalScroll: false,
 });
 
-(window as any).root = drawerA.root;
-console.log(drawerA);
+drawerD.initRoot(document.querySelector<HTMLDivElement>("#drawerd")!);
 
-drawerB.root.add("a/b/c/d/e/f/g/");
-drawerB.root.add("a/b/c/cat.html");
-drawerB.root.add("a/b/c/dog.cpp");
-drawerB.root.add("a/b/c/mice.txt");
 
-drawerC.root.add("a/b/c/d/cat/f/g/");
-drawerC.root.add("a/dog/c/cat.html");
-drawerC.root.add("a/b/test/dog.cpp");
-drawerC.root.add("a/b/c/mice.txt");
+(window as any).drawerA = drawerA;
+(window as any).drawerB = drawerB;
+(window as any).drawerC = drawerC;
+(window as any).drawerD = drawerD;
+
+drawerB.getRoot().add("a/b/c/d/e/f/g/");
+drawerB.getRoot().add("a/b/c/cat.html");
+drawerB.getRoot().add("a/b/c/dog.cpp");
+drawerB.getRoot().add("a/b/c/mice.txt");
+
+drawerC.getRoot().add("a/b/c/d/cat/f/g/");
+drawerC.getRoot().add("a/dog/c/cat.html");
+drawerC.getRoot().add("a/b/test/dog.cpp");
+drawerC.getRoot().add("a/b/c/mice.txt");
 
 drawerA.onDidClickItem((e) => {
    console.log("Item clicked:", e.item.source);
@@ -167,22 +172,23 @@ drawerA.onError((e) => {
    console.error(e.reason);
 })
 
-let folderA = drawerA.root.add("/src", "folder");
-let folderB = drawerA.root.add("/src/classes/comps", "folder");
+let folderA = drawerA.getRoot().add("/src", "folder");
+let folderB = drawerA.getRoot().add("/src/classes/comps", "folder");
 let fileA = folderA.add("c_memo.txt");
-drawerA.root.add("src/src", "file");
+drawerA.getRoot().add("src/src", "file");
 
-drawerD.root.add("zxc.ts");
-drawerD.root.add("abc.ts");
-drawerD.root.add("hello.ts");
+drawerD.getRoot().add("zxc.ts");
+drawerD.getRoot().add("abc.ts");
+drawerD.getRoot().add("hello.ts");
 
 // implicit folder
-let folder1 = drawerD.root.add("src/classes/comps");
-drawerD.root.add("src/classes/test");
+let folder1 = drawerD.getRoot().add("src/classes/comps");
+drawerD.getRoot().add("src/classes/test");
 
 // force as folder
-let folder2 = drawerD.root.add("src", "folder");
-drawerD.root.add("src/z/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
+let folder2 = drawerD.getRoot().add("src", "folder");
+drawerD.getRoot().add("src/.opaque/b/c.cpp/d/e.cpp/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
+
 // implicit file
 if (folder1.type == "folder") {
    let file1 = folder1.add("index.html");
@@ -196,7 +202,7 @@ if (folder1.type == "folder") {
    folder1.add("../file1.cpp");
    folder1.add("../file2.cpp");
    folder1.add("../file3.cpp"); */
-   //let folder3 = drawerA.root.add("src/classes", "folder");
+   //let folder3 = drawerA.getRoot().add("src/classes", "folder");
    //console.log(folder1.get("/classes/comps"));
 }
 
@@ -206,3 +212,25 @@ let file2 = folder2.add("index", "file");
 if (folder1.type == "file") {
    folder1.parent;
 }
+
+document.querySelector<HTMLInputElement>("#filter")?.addEventListener("input", (ev) => {
+   let input = ev.target as HTMLInputElement;
+   let matchesDrawerA = drawerA.filter(input.value);
+
+   if (!matchesDrawerA.length) {
+      console.log("no matches!");
+   }
+
+   drawerB.filter(input.value);
+   drawerC.filter(input.value);
+   drawerD.filter(input.value);
+})
+
+addEventListener("keydown", e => {
+   if (e.key == "Delete") {
+      drawerA.getSelectedItem()?.delete();
+      drawerB.getSelectedItem()?.delete();
+      drawerC.getSelectedItem()?.delete();
+      drawerD.getSelectedItem()?.delete();
+   }
+})

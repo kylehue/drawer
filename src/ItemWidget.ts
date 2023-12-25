@@ -178,6 +178,7 @@ export class ItemWidget {
          preventScroll: true,
       });
 
+      // @ts-ignore
       this.item.drawer.focusedItem = this.item;
    }
 
@@ -205,7 +206,9 @@ export class ItemWidget {
       this.domNodes.container.classList.add(DRAWER_ITEM_BLURRED);
       this.domNodes.container.removeAttribute("tabindex");
 
+      // @ts-ignore
       if (this.item.drawer.focusedItem == this.item) {
+         // @ts-ignore
          this.item.drawer.focusedItem = null;
       }
    }
@@ -283,7 +286,7 @@ export class ItemWidget {
     * @returns {void}
     */
    move(source: string): void {
-      const item = this.item.drawer.root.get(source, "folder");
+      const item = this.item.drawer.getRoot().get(source, "folder");
 
       if (item) {
          item.widget.domNodes.body.prepend(this.domNodes.container);

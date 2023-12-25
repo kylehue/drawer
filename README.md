@@ -22,18 +22,19 @@ npm install @kylehue/drawer
 import { Drawer } from "@kylehue/drawer";
 
 const drawer = new Drawer({
-   element: document.querySelector("#drawer")
    /* ...options */
 });
 
+const root = drawer.initRoot(document.querySelector("#drawer"));
+
 // Adding items
-drawer.root.add("src/classes/comps/sample.txt");
+root.add("src/classes/comps/sample.txt");
 
 // Deleting items
-drawer.root.delete("/src/classes/comps");
+root.delete("/src/classes/comps");
 
 // Moving items
-drawer.root.get("src/classes")?.move("/");
+root.get("src/classes")?.move("/");
 
 // Listen on item add
 drawer.onDidAddItem((desc) => {
@@ -45,3 +46,19 @@ drawer.onError((error) => {
    console.error(error.reason);
 });
 ```
+
+### Styling
+Here are some of the styles that can be customized.
+
+| Class name                    | Description                           |
+| ----------------------------- | ------------------------------------- |
+| `.drawer-folder`              | Container of folder item              |
+| `.drawer-folder-head`         | Folder header container               |
+| `.drawer-folder-icon`         | Folder icon                           |
+| `.drawer-folder-icon-chevron` | Folder arrow icon                     |
+| `.drawer-file`                | Container of file item                |
+| `.drawer-file-icon`           | File icon                             |
+| `.drawer-indent-guide`        | Vertical lines beside the folder tree |
+| `.drawer-drop-target`         | Current location of item on drag      |
+| `.drawer-drag-label`          | The item that is being dragged        |
+| `.drawer-item-focused`        | Selected item                         |

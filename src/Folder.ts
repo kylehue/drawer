@@ -91,14 +91,14 @@ export class Folder {
             const directory = directories.slice(0, i + 1).join("/");
             // Check if directory exists or not
 
-            if (!this.drawer.root.get(directory, "folder")) {
+            if (!this.drawer.getRoot().get(directory, "folder")) {
                // ...if it doesn't exist, then create a folder for it
-               this.drawer.root.add(directory, "folder");
+               this.drawer.getRoot().add(directory, "folder");
             }
          }
       }
 
-      const parent = this.drawer.root.get(dirname, "folder")!;
+      const parent = this.drawer.getRoot().get(dirname, "folder")!;
 
       // Create main item
       let item: Folder | File;
@@ -147,7 +147,7 @@ export class Folder {
 
       let item =
          relativePath == "/"
-            ? this.drawer.root
+            ? this.drawer.getRoot()
             : this.drawer.items.get(relativePath) || null;
 
       if (item?.type && !possibleItemTypes.includes(item.type)) {
@@ -166,7 +166,7 @@ export class Folder {
     */
    move(source: string): void {
       if (!source) return;
-      if (this === this.drawer.root) return;
+      if (this === this.drawer.getRoot()) return;
 
       const oldSource = this.source;
       const sourceWithoutTrailingSlash = source.replace(/\/$/, "");
@@ -187,14 +187,14 @@ export class Folder {
       const newSource = path.join(targetSource, path.basename(this.source));
 
       // Make sure it doesn't have a duplicate
-      if (this.drawer.root.get(newSource)) {
+      if (this.drawer.getRoot().get(newSource)) {
          this.drawer.trigger("onError", ERR_MOVE_CLONE(newSource));
          return;
       }
 
       // If the target source doesn't exist, create it
-      if (!this.drawer.root.get(targetSource)) {
-         this.drawer.root.add(targetSource, "folder");
+      if (!this.drawer.getRoot().get(targetSource)) {
+         this.drawer.getRoot().add(targetSource, "folder");
       }
 
       // Move itself and its children
@@ -207,7 +207,7 @@ export class Folder {
             );
 
             const parentSource = path.dirname(newItemSource);
-            const parent = this.drawer.root.get(parentSource, "folder")!;
+            const parent = this.drawer.getRoot().get(parentSource, "folder")!;
             item.parent = parent;
             item.source = newItemSource;
             this.drawer.items.delete(oldItemSource);

@@ -128,17 +128,17 @@ export class File {
       const newSource = path.join(targetSource, path.basename(this.source));
 
       // Make sure it doesn't have a duplicate
-      if (this.drawer.root.get(newSource)) {
+      if (this.drawer.getRoot().get(newSource)) {
          this.drawer.trigger("onError", ERR_MOVE_CLONE(newSource));
          return;
       }
 
       // If the target source doesn't exist, create it
-      if (!this.drawer.root.get(targetSource)) {
-         this.drawer.root.add(targetSource, "folder");
+      if (!this.drawer.getRoot().get(targetSource)) {
+         this.drawer.getRoot().add(targetSource, "folder");
       }
 
-      const parent = this.drawer.root.get(targetSource, "folder")!;
+      const parent = this.drawer.getRoot().get(targetSource, "folder")!;
       this.source = newSource;
       this.parent = parent;
       this.drawer.items.delete(oldSource);

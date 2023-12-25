@@ -2,7 +2,11 @@ import { Folder } from "./Folder.js";
 import { File } from "./File.js";
 import path from "path-browserify";
 import { isChildOf } from "./utils.js";
-import { DRAWER_DRAG_LABEL, DRAWER_DROP_TARGET } from "./classNames.js";
+import {
+   DRAWER_DRAG_LABEL,
+   DRAWER_DROP_TARGET,
+   DRAWER_FOLDER,
+} from "./classNames.js";
 
 interface IDraggableOptions {
    /**
@@ -138,6 +142,23 @@ export function makeDrawerItemDraggable(
          mouseDownPositionDeltaX > opts.buffer ||
          mouseDownPositionDeltaY > opts.buffer;
 
+      // @ts-ignore
+      const element = item.drawer.element!;
+      const distanceToBottom = mouseY - element?.offsetTop;
+      const buffer = dragLabel.offsetHeight + 20;
+
+      // If the mouse is in the bottom buffer zone, scroll down
+      if (
+         distanceToBottom >=
+         element.offsetTop + element.offsetHeight - buffer
+      ) {
+         element.scrollBy(0, 5);
+      }
+
+      if (distanceToBottom <= buffer) {
+         element.scrollBy(0, -5);
+      }
+
       // Only fires once
       if (outOfRange && !outOfRangeFired) {
          if (item.type == "folder") item.widget.freeze();
@@ -155,9 +176,9 @@ export function makeDrawerItemDraggable(
          // Get the drop target element using document.elementFromPoint()
          let targetElement = document.elementFromPoint(mouseX, mouseY);
 
-         if (!targetElement?.matches(".drawer-folder")) {
+         if (!targetElement?.matches("." + DRAWER_FOLDER)) {
             while (targetElement?.parentElement) {
-               if (targetElement.matches(".drawer-folder")) {
+               if (targetElement.matches("." + DRAWER_FOLDER)) {
                   break;
                }
 
@@ -186,10 +207,10 @@ export function makeDrawerItemDraggable(
 
          // If target element is the root's container, make the root the drop target
          if (
-            targetElement === item.drawer.root.widget.domNodes.container &&
+            targetElement === item.drawer.getRoot().widget.domNodes.container &&
             !isInRoot
          ) {
-            dropTarget = item.drawer.root;
+            dropTarget = item.drawer.getRoot();
          }
 
          // If drop target's state is closed, open it after some time of hovering

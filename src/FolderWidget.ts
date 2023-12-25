@@ -102,7 +102,7 @@ export class FolderWidget extends ItemWidget {
       nodes.container.append(nodes.body);
 
       if (isRoot) {
-         options.element.append(nodes.container);
+         // it's already appended when initRoot() is called so we can skip this
       } else if (folder.parent) {
          folder.parent.widget.domNodes.body.prepend(nodes.container);
       } else {

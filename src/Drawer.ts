@@ -16,9 +16,10 @@ let lastId = 0;
 export class Drawer extends Hooks {
    public id = "$drawer" + lastId++;
    public options: IDrawerOptions;
-   public root: Folder;
    public items = new Map<string, Folder | File>();
-   public focusedItem: Folder | File | null = null;
+   private focusedItem: Folder | File | null = null;
+   protected root?: Folder;
+   protected element?: HTMLElement;
 
    /**
     *
@@ -32,27 +33,15 @@ export class Drawer extends Hooks {
          Object.assign({}, defaultOptions),
          options || {}
       );
+   }
 
-      // Setup element
-      if (!this.options.element) {
-         throw new Error(
-            "The drawer cannot be appended to a null or undefined element. Please provide a valid container element."
-         );
-      }
-
-      this.options.element.classList.add(DRAWER);
-
-      if (this.options.animated) {
-         this.options.element.classList.add(DRAWER_ANIMATED);
-      }
-
-      if (this.options.horizontalScroll) {
-         this.options.element.classList.add(DRAWER_SCROLLABLE);
-      } else {
-         this.options.element.onscroll = () => {
-            this.options.element.scrollLeft = 0;
-         };
-      }
+   /**
+    * Appends the root widget container to the specified HTML element.
+    *
+    * @param element The HTML element to which the root widget container will be appended.
+    */
+   initRoot(element: HTMLElement) {
+      this.element = element;
 
       // Setup root
       this.root = new Folder(this, null, "/");
@@ -71,15 +60,34 @@ export class Drawer extends Hooks {
             }
          }
       });
+
+      element.append(this.root.widget.domNodes.container);
+      element.classList.add(DRAWER);
+
+      if (this.options.animated) {
+         element.classList.add(DRAWER_ANIMATED);
+      }
+
+      if (this.options.horizontalScroll) {
+         element.classList.add(DRAWER_SCROLLABLE);
+      } else {
+         element.onscroll = () => {
+            element.scrollLeft = 0;
+         };
+      }
    }
 
-   /**
-    * Appends the root widget container to the specified HTML element.
-    *
-    * @param element The HTML element to which the root widget container will be appended.
-    */
-   appendTo(element: HTMLElement) {
-      element.append(this.root.widget.domNodes.container);
+   getRoot() {
+      // @ts-ignore
+      const root = this.root;
+
+      if (!root) {
+         throw new Error(
+            "Root doesn't exist. Please make sure that initRoot() has been called."
+         );
+      }
+
+      return root;
    }
 
    /**
@@ -122,6 +130,68 @@ export class Drawer extends Hooks {
 
       return matchedItems;
    }
+
+   getSelectedItem() {
+      return this.focusedItem;
+   }
+
+   // private getItemsAround(item: Folder | File) {
+   //    const items = Object.values(Object.fromEntries(this.items));
+   //    let itemBelow: Folder | File | null = null;
+   //    let itemAbove: Folder | File | null = null;
+
+   //    const getItemAbove = (_item: Folder | File) => {
+
+   //    };
+
+   //    const getItemBeneath = () => {};
+
+   //    if (item.widget.order == 0) {
+   //       itemAbove = item.parent;
+   //    }
+
+   //    // First, we can get item above/below by checking siblings
+   //    const siblings = item.parent?.getChildren() || [];
+   //    for (const sibling of siblings) {
+   //       const isFile = sibling.type == "file";
+   //       const isFolder = sibling.type == "folder";
+   //       const isClosedFolder =
+   //          sibling.type == "folder" && sibling.widget.state == "close";
+   //       const isEmptyFolder = sibling.type == "folder" && !sibling.getChildren().length;
+   //       //if (sibling.type == "folder" && sibling.widget.state == "open") continue;
+
+   //       if (isFile || isClosedFolder || isEmptyFolder) {
+   //          if (sibling.widget.order == item.widget.order - 1) {
+   //             itemAbove = sibling;
+   //          }
+
+   //          if (sibling.widget.order == item.widget.order + 1) {
+   //             itemBelow = sibling;
+   //          }
+   //       } else {
+   //          // If it's an open folder...
+   //          // If it's empty, make it the item
+   //          if (sibling.widget.order == item.widget.order - 1) {
+   //             //itemAbove = sibling;
+   //          }
+
+   //          if (sibling.widget.order == item.widget.order + 1) {
+   //             //itemBelow = sibling;
+   //          }
+   //       }
+
+   //    }
+
+   //    // If item above is still null
+   //    console.log(item.widget.order);
+
+   //    console.log(itemAbove, itemBelow);
+
+   //    for (let item of items) {
+   //       if (item.source == "/") continue;
+
+   //    }
+   // }
 }
 
 export { File, Folder };

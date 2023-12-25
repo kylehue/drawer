@@ -4,10 +4,6 @@ type IconType = string | Node | ((source: string) => string | Node);
 
 export const defaultOptions = {
    /**
-    * The HTML element to use as the root element of the drawer.
-    */
-   element: document.createElement("div") as HTMLElement,
-   /**
     * The class name to use for folder items.
     */
    folderClassName: "",
