@@ -75,6 +75,8 @@ export class Drawer extends Hooks {
             element.scrollLeft = 0;
          };
       }
+
+      return this.root;
    }
 
    getRoot() {
