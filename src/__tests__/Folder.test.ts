@@ -9,18 +9,20 @@ import { File } from "../File.js";
 import { Folder } from "../Folder.js";
 
 const drawer = new Drawer();
-let folderA = drawer.root.add("/src", "folder");
-let folderB = drawer.root.add("/src/classes/comps", "folder");
+const root = drawer.initRoot(document.createElement("div"));
+
+let folderA = root.add("/src", "folder");
+let folderB = root.add("/src/classes/comps", "folder");
 let fileA = folderA.add("c_memo.txt");
 
 beforeAll(() => {
-   drawer.root.clear();
+   root.clear();
 });
 
 beforeEach(() => {
-   drawer.root.delete();
-   folderA = drawer.root.add("/src", "folder");
-   folderB = drawer.root.add("/src/classes/comps", "folder");
+   root.delete();
+   folderA = root.add("/src", "folder");
+   folderB = root.add("/src/classes/comps", "folder");
    fileA = folderA.add("c_memo.txt");
 });
 
@@ -74,7 +76,7 @@ describe("ADDING:", () => {
 
    describe("ADD: Recursive folder creation", () => {
       test("should create 2 folders in root named '/src/styles' and '/src/styles/test' and 1 file named '/src/styles/test/file.css'", () => {
-         drawer.root.add("src/styles/test/file.css");
+         root.add("src/styles/test/file.css");
          expect(drawer.items.get("/src/styles")).toBeInstanceOf(Folder);
          expect(drawer.items.get("/src/styles/test")).toBeInstanceOf(Folder);
          expect(drawer.items.get("/src/styles/test/file.css")).toBeInstanceOf(
@@ -115,7 +117,7 @@ describe("GETTING:", () => {
 
    describe("GET: Parent", () => {
       test("should return the root", () => {
-         expect(folderA.get("../")).toBe(drawer.root);
+         expect(folderA.get("../")).toBe(root);
       });
    });
 
@@ -177,7 +179,7 @@ describe("MOVING:", () => {
 
    describe("MOVE: moving classes (a folder that begins with c) to root", () => {
       test("shouldn't move its sibling file c_memo.txt to root (a file that begins with c)", () => {
-         drawer.root.get("src/classes/")!.move("/");
+         root.get("src/classes/")!.move("/");
          expect(fileA.source).toEqual("/src/c_memo.txt");
       });
    });
