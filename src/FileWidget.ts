@@ -88,7 +88,7 @@ export class FileWidget extends ItemWidget {
    updateIndentation(): void {
       const indentSize = this._getCalculatedIndentSize();
 
-      this.domNodes.container.style.paddingLeft = indentSize + "em";
+      this.domNodes.container.style.paddingLeft = this.file.drawer.options.leftSpacing + indentSize + "rem";
    }
 
    /**

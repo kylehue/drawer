@@ -201,11 +201,15 @@ export class FolderWidget extends ItemWidget {
       }
 
       const indentSize = this._getCalculatedIndentSize();
-      this.domNodes.head.style.paddingLeft = indentSize + "em";
+      this.domNodes.head.style.paddingLeft =
+         this.folder.drawer.options.leftSpacing + indentSize + "rem";
 
       const indentGuideOffset = this.folder.drawer.options.indentGuideOffset;
       this.domNodes.indentGuide.style.left =
-         indentSize + indentGuideOffset + "em";
+         this.folder.drawer.options.leftSpacing +
+         indentSize +
+         indentGuideOffset +
+         "rem";
 
       if (recursive) {
          for (const [_, item] of this.folder.drawer.items) {

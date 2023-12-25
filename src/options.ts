@@ -38,15 +38,20 @@ export const defaultOptions = {
     */
    editFileNameOnDoubleClick: true,
    /**
-    * Item indent size (in em)
+    * Item indent size (in rem)
     * @default 1
     */
    indentSize: 1,
    /**
-    * Folder tree indent guide offset (in em)
-    * @default 0.75
+    * Folder tree indent guide offset (in rem)
+    * @default 0
     */
-   indentGuideOffset: 0.75,
+   indentGuideOffset: 0,
+   /**
+    * Items left spacing (in rem)
+    * @default 1
+    */
+   leftSpacing: 1,
    /**
     * A regular expression to match items that should be transluscent in the drawer.
     */
