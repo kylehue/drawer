@@ -31,29 +31,8 @@ interface IDraggable {
 // 1 group = 1 drawer
 const draggableGroups = new Map<string, Map<string, IDraggable>>();
 
-addEventListener("mousemove", (event) => {
-   draggableGroups.forEach((draggableGroup) => {
-      draggableGroup.forEach((drag) => {
-         if (drag.isMouseDown) {
-            drag.isDragging = true;
-            drag.onDrag(event);
-         }
-      });
-   });
-});
-
-addEventListener("mouseup", (event) => {
-   draggableGroups.forEach((draggableGroup) => {
-      draggableGroup.forEach((drag) => {
-         drag.isDragging = false;
-         drag.isMouseDown = false;
-         drag.onDrop();
-      });
-   });
-});
-
-const dragLabel = document.createElement("span");
-dragLabel.classList.add(DRAWER_DRAG_LABEL);
+let hydrated = false;
+let dragLabel: HTMLSpanElement;
 export function makeDrawerItemDraggable(
    item: Folder | File,
    element: HTMLElement,
@@ -66,6 +45,36 @@ export function makeDrawerItemDraggable(
       },
       options
    );
+
+   if (!dragLabel) {
+      dragLabel = document.createElement("span");
+      dragLabel.classList.add(DRAWER_DRAG_LABEL);
+   }
+
+   if (!hydrated) {
+      addEventListener("mousemove", (event) => {
+         draggableGroups.forEach((draggableGroup) => {
+            draggableGroup.forEach((drag) => {
+               if (drag.isMouseDown) {
+                  drag.isDragging = true;
+                  drag.onDrag(event);
+               }
+            });
+         });
+      });
+
+      addEventListener("mouseup", (event) => {
+         draggableGroups.forEach((draggableGroup) => {
+            draggableGroup.forEach((drag) => {
+               drag.isDragging = false;
+               drag.isMouseDown = false;
+               drag.onDrop();
+            });
+         });
+      });
+
+      hydrated = true;
+   }
 
    // Get draggable group
    let draggableGroup = draggableGroups.get(item.drawer.id) as Map<
