@@ -153,19 +153,26 @@ export function makeDrawerItemDraggable(
 
       // @ts-ignore
       const element = item.drawer.element!;
-      const distanceToBottom = mouseY - element?.offsetTop;
-      const buffer = dragLabel.offsetHeight + 20;
+      const bounds = element.getBoundingClientRect();
+      const distanceToBottom = mouseY - bounds.y;
+      const distanceToRight = mouseX - bounds.x;
+      const bufferX = dragLabel.offsetWidth + 10;
+      const bufferY = dragLabel.offsetHeight + 15;
 
-      // If the mouse is in the bottom buffer zone, scroll down
-      if (
-         distanceToBottom >=
-         element.offsetTop + element.offsetHeight - buffer
-      ) {
+      if (distanceToBottom >= bounds.height - bufferY) {
          element.scrollBy(0, 5);
       }
 
-      if (distanceToBottom <= buffer) {
+      if (distanceToBottom <= bufferY) {
          element.scrollBy(0, -5);
+      }
+
+      if (distanceToRight >= bounds.width - bufferX) {
+         element.scrollBy(5, 0);
+      }
+
+      if (distanceToRight <= bufferX) {
+         element.scrollBy(-5, 0);
       }
 
       // Only fires once
